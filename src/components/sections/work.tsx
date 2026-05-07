@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 import {
   type WorkCard,
@@ -8,9 +7,11 @@ import {
   type WorkImageSingle,
   workSection,
 } from "@/data/site";
-
-/** Scroll runway per panel (vh): pinned slide + handoff scroll. Use `vh` (not `dvh`) so runway + sticky use the same unit in Chrome. */
-const WORK_STACK_RUNWAY_VH = 220;
+import {
+  LetterWaveLink,
+  OUTLINE_CTA_BUTTON_CLASSNAME,
+} from "@/components/ui/letter-wave-link";
+import { WorkStackSlide } from "@/components/sections/work-stack-slide";
 
 /** Fraction of the image height visible in the frame (top half / shifted up). */
 const IMAGE_VISIBLE_FRACTION = 0.5;
@@ -26,9 +27,6 @@ function workSlugToClass(slug: string): string {
 function formatWorkIndex(index: number): string {
   return String(index + 1).padStart(2, "0");
 }
-
-const heroSecondaryBtnClass =
-  "inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background/80 px-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 shadow-sm backdrop-blur-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50/90 dark:border-zinc-600 dark:bg-zinc-950/50 dark:text-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-900/80";
 
 const workGlassFrameClass =
   "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-white/14 dark:bg-zinc-950/28 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.08)] sm:px-4 sm:pt-4";
@@ -253,33 +251,30 @@ function WorkItemRow({
   const indexLabel = formatWorkIndex(index);
 
   return (
-    <li
-      className={`work-showcase work-showcase--${mod} text-foreground`}
-      style={{
-        height: `${WORK_STACK_RUNWAY_VH}vh`,
-        zIndex: index + 1,
-      }}
-      data-work={item.slug}
+    <WorkStackSlide
+      mod={mod}
+      itemSlug={item.slug}
+      index={index}
+      total={total}
     >
-      <div className="sticky top-0 h-screen min-h-screen w-full">
-        <div className="work-showcase__bg" aria-hidden />
+      <div className="work-showcase__bg" aria-hidden />
 
-        <div className="relative z-[2] min-h-screen w-full">
-          <span className="sr-only">
-            Project {index + 1} of {total}
-          </span>
+      <div className="relative z-[2] min-h-screen w-full">
+        <span className="sr-only">
+          Project {index + 1} of {total}
+        </span>
 
-          <article
-            className="relative min-h-screen w-full"
-            aria-labelledby={titleId}
-          >
+        <article
+          className="relative min-h-screen w-full"
+          aria-labelledby={titleId}
+        >
             {/* Title left + index right, aligned to max-w-7xl */}
             <div className="absolute inset-x-0 top-[15%] z-30 flex justify-center px-4 sm:px-6 lg:px-8">
               <div className="flex w-full max-w-7xl items-start justify-between gap-6">
                 <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
                   <h3
                     id={titleId}
-                    className="text-left text-3xl font-semibold uppercase leading-[1.05] tracking-tight text-zinc-900 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]"
+                    className="text-left text-3xl font-normal uppercase leading-[1.05] tracking-tight text-zinc-900 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]"
                   >
                     {item.title}
                   </h3>
@@ -294,17 +289,16 @@ function WorkItemRow({
 
             {/* Center: description + Read more */}
             <div className="absolute left-1/2 top-1/2 z-20 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 px-5 text-center sm:max-w-2xl sm:px-8">
-              <p className="text-sm leading-relaxed text-zinc-700 sm:text-[15px] dark:text-zinc-300">
+              <p className="text-base leading-relaxed text-zinc-700 sm:text-[17px] dark:text-zinc-300">
                 {item.description}
               </p>
               <div className="mt-8 flex justify-center sm:mt-10">
-                <Link
+                <LetterWaveLink
                   href={`/${item.slug}`}
-                  aria-label={`Read more about ${item.title}`}
-                  className={heroSecondaryBtnClass}
-                >
-                  Read more
-                </Link>
+                  className={OUTLINE_CTA_BUTTON_CLASSNAME}
+                  label="READ MORE"
+                  ariaLabel={`Read more about ${item.title}`}
+                />
               </div>
             </div>
 
@@ -313,8 +307,7 @@ function WorkItemRow({
             </div>
           </article>
         </div>
-      </div>
-    </li>
+    </WorkStackSlide>
   );
 }
 

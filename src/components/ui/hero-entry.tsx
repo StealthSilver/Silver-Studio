@@ -11,7 +11,10 @@ import {
   splitHeroWords,
 } from "@/components/ui/hero-reveal";
 import { HERO_TILE_COUNT, HeroTiles } from "@/components/ui/hero-tiles";
-import { LetterWaveLink } from "@/components/ui/letter-wave-link";
+import {
+  LetterWaveLink,
+  OUTLINE_CTA_BUTTON_CLASSNAME,
+} from "@/components/ui/letter-wave-link";
 import { heroLogoTicker } from "@/data/site";
 
 type HeroEntryProps = {
@@ -119,7 +122,7 @@ export function HeroEntry({
             >
               <LetterWaveLink
                 href={secondaryCta.href}
-                className="inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background px-6 text-sm font-semibold tracking-wide text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+                className={OUTLINE_CTA_BUTTON_CLASSNAME}
                 label={secondaryCta.label}
               />
             </motion.span>
