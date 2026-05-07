@@ -14,7 +14,7 @@ export default function Home() {
         </div>
          <Work />
         <div className="shrink-0">
-          <Process />
+          {/* <Process /> */}
         </div>
       </main>
       <Footer />

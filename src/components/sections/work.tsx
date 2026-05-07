@@ -12,6 +12,7 @@ import {
   OUTLINE_CTA_BUTTON_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { WorkStackSlide } from "@/components/sections/work-stack-slide";
+import { cn } from "@/lib/utils";
 
 /** Fraction of the image height visible in the frame (top half / shifted up). */
 const IMAGE_VISIBLE_FRACTION = 0.5;
@@ -315,19 +316,28 @@ export function Work() {
   const { id, sectionAriaLabel, heading, items } = workSection;
   const total = items.length;
 
+  const showHeading = heading.trim().length > 0;
+
   return (
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-24 sm:scroll-mt-32 sm:pb-10 sm:pt-32 md:pt-40"
+      className="w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-0 sm:scroll-mt-32 sm:pb-10"
     >
-      <div className="mx-auto w-full max-w-7xl">
-        <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-          {heading}
-        </h2>
-      </div>
+      {showHeading ? (
+        <div className="mx-auto w-full max-w-7xl">
+          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+            {heading}
+          </h2>
+        </div>
+      ) : null}
 
-      <ul className="relative m-0 mt-24 list-none overflow-x-visible overflow-y-visible p-0 sm:mt-32 lg:mt-40">
+      <ul
+        className={cn(
+          "relative m-0 list-none overflow-x-visible overflow-y-visible p-0",
+          showHeading ? "mt-24 sm:mt-32 lg:mt-40" : "mt-0",
+        )}
+      >
         {items.map((item, index) => (
           <WorkItemRow
             key={item.slug}
