@@ -9,16 +9,27 @@ import {
   workSection,
 } from "@/data/site";
 
-const isAbsoluteUrl = (href: string) => /^https?:\/\//i.test(href);
-
 /** Same as hero secondary CTA (SEE WORK) */
 const heroSecondaryBtnClass =
   "inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background px-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900";
 
-function WorkPreviewFrame({ children }: { children: ReactNode }) {
-  return (
+function WorkPreviewFrame({
+  children,
+  externalHref,
+  externalAriaLabel,
+}: {
+  children: ReactNode;
+  externalHref?: string;
+  externalAriaLabel?: string;
+}) {
+  const frame = (
     <div
-      className="relative flex aspect-[16/10] w-full max-w-xl shrink-0 items-center justify-center overflow-hidden rounded-[4px] border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 lg:max-w-none lg:flex-1 xl:max-w-[min(100%,560px)]"
+      className={[
+        "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-[4px] border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900",
+        externalHref
+          ? "transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950"
+          : "",
+      ].join(" ")}
     >
       {children}
       <div
@@ -27,6 +38,25 @@ function WorkPreviewFrame({ children }: { children: ReactNode }) {
       />
     </div>
   );
+
+  const shellClass =
+    "w-full max-w-xl shrink-0 lg:max-w-none lg:flex-1 xl:max-w-[min(100%,560px)]";
+
+  if (externalHref) {
+    return (
+      <a
+        href={externalHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={externalAriaLabel}
+        className={`block ${shellClass}`}
+      >
+        {frame}
+      </a>
+    );
+  }
+
+  return <div className={shellClass}>{frame}</div>;
 }
 
 function WorkPreviewPlaceholder() {
@@ -41,10 +71,18 @@ function WorkPreviewPlaceholder() {
   );
 }
 
-function WorkPreviewImage({ image }: { image: WorkImageSingle }) {
+function WorkPreviewImage({
+  image,
+  externalHref,
+  externalAriaLabel,
+}: {
+  image: WorkImageSingle;
+  externalHref?: string;
+  externalAriaLabel?: string;
+}) {
   const fit = image.objectFit ?? "cover";
   return (
-    <WorkPreviewFrame>
+    <WorkPreviewFrame externalHref={externalHref} externalAriaLabel={externalAriaLabel}>
       <Image
         src={image.src}
         alt={image.alt}
@@ -61,9 +99,17 @@ function WorkPreviewImage({ image }: { image: WorkImageSingle }) {
   );
 }
 
-function WorkPreviewDual({ image }: { image: WorkImageDual }) {
+function WorkPreviewDual({
+  image,
+  externalHref,
+  externalAriaLabel,
+}: {
+  image: WorkImageDual;
+  externalHref?: string;
+  externalAriaLabel?: string;
+}) {
   return (
-    <WorkPreviewFrame>
+    <WorkPreviewFrame externalHref={externalHref} externalAriaLabel={externalAriaLabel}>
       <>
         <Image
           src={image.light.src}
@@ -86,7 +132,10 @@ function WorkPreviewDual({ image }: { image: WorkImageDual }) {
 }
 
 function WorkPreview({ item }: { item: WorkCard }) {
-  const { image } = item;
+  const { image, siteUrl } = item;
+  const previewLabel = siteUrl
+    ? `Visit ${item.title} website (opens in new tab)`
+    : undefined;
   if (!image) {
     return (
       <WorkPreviewFrame>
@@ -94,8 +143,22 @@ function WorkPreview({ item }: { item: WorkCard }) {
       </WorkPreviewFrame>
     );
   }
-  if (image.type === "dual") return <WorkPreviewDual image={image} />;
-  return <WorkPreviewImage image={image} />;
+  if (image.type === "dual") {
+    return (
+      <WorkPreviewDual
+        image={image}
+        externalHref={siteUrl}
+        externalAriaLabel={previewLabel}
+      />
+    );
+  }
+  return (
+    <WorkPreviewImage
+      image={image}
+      externalHref={siteUrl}
+      externalAriaLabel={previewLabel}
+    />
+  );
 }
 
 export function Work() {
@@ -112,17 +175,17 @@ export function Work() {
           {heading}
         </h2>
 
-        <ul className="mt-10 list-none space-y-12 sm:mt-14 sm:space-y-16">
+        <ul className="mt-16 list-none space-y-20 sm:mt-24 sm:space-y-28">
           {items.map((item, index) => (
-            <li key={item.title}>
+            <li key={item.slug}>
               <article>
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-12 xl:gap-16">
-                  <div className="flex min-w-0 flex-shrink-0 flex-col gap-4 lg:flex-[0.92] lg:justify-center xl:max-w-lg">
+                  <div className="flex min-w-0 flex-shrink-0 flex-col gap-7 sm:gap-8 lg:gap-10 lg:flex-[0.92] lg:justify-center xl:max-w-lg">
                     <h3 className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
                       <span className="shrink-0 text-[0.55rem] font-medium tabular-nums leading-none tracking-normal text-zinc-600 sm:text-[0.6rem] dark:text-zinc-400">
                         [{index + 1}]
                       </span>
-                      <span className="min-w-0">{item.title}</span>
+                      <span className="min-w-0 uppercase">{item.title}</span>
                     </h3>
                     <p className="text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
                       {item.description}
@@ -137,23 +200,15 @@ export function Work() {
                         </span>
                       ))}
                     </div>
-                    {item.link ? (
-                      <div className="pt-2">
-                        <Link
-                          href={item.link.href}
-                          aria-label={`Read more about ${item.title}`}
-                          {...(isAbsoluteUrl(item.link.href)
-                            ? {
-                                target: "_blank",
-                                rel: "noopener noreferrer",
-                              }
-                            : {})}
-                          className={heroSecondaryBtnClass}
-                        >
-                          Read more
-                        </Link>
-                      </div>
-                    ) : null}
+                    <div className="pt-2 sm:pt-4">
+                      <Link
+                        href={`/${item.slug}`}
+                        aria-label={`Read more about ${item.title}`}
+                        className={heroSecondaryBtnClass}
+                      >
+                        Read more
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="min-w-0 lg:flex lg:min-h-0 lg:flex-1 lg:justify-end">

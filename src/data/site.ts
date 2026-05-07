@@ -111,9 +111,12 @@ export type WorkImageDual = {
 
 export type WorkCard = {
   title: string;
+  /** URL path segment, e.g. `/brilliant` */
+  slug: string;
   description: string;
   tags: readonly string[];
-  link?: { href: string };
+  /** Live site — work preview image links here (new tab). Omit if there is no public URL yet. */
+  siteUrl?: string;
   image?: WorkImageSingle | WorkImageDual;
 };
 
@@ -124,10 +127,11 @@ export const workSection = {
   items: [
     {
       title: "Brilliant.org",
+      slug: "brilliant",
       description:
         "Interactive STEM learning experience—product storytelling, responsiveness, and a calm interface that scales across audiences.",
       tags: ["Education", "UX", "Frontend"],
-      link: { href: "https://brilliant.org/" },
+      siteUrl: "https://brilliant.org/",
       image: {
         type: "single",
         src: "/works/brilliant.png",
@@ -138,10 +142,11 @@ export const workSection = {
     },
     {
       title: "Sgrids.com",
+      slug: "sgrids",
       description:
         "Corporate positioning and structured layouts for enterprise energy—with light and dark brand treatments that carry across breakpoints.",
       tags: ["Corporate", "Brand", "Responsive"],
-      link: { href: "https://www.sgrids.com/" },
+      siteUrl: "https://www.sgrids.com/",
       image: {
         type: "single",
         src: "/works/sgrids.png",
@@ -152,10 +157,11 @@ export const workSection = {
     },
     {
       title: "8th Light",
+      slug: "8th-light",
       description:
         "Craft-led software consultancy site—emphasis on typography, restraint, and a narrative layout that reinforces expertise.",
       tags: ["Consulting", "Editorial", "Brand"],
-      link: { href: "https://8thlight.com/" },
+      siteUrl: "https://8thlight.com/",
       image: {
         type: "single",
         src: "/works/8thlight.png",
@@ -166,10 +172,11 @@ export const workSection = {
     },
     {
       title: "Harit",
+      slug: "harit",
       description:
         "Landing and UX systems that translate a technical product story into approachable, credible marketing—built for clarity and conversion.",
       tags: ["Landing", "Product", "Systems"],
-      link: { href: "/#contact" },
+      siteUrl: "https://verdan-main.vercel.app/",
       image: {
         type: "single",
         src: "/works/harit.png",
@@ -180,10 +187,11 @@ export const workSection = {
     },
     {
       title: "Sol-X",
+      slug: "sol-x",
       description:
         "SaaS go-to-market web presence—focused messaging hierarchy, funnel-friendly sections, and a flexible component set for iterative launches.",
       tags: ["SaaS", "GTM", "UI"],
-      link: { href: "/#contact" },
+      siteUrl: "https://sol-x-eta.vercel.app/",
       image: {
         type: "single",
         src: "/works/sol-x.png",
@@ -194,10 +202,11 @@ export const workSection = {
     },
     {
       title: "Meshspire",
+      slug: "meshspire",
       description:
         "Product-front site with iterative UI delivery—balancing proof, pricing paths, and a lightweight stack for fast stakeholder feedback.",
       tags: ["Product", "Iteration", "Web"],
-      link: { href: "https://dev.dg4uqajhampr9.amplifyapp.com/" },
+      siteUrl: "https://dev.dg4uqajhampr9.amplifyapp.com/",
       image: {
         type: "single",
         src: "/works/meshspire.png",
@@ -208,6 +217,10 @@ export const workSection = {
     },
   ] satisfies readonly WorkCard[],
 };
+
+export function getWorkBySlug(slug: string): WorkCard | undefined {
+  return workSection.items.find((item) => item.slug === slug);
+}
 
 export const processSection = {
   id: "process" as const,
