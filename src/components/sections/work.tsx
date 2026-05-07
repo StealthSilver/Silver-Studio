@@ -9,38 +9,72 @@ import {
   workSection,
 } from "@/data/site";
 
-/** Same as hero secondary CTA (SEE WORK) */
-const heroSecondaryBtnClass =
-  "inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background px-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900";
+/** Scroll runway per panel (vh): pinned slide + handoff scroll. Use `vh` (not `dvh`) so runway + sticky use the same unit in Chrome. */
+const WORK_STACK_RUNWAY_VH = 220;
 
-function WorkPreviewFrame({
+/** Fraction of the image height visible in the frame (top half / shifted up). */
+const IMAGE_VISIBLE_FRACTION = 0.5;
+
+/** Placeholder aspect when there is no image. */
+const PLACEHOLDER_FULL_WIDTH = 1600;
+const PLACEHOLDER_FULL_HEIGHT = 1000;
+
+function workSlugToClass(slug: string): string {
+  return slug.replace(/[^a-z0-9-]/gi, "-");
+}
+
+function formatWorkIndex(index: number): string {
+  return String(index + 1).padStart(2, "0");
+}
+
+const heroSecondaryBtnClass =
+  "inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background/80 px-6 text-sm font-semibold uppercase tracking-wide text-zinc-900 shadow-sm backdrop-blur-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50/90 dark:border-zinc-600 dark:bg-zinc-950/50 dark:text-zinc-50 dark:hover:border-zinc-500 dark:hover:bg-zinc-900/80";
+
+const workGlassFrameClass =
+  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-white/14 dark:bg-zinc-950/28 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.08)] sm:px-4 sm:pt-4";
+
+function WorkBottomGlassInner({
+  naturalWidth,
+  naturalHeight,
   children,
+}: {
+  naturalWidth: number;
+  naturalHeight: number;
+  children: ReactNode;
+}) {
+  const visibleHeight = naturalHeight * IMAGE_VISIBLE_FRACTION;
+  return (
+    <div className={workGlassFrameClass}>
+      <div
+        className="relative w-full overflow-hidden rounded-t-2xl rounded-b-none sm:rounded-t-3xl"
+        style={{
+          aspectRatio: `${naturalWidth} / ${visibleHeight}`,
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function WorkBottomFrame({
+  children,
+  naturalWidth,
+  naturalHeight,
   externalHref,
   externalAriaLabel,
 }: {
   children: ReactNode;
+  naturalWidth: number;
+  naturalHeight: number;
   externalHref?: string;
   externalAriaLabel?: string;
 }) {
-  const frame = (
-    <div
-      className={[
-        "relative flex aspect-[16/10] w-full items-center justify-center overflow-hidden rounded-[4px] border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900",
-        externalHref
-          ? "transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950"
-          : "",
-      ].join(" ")}
-    >
+  const inner = (
+    <WorkBottomGlassInner naturalWidth={naturalWidth} naturalHeight={naturalHeight}>
       {children}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-zinc-300/70 to-transparent dark:via-zinc-600/60"
-        aria-hidden
-      />
-    </div>
+    </WorkBottomGlassInner>
   );
-
-  const shellClass =
-    "w-full max-w-xl shrink-0 lg:max-w-none lg:flex-1 xl:max-w-[min(100%,560px)]";
 
   if (externalHref) {
     return (
@@ -49,29 +83,70 @@ function WorkPreviewFrame({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={externalAriaLabel}
-        className={`block ${shellClass}`}
+        className="mx-auto block w-full max-w-7xl transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950"
       >
-        {frame}
+        {inner}
       </a>
     );
   }
 
-  return <div className={shellClass}>{frame}</div>;
+  return inner;
 }
 
-function WorkPreviewPlaceholder() {
+function WorkBottomPlaceholder() {
   return (
-    <>
-      <div
-        className="absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_100%,var(--hero-silver-2)_0%,transparent_55%),linear-gradient(to_top,var(--hero-silver-1)_0%,transparent_58%)]"
-        aria-hidden
-      />
-      <div className="relative z-[1] h-24 w-[62%] max-w-[16rem] rounded-[3px] border border-zinc-300/60 bg-background/65 shadow-sm backdrop-blur-[2px] dark:border-zinc-600/60 dark:bg-zinc-950/50" />
-    </>
+    <WorkBottomFrame
+      naturalWidth={PLACEHOLDER_FULL_WIDTH}
+      naturalHeight={PLACEHOLDER_FULL_HEIGHT}
+    >
+      <div className="absolute inset-0 bg-zinc-200/80 dark:bg-zinc-800/80">
+        <div
+          className="absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_100%,var(--hero-silver-2)_0%,transparent_55%),linear-gradient(to_top,var(--hero-silver-1)_0%,transparent_58%)]"
+          aria-hidden
+        />
+        <div className="relative z-[1] flex h-full w-full items-center justify-center">
+          <div className="h-16 w-[50%] max-w-[10rem] rounded-lg border border-zinc-300/60 bg-background/50 backdrop-blur-sm dark:border-zinc-600/60 dark:bg-zinc-950/40" />
+        </div>
+      </div>
+    </WorkBottomFrame>
   );
 }
 
-function WorkPreviewImage({
+/** Full image width in frame; top `IMAGE_VISIBLE_FRACTION` of image height visible (aligned to top). */
+function WorkImageFullWidthTopCrop({
+  src,
+  width,
+  height,
+  alt,
+  className,
+  sizes,
+  ariaHidden,
+}: {
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  className?: string;
+  sizes: string;
+  ariaHidden?: boolean;
+}) {
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      className={[
+        "absolute left-0 top-0 h-auto w-full max-w-full select-none",
+        className ?? "",
+      ].join(" ")}
+      sizes={sizes}
+      {...(ariaHidden ? { "aria-hidden": true as const } : {})}
+    />
+  );
+}
+
+function WorkBottomSingle({
   image,
   externalHref,
   externalAriaLabel,
@@ -80,26 +155,26 @@ function WorkPreviewImage({
   externalHref?: string;
   externalAriaLabel?: string;
 }) {
-  const fit = image.objectFit ?? "cover";
   return (
-    <WorkPreviewFrame externalHref={externalHref} externalAriaLabel={externalAriaLabel}>
-      <Image
+    <WorkBottomFrame
+      naturalWidth={image.width}
+      naturalHeight={image.height}
+      externalHref={externalHref}
+      externalAriaLabel={externalAriaLabel}
+    >
+      <WorkImageFullWidthTopCrop
         src={image.src}
-        alt={image.alt}
         width={image.width}
         height={image.height}
-        className={
-          fit === "contain"
-            ? "relative z-[1] h-auto max-h-[38%] w-auto max-w-[72%] object-contain px-6 sm:max-h-[42%]"
-            : "relative z-[1] h-full w-full object-cover"
-        }
-        sizes="(max-width:1024px) 100vw, 45vw"
+        alt={image.alt}
+        className="object-contain object-[center_top]"
+        sizes="(max-width: 1280px) 100vw, 80rem"
       />
-    </WorkPreviewFrame>
+    </WorkBottomFrame>
   );
 }
 
-function WorkPreviewDual({
+function WorkBottomDual({
   image,
   externalHref,
   externalAriaLabel,
@@ -108,44 +183,47 @@ function WorkPreviewDual({
   externalHref?: string;
   externalAriaLabel?: string;
 }) {
+  const w = image.light.width;
+  const h = image.light.height;
   return (
-    <WorkPreviewFrame externalHref={externalHref} externalAriaLabel={externalAriaLabel}>
-      <>
-        <Image
-          src={image.light.src}
-          alt={image.ariaLabel}
-          width={image.light.width}
-          height={image.light.height}
-          className="relative z-[1] h-auto max-h-[38%] w-auto max-w-[72%] object-contain px-6 opacity-95 dark:hidden sm:max-h-[42%]"
-        />
-        <Image
-          src={image.dark.src}
-          alt=""
-          width={image.dark.width}
-          height={image.dark.height}
-          className="relative z-[1] hidden h-auto max-h-[38%] w-auto max-w-[72%] object-contain px-6 opacity-95 dark:block sm:max-h-[42%]"
-          aria-hidden
-        />
-      </>
-    </WorkPreviewFrame>
+    <WorkBottomFrame
+      naturalWidth={w}
+      naturalHeight={h}
+      externalHref={externalHref}
+      externalAriaLabel={externalAriaLabel}
+    >
+      <WorkImageFullWidthTopCrop
+        src={image.light.src}
+        width={image.light.width}
+        height={image.light.height}
+        alt={image.ariaLabel}
+        className="object-contain object-[center_top] opacity-95 dark:hidden"
+        sizes="(max-width: 1280px) 100vw, 80rem"
+      />
+      <WorkImageFullWidthTopCrop
+        src={image.dark.src}
+        width={image.dark.width}
+        height={image.dark.height}
+        alt=""
+        className="hidden object-contain object-[center_top] opacity-95 dark:block"
+        sizes="(max-width: 1280px) 100vw, 80rem"
+        ariaHidden
+      />
+    </WorkBottomFrame>
   );
 }
 
-function WorkPreview({ item }: { item: WorkCard }) {
+function WorkBottomPreview({ item }: { item: WorkCard }) {
   const { image, siteUrl } = item;
   const previewLabel = siteUrl
     ? `Visit ${item.title} website (opens in new tab)`
     : undefined;
   if (!image) {
-    return (
-      <WorkPreviewFrame>
-        <WorkPreviewPlaceholder />
-      </WorkPreviewFrame>
-    );
+    return <WorkBottomPlaceholder />;
   }
   if (image.type === "dual") {
     return (
-      <WorkPreviewDual
+      <WorkBottomDual
         image={image}
         externalHref={siteUrl}
         externalAriaLabel={previewLabel}
@@ -153,7 +231,7 @@ function WorkPreview({ item }: { item: WorkCard }) {
     );
   }
   return (
-    <WorkPreviewImage
+    <WorkBottomSingle
       image={image}
       externalHref={siteUrl}
       externalAriaLabel={previewLabel}
@@ -161,65 +239,111 @@ function WorkPreview({ item }: { item: WorkCard }) {
   );
 }
 
+function WorkItemRow({
+  item,
+  index,
+  total,
+}: {
+  item: WorkCard;
+  index: number;
+  total: number;
+}) {
+  const mod = workSlugToClass(item.slug);
+  const titleId = `work-item-title-${item.slug}`;
+  const indexLabel = formatWorkIndex(index);
+
+  return (
+    <li
+      className={`work-showcase work-showcase--${mod} text-foreground`}
+      style={{
+        height: `${WORK_STACK_RUNWAY_VH}vh`,
+        zIndex: index + 1,
+      }}
+      data-work={item.slug}
+    >
+      <div className="sticky top-0 h-screen min-h-screen w-full">
+        <div className="work-showcase__bg" aria-hidden />
+
+        <div className="relative z-[2] min-h-screen w-full">
+          <span className="sr-only">
+            Project {index + 1} of {total}
+          </span>
+
+          <article
+            className="relative min-h-screen w-full"
+            aria-labelledby={titleId}
+          >
+            {/* Title left + index right, aligned to max-w-7xl */}
+            <div className="absolute inset-x-0 top-[15%] z-30 flex justify-center px-4 sm:px-6 lg:px-8">
+              <div className="flex w-full max-w-7xl items-start justify-between gap-6">
+                <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
+                  <h3
+                    id={titleId}
+                    className="text-left text-3xl font-semibold uppercase leading-[1.05] tracking-tight text-zinc-900 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]"
+                  >
+                    {item.title}
+                  </h3>
+                </div>
+                <div className="shrink-0" aria-hidden>
+                  <span className="font-thin tabular-nums tracking-tight text-zinc-900 [font-family:var(--font-ibm-plex-sans)] text-5xl leading-none dark:text-zinc-50 sm:text-6xl md:text-7xl lg:text-8xl">
+                    {indexLabel}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Center: description + Read more */}
+            <div className="absolute left-1/2 top-1/2 z-20 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 px-5 text-center sm:max-w-2xl sm:px-8">
+              <p className="text-sm leading-relaxed text-zinc-700 sm:text-[15px] dark:text-zinc-300">
+                {item.description}
+              </p>
+              <div className="mt-8 flex justify-center sm:mt-10">
+                <Link
+                  href={`/${item.slug}`}
+                  aria-label={`Read more about ${item.title}`}
+                  className={heroSecondaryBtnClass}
+                >
+                  Read more
+                </Link>
+              </div>
+            </div>
+
+            <div className="absolute bottom-0 left-0 right-0 z-[15] flex justify-center px-4 sm:px-6">
+              <WorkBottomPreview item={item} />
+            </div>
+          </article>
+        </div>
+      </div>
+    </li>
+  );
+}
+
 export function Work() {
   const { id, sectionAriaLabel, heading, items } = workSection;
+  const total = items.length;
 
   return (
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 pt-16 sm:scroll-mt-32 sm:pt-20"
+      className="w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-24 sm:scroll-mt-32 sm:pb-10 sm:pt-32 md:pt-40"
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-7xl">
         <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
           {heading}
         </h2>
-
-        <ul className="mt-16 list-none space-y-20 sm:mt-24 sm:space-y-28">
-          {items.map((item, index) => (
-            <li key={item.slug}>
-              <article>
-                <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch lg:gap-12 xl:gap-16">
-                  <div className="flex min-w-0 flex-shrink-0 flex-col gap-7 sm:gap-8 lg:gap-10 lg:flex-[0.92] lg:justify-center xl:max-w-lg">
-                    <h3 className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-                      <span className="shrink-0 text-[0.55rem] font-medium tabular-nums leading-none tracking-normal text-zinc-600 sm:text-[0.6rem] dark:text-zinc-400">
-                        [{index + 1}]
-                      </span>
-                      <span className="min-w-0 uppercase">{item.title}</span>
-                    </h3>
-                    <p className="text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
-                      {item.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {item.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-[3px] border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-400"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="pt-2 sm:pt-4">
-                      <Link
-                        href={`/${item.slug}`}
-                        aria-label={`Read more about ${item.title}`}
-                        className={heroSecondaryBtnClass}
-                      >
-                        Read more
-                      </Link>
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 lg:flex lg:min-h-0 lg:flex-1 lg:justify-end">
-                    <WorkPreview item={item} />
-                  </div>
-                </div>
-              </article>
-            </li>
-          ))}
-        </ul>
       </div>
+
+      <ul className="relative m-0 mt-24 list-none overflow-x-visible overflow-y-visible p-0 sm:mt-32 lg:mt-40">
+        {items.map((item, index) => (
+          <WorkItemRow
+            key={item.slug}
+            item={item}
+            index={index}
+            total={total}
+          />
+        ))}
+      </ul>
     </section>
   );
 }

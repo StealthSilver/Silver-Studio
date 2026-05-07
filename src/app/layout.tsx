@@ -4,6 +4,7 @@ import { Geist_Mono, IBM_Plex_Sans, Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
+import "@/styles/work-showcase.css";
 
 /**
  * Runs synchronously in <head> before body/CSS paint — avoids light-theme flash.
@@ -59,7 +60,7 @@ const inter = Inter({
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-plex-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["100", "400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({

@@ -114,7 +114,6 @@ export type WorkCard = {
   /** URL path segment, e.g. `/brilliant` */
   slug: string;
   description: string;
-  tags: readonly string[];
   /** Live site — work preview image links here (new tab). Omit if there is no public URL yet. */
   siteUrl?: string;
   image?: WorkImageSingle | WorkImageDual;
@@ -130,7 +129,6 @@ export const workSection = {
       slug: "brilliant",
       description:
         "Interactive STEM learning experience—product storytelling, responsiveness, and a calm interface that scales across audiences.",
-      tags: ["Education", "UX", "Frontend"],
       siteUrl: "https://brilliant.org/",
       image: {
         type: "single",
@@ -145,7 +143,6 @@ export const workSection = {
       slug: "sgrids",
       description:
         "Corporate positioning and structured layouts for enterprise energy—with light and dark brand treatments that carry across breakpoints.",
-      tags: ["Corporate", "Brand", "Responsive"],
       siteUrl: "https://www.sgrids.com/",
       image: {
         type: "single",
@@ -160,7 +157,6 @@ export const workSection = {
       slug: "8th-light",
       description:
         "Craft-led software consultancy site—emphasis on typography, restraint, and a narrative layout that reinforces expertise.",
-      tags: ["Consulting", "Editorial", "Brand"],
       siteUrl: "https://8thlight.com/",
       image: {
         type: "single",
@@ -175,7 +171,6 @@ export const workSection = {
       slug: "harit",
       description:
         "Landing and UX systems that translate a technical product story into approachable, credible marketing—built for clarity and conversion.",
-      tags: ["Landing", "Product", "Systems"],
       siteUrl: "https://verdan-main.vercel.app/",
       image: {
         type: "single",
@@ -190,7 +185,6 @@ export const workSection = {
       slug: "sol-x",
       description:
         "SaaS go-to-market web presence—focused messaging hierarchy, funnel-friendly sections, and a flexible component set for iterative launches.",
-      tags: ["SaaS", "GTM", "UI"],
       siteUrl: "https://sol-x-eta.vercel.app/",
       image: {
         type: "single",
@@ -205,7 +199,6 @@ export const workSection = {
       slug: "meshspire",
       description:
         "Product-front site with iterative UI delivery—balancing proof, pricing paths, and a lightweight stack for fast stakeholder feedback.",
-      tags: ["Product", "Iteration", "Web"],
       siteUrl: "https://dev.dg4uqajhampr9.amplifyapp.com/",
       image: {
         type: "single",

@@ -60,7 +60,7 @@ export function HeroEntry({
       className="hero flex w-full shrink-0 flex-col justify-center"
       aria-label={sectionAriaLabel}
     >
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-10 px-2 text-left lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
         <div className="flex min-w-0 flex-col items-start gap-8 sm:gap-10">
           <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl sm:leading-[1.1] lg:text-6xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
             {headlineWords.map((word, i) => (
