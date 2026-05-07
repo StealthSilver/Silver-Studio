@@ -2,15 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
+import { usePathname } from "next/navigation";
 import {
   useEffect,
   useMemo,
-  useRef,
   useSyncExternalStore,
   useState,
 } from "react";
 
+import { LetterWaveLink } from "@/components/ui/letter-wave-link";
 import { navbar as navbarData, site } from "@/data/site";
+import {
+  getHomeHeroRevealCompleteDelayMs,
+  NAVBAR_AFTER_HERO_FADE_IN_S,
+} from "@/lib/hero-intro-timing";
 import { cn } from "@/lib/utils";
 
 const { links, cta } = navbarData;
@@ -53,109 +59,28 @@ function serverScrollSnapshot() {
 const scrollGaugeClass =
   "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-zinc-200/90 bg-zinc-50 px-2 text-xs font-semibold tabular-nums text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
 
-const TYPE_INTERVAL_MS = 42;
-
-function subscribeReducedMotion(onStoreChange: () => void) {
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-  mq.addEventListener("change", onStoreChange);
-  return () => mq.removeEventListener("change", onStoreChange);
-}
-
-function reducedMotionMatches() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function reducedMotionSnapshotServer() {
-  return false;
-}
-
-function BookCallLink({
-  href,
-  className,
-  label,
-  onClick,
-  centerInContainer,
-}: {
-  href: string;
-  className?: string;
-  label: string;
-  onClick?: () => void;
-  /** Full-width row (e.g. mobile menu): keep label centered like `text-center` */
-  centerInContainer?: boolean;
-}) {
-  const [displayed, setDisplayed] = useState(label);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const prefersReducedMotion = useSyncExternalStore(
-    subscribeReducedMotion,
-    reducedMotionMatches,
-    reducedMotionSnapshotServer,
-  );
-
-  useEffect(() => {
-    setDisplayed(label);
-  }, [label]);
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, []);
-
-  const stopTyper = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  };
-
-  const handleEnter = () => {
-    if (prefersReducedMotion) return;
-    stopTyper();
-    setDisplayed("");
-    let i = 0;
-    intervalRef.current = setInterval(() => {
-      i += 1;
-      setDisplayed(label.slice(0, i));
-      if (i >= label.length) stopTyper();
-    }, TYPE_INTERVAL_MS);
-  };
-
-  const handleLeave = () => {
-    stopTyper();
-    setDisplayed(label);
-  };
-
-  const body = (
-    <span className="relative inline-grid place-items-center">
-      <span
-        className="invisible col-start-1 row-start-1 select-none"
-        aria-hidden
-      >
-        {label}
-      </span>
-      <span className="col-start-1 row-start-1">{displayed}</span>
-    </span>
-  );
-
-  return (
-    <Link
-      href={href}
-      className={className}
-      aria-label={label}
-      onClick={onClick}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-    >
-      {centerInContainer ? (
-        <span className="flex w-full justify-center">{body}</span>
-      ) : (
-        body
-      )}
-    </Link>
-  );
-}
-
 export function Navbar() {
+  const pathname = usePathname();
+  const prefersReducedMotion = useReducedMotion() === true;
+  const deferHeroSyncedIntro =
+    pathname === "/" && !prefersReducedMotion;
+
+  const [navInteractable, setNavInteractable] = useState(
+    () => !deferHeroSyncedIntro,
+  );
+
+  useEffect(() => {
+    if (!deferHeroSyncedIntro) setNavInteractable(true);
+  }, [deferHeroSyncedIntro]);
+
+  const heroRevealDoneDelaySec = deferHeroSyncedIntro
+    ? getHomeHeroRevealCompleteDelayMs() / 1000
+    : 0;
+
+  const navFadeInDuration = deferHeroSyncedIntro
+    ? NAVBAR_AFTER_HERO_FADE_IN_S
+    : 0;
+
   const [open, setOpen] = useState(false);
   const scrollSnap = useSyncExternalStore(
     subscribeScroll,
@@ -179,9 +104,12 @@ export function Navbar() {
     <ul className="hidden h-9 items-center gap-1 md:flex">
       {links.map(({ href, label }) => (
         <li key={href}>
-          <Link href={href} className={navLinkClass}>
-            <span className="relative z-10">{label}</span>
-          </Link>
+          <LetterWaveLink
+            href={href}
+            className={navLinkClass}
+            label={label}
+            variant="nav"
+          />
         </li>
       ))}
     </ul>
@@ -240,16 +168,17 @@ export function Navbar() {
             key={href}
             className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-800"
           >
-            <Link
+            <LetterWaveLink
               href={href}
               className={cn(
                 navLinkMobileClass,
                 "rounded-none text-center before:rounded-none hover:before:rounded-none",
               )}
+              label={label}
               onClick={() => setOpen(false)}
-            >
-              <span className="relative z-10">{label}</span>
-            </Link>
+              centerInContainer
+              variant="nav"
+            />
           </li>
         ))}
         <li
@@ -258,7 +187,7 @@ export function Navbar() {
             scrolled && "md:hidden",
           )}
         >
-          <BookCallLink
+          <LetterWaveLink
             href={cta.href}
             className={`${talkNowButtonClass} block w-full rounded-[4px] py-2.5 text-center`}
             label={cta.label}
@@ -296,7 +225,22 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-2 z-50 mt-1 w-full px-2">
+    <motion.header
+      className="sticky top-2 z-50 mt-1 w-full px-2"
+      initial={{ opacity: deferHeroSyncedIntro ? 0 : 1 }}
+      animate={{ opacity: 1 }}
+      transition={{
+        opacity: {
+          delay: heroRevealDoneDelaySec,
+          duration: navFadeInDuration,
+          ease: [0.22, 1, 0.36, 1],
+        },
+      }}
+      onAnimationComplete={() => {
+        if (deferHeroSyncedIntro) setNavInteractable(true);
+      }}
+      inert={deferHeroSyncedIntro && !navInteractable ? true : undefined}
+    >
       <div
         className={cn(
           "mx-auto rounded-[4px] bg-transparent text-zinc-900 transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none dark:text-zinc-50",
@@ -353,7 +297,7 @@ export function Navbar() {
                   scrolled && "min-w-0 md:min-w-[1px]",
                 )}
               >
-                <BookCallLink
+                <LetterWaveLink
                   href={cta.href}
                   className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
                   label={cta.label}
@@ -363,7 +307,7 @@ export function Navbar() {
           ) : (
             <div className="flex h-9 shrink-0 items-center gap-2 md:gap-3">
               {desktopLinks}
-              <BookCallLink
+              <LetterWaveLink
                 href={cta.href}
                 className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
                 label={cta.label}
@@ -375,6 +319,6 @@ export function Navbar() {
 
         {overlayMenuPanel}
       </div>
-    </header>
+    </motion.header>
   );
 }

@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 
 import { cn } from "@/lib/utils";
 
-const TILE_COUNT = 5;
+export const HERO_TILE_COUNT = 5;
 
 /** Subtle width variety only — all neutral / grayscale. */
 const NEUTRAL_HERO_LAYOUT = [
@@ -40,7 +40,7 @@ function tileStackZ(index: number): number {
 }
 
 function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
-  const mock = NEUTRAL_HERO_LAYOUT[index % NEUTRAL_HERO_LAYOUT.length];
+  const mock = NEUTRAL_HERO_LAYOUT[index % HERO_TILE_COUNT];
 
   return (
     <div
@@ -211,7 +211,20 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
   );
 }
 
-export function HeroTiles({ className }: { className?: string }) {
+type HeroTilesReveal = {
+  baseStep: number;
+  staggerMs: number;
+  duration: number;
+  instant: boolean;
+};
+
+export function HeroTiles({
+  className,
+  reveal,
+}: {
+  className?: string;
+  reveal?: HeroTilesReveal;
+}) {
   const reduceMotion = useReducedMotion();
 
   return (
@@ -238,7 +251,7 @@ export function HeroTiles({ className }: { className?: string }) {
         )}
       >
         <div className="flex min-w-min items-end">
-          {Array.from({ length: TILE_COUNT }, (_, i) => {
+          {Array.from({ length: HERO_TILE_COUNT }, (_, i) => {
             const stackZ = tileStackZ(i);
 
             return (
@@ -251,7 +264,27 @@ export function HeroTiles({ className }: { className?: string }) {
                 style={{
                   zIndex: stackZ,
                 }}
-                initial={false}
+                initial={
+                  reveal
+                    ? reveal.instant
+                      ? false
+                      : { opacity: 0 }
+                    : false
+                }
+                animate={reveal ? { opacity: 1 } : undefined}
+                transition={
+                  reveal
+                    ? {
+                        opacity: {
+                          delay: reveal.instant
+                            ? 0
+                            : ((reveal.baseStep + i) * reveal.staggerMs) / 1000,
+                          duration: reveal.instant ? 0 : reveal.duration,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                        },
+                      }
+                    : undefined
+                }
                 whileHover={
                   reduceMotion
                     ? undefined

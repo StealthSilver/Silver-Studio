@@ -190,3 +190,92 @@ body {
 .talk-now-btn:focus-visible:active {
   filter: brightness(0.9);
 }
+
+/* Letter-wave: default stagger LETTER_WAVE_STAGGER_MS; nav uses LETTER_WAVE_NAV_STAGGER_MS + letter-wave-char-nav */
+@keyframes letter-wave-char {
+  0%,
+  5% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.45);
+  }
+  37% {
+    transform: translate3d(0, -135%, 0);
+    opacity: 0;
+    animation-timing-function: step-end;
+  }
+  39% {
+    transform: translate3d(0, 128%, 0);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.35, 1);
+  }
+  76% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+/* Navbar section links: longer duration + smooth cubic-bezier on each motion segment */
+@keyframes letter-wave-char-nav {
+  0%,
+  5% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.43, 0, 0.57, 1);
+  }
+  37% {
+    transform: translate3d(0, -135%, 0);
+    opacity: 0;
+    animation-timing-function: step-end;
+  }
+  39% {
+    transform: translate3d(0, 128%, 0);
+    opacity: 0;
+    animation-timing-function: cubic-bezier(0.15, 0.92, 0.32, 1);
+  }
+  76% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.43, 0, 0.57, 1);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+.letter-wave .letter-wave__track {
+  display: inline-flex;
+  max-height: 1.35em;
+  line-height: 1.15;
+  overflow: hidden;
+}
+
+.letter-wave .letter-wave__char {
+  display: inline-block;
+}
+
+.letter-wave:hover .letter-wave__char {
+  animation-name: letter-wave-char;
+  animation-duration: var(--letter-wave-ms, 360ms);
+  animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+}
+
+.letter-wave.letter-wave--nav:hover .letter-wave__char {
+  animation-name: letter-wave-char-nav;
+  animation-duration: var(--letter-wave-ms-nav, 700ms);
+  animation-timing-function: cubic-bezier(0.43, 0, 0.57, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-wave:hover .letter-wave__char {
+    animation: none;
+  }
+}
