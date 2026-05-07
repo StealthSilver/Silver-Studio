@@ -4,13 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-const links = [
-  { href: "/#work", label: "Work" },
-  { href: "/#services", label: "Services" },
-  { href: "/#process", label: "Process" },
-  { href: "/#about", label: "About" },
-  { href: "/#pricing", label: "Pricing" },
-] as const;
+import { navbar as navbarData, site } from "@/data/site";
+
+const { links, cta } = navbarData;
 
 const talkNowButtonClass = "talk-now-btn rounded-[4px]";
 
@@ -28,28 +24,28 @@ export function Navbar() {
       <div className="mx-auto max-w-6xl overflow-hidden rounded-[4px] bg-white text-zinc-900 ring-1 ring-zinc-200/70 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(15,23,42,0.04),0_2px_8px_rgba(15,23,42,0.05),0_6px_16px_rgba(15,23,42,0.05),0_12px_24px_rgba(15,23,42,0.04)] dark:bg-zinc-950 dark:text-zinc-50 dark:ring-zinc-800/80 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.25),0_6px_16px_rgba(0,0,0,0.2),0_12px_24px_rgba(0,0,0,0.15)]">
         <nav className="relative flex min-h-[3.25rem] items-center justify-between gap-3 px-2 py-2 sm:min-h-14">
           <Link
-            href="/"
+            href={site.homeHref}
             className="flex shrink-0 items-center gap-1 transition-opacity hover:opacity-80"
             onClick={() => setOpen(false)}
           >
-            <span className="sr-only">Silver Studios home</span>
+            <span className="sr-only">{site.homeSrLabel}</span>
             <Image
-              src="/Logos/silverui-l.svg"
+              src={site.logo.lightSrc}
               alt=""
-              width={32}
-              height={32}
+              width={site.logo.width}
+              height={site.logo.height}
               className="size-8 dark:hidden"
               priority
             />
             <Image
-              src="/Logos/silverui-d.svg"
+              src={site.logo.darkSrc}
               alt=""
-              width={32}
-              height={32}
+              width={site.logo.width}
+              height={site.logo.height}
               className="hidden size-8 dark:block"
             />
             <span className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
-              Silver Studios
+              {site.name}
             </span>
           </Link>
 
@@ -65,10 +61,10 @@ export function Navbar() {
             </ul>
 
             <Link
-              href="/#talk-now"
+              href={cta.href}
               className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
             >
-              BOOK A CALL
+              {cta.label}
             </Link>
 
             <button
@@ -123,11 +119,11 @@ export function Navbar() {
             ))}
             <li className="mt-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
               <Link
-                href="/#talk-now"
+                href={cta.href}
                 className={`${talkNowButtonClass} block py-2.5 text-center`}
                 onClick={() => setOpen(false)}
               >
-                BOOK A CALL
+                {cta.label}
               </Link>
             </li>
           </ul>
