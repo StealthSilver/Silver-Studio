@@ -5,7 +5,7 @@ type MeshspireLogoProps = {
   "aria-label"?: string;
 };
 
-/** Monochrome mark derived from `public/Logos/meshspire.svg`; color via `currentColor`. */
+/** Mark colors match `public/Logos/meshspire.svg`; wordmark uses `currentColor`. */
 export function MeshspireLogo({ className, "aria-label": ariaLabel }: MeshspireLogoProps) {
   return (
     <svg
@@ -13,7 +13,7 @@ export function MeshspireLogo({ className, "aria-label": ariaLabel }: MeshspireL
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 251 43"
       className={cn(
-        "h-9 w-auto max-w-[min(100%,11rem)] shrink-0 text-zinc-950 dark:text-zinc-50",
+        "h-9 w-auto max-w-[min(100%,11rem)] shrink-0 text-zinc-900 dark:text-zinc-100",
         className,
       )}
       aria-hidden={ariaLabel ? undefined : true}
@@ -22,15 +22,15 @@ export function MeshspireLogo({ className, "aria-label": ariaLabel }: MeshspireL
     >
       <g id="logogram" transform="translate(0, 1)">
         <path
-          fill="currentColor"
+          fill="#22C55E"
           d="M40.7636 20.3C40.7636 31.3457 31.8093 40.3 20.7636 40.3C9.71798 40.3 0.763611 31.3457 0.763611 20.3C0.763611 9.2543 9.71798 0.299988 20.7636 0.299988C31.8093 0.299988 40.7636 9.2543 40.7636 20.3Z"
         />
         <path
-          fill="currentColor"
+          fill="#5B21B6"
           d="M63.7636 20.3C63.7636 31.3457 54.8092 40.3 43.7636 40.3C32.718 40.3 23.7636 31.3457 23.7636 20.3C23.7636 9.2543 32.718 0.299988 43.7636 0.299988C54.8092 0.299988 63.7636 9.2543 63.7636 20.3Z"
         />
         <path
-          fill="currentColor"
+          fill="#0F172A"
           d="M32.2636 3.93488C37.4047 7.55424 40.7636 13.535 40.7636 20.3001C40.7636 27.0648 37.4042 33.044 32.2636 36.6634C27.123 33.044 23.7637 27.0648 23.7636 20.3001C23.7636 13.535 27.1225 7.55424 32.2636 3.93488Z"
         />
       </g>

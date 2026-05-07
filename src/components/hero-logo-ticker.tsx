@@ -9,12 +9,8 @@ type HeroLogoTickerProps = {
   className?: string;
 };
 
-/** Vector wordmarks: muted grey on light, zinc-50 on dark. */
-const wordmarkTone = "text-zinc-500 dark:text-zinc-50";
-
-/** Raster strip: grey muted glyphs on light, inverted on dark. */
-const rasterMonoDarkOnLight =
-  "opacity-65 grayscale transition-[filter,opacity] [filter:grayscale(1)_brightness(0)_saturate(0)] dark:opacity-100 dark:[filter:grayscale(1)_brightness(0)_invert(1)_saturate(0)]";
+/** Vector wordmarks without muted grey — reads clearly on hero backgrounds. */
+const wordmarkTone = "text-zinc-900 dark:text-zinc-100";
 
 const tickerItemClass =
   "flex min-h-[2rem] items-center justify-center px-4";
@@ -36,17 +32,25 @@ export function HeroLogoTicker({ className }: HeroLogoTickerProps) {
         aria-labelledby="hero-logo-ticker-label"
       >
         <li className={tickerItemClass}>
-          <Image
-            src="/Logos/sgrids.svg"
-            alt="sGrids"
-            width={176}
-            height={41}
-            className={cn(
-              "h-7 w-auto max-h-8 max-w-[min(100%,10rem)] object-contain object-left sm:h-8 sm:max-w-[11rem]",
-              rasterMonoDarkOnLight,
-            )}
-            sizes="(max-width:640px) 40vw, 12rem"
-          />
+          <span className="inline-flex items-center justify-center">
+            <Image
+              src="/Logos/sgrids.svg"
+              alt="sGrids"
+              width={176}
+              height={41}
+              className="h-7 w-auto max-h-8 max-w-[min(100%,10rem)] object-contain object-left sm:h-8 sm:max-w-[11rem] dark:hidden"
+              sizes="(max-width:640px) 40vw, 12rem"
+            />
+            <Image
+              src="/Logos/sgrids-dark.svg"
+              alt=""
+              width={176}
+              height={41}
+              className="hidden h-7 w-auto max-h-8 max-w-[min(100%,10rem)] object-contain object-left sm:h-8 sm:max-w-[11rem] dark:block"
+              sizes="(max-width:640px) 40vw, 12rem"
+              aria-hidden
+            />
+          </span>
         </li>
         <li className={tickerItemClass}>
           <BrilliantLogo
@@ -57,22 +61,14 @@ export function HeroLogoTicker({ className }: HeroLogoTickerProps) {
             )}
           />
         </li>
-        <li className={tickerItemClass}>
-          <MeshspireLogo
-            aria-label="Meshspire"
-            className="h-7 max-w-[min(100%,10rem)] sm:h-8 sm:max-w-[11rem] text-zinc-500 dark:text-zinc-50"
-          />
-        </li>
+       
         <li className={tickerItemClass}>
           <Image
             src="/Logos/serentia.png"
             alt="Serentica"
             width={215}
             height={37}
-            className={cn(
-              "h-[1.125rem] w-auto max-h-8 object-contain sm:h-5",
-              rasterMonoDarkOnLight,
-            )}
+            className="h-[1.125rem] w-auto max-h-8 object-contain sm:h-5"
           />
         </li>
         <li className={tickerItemClass}>
@@ -82,6 +78,12 @@ export function HeroLogoTicker({ className }: HeroLogoTickerProps) {
               "h-5 w-auto max-w-[min(100%,8rem)] sm:h-5 sm:max-w-[min(100%,8.5rem)]",
               wordmarkTone,
             )}
+          />
+        </li>
+        <li className={tickerItemClass}>
+          <MeshspireLogo
+            aria-label="Meshspire"
+            className="h-7 max-w-[min(100%,10rem)] sm:h-8 sm:max-w-[11rem]"
           />
         </li>
       </ul>
