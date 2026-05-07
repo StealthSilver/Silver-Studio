@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Footer } from "@/components/footer";
+import { HeroLogoTicker } from "@/components/hero-logo-ticker";
 import { HeroTiles } from "@/components/hero-tiles";
 import { Navbar } from "@/components/navbar";
 
@@ -41,6 +42,7 @@ export default function Home() {
               <HeroTiles className="max-w-full" />
             </div>
           </div>
+          <HeroLogoTicker />
         </section>
       </main>
       <Footer />
