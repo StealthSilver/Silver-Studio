@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useSyncExternalStore, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+  useState,
+} from "react";
 
 import { navbar as navbarData, site } from "@/data/site";
 import { cn } from "@/lib/utils";
@@ -46,6 +52,108 @@ function serverScrollSnapshot() {
 
 const scrollGaugeClass =
   "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-zinc-200/90 bg-zinc-50 px-2 text-xs font-semibold tabular-nums text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
+
+const TYPE_INTERVAL_MS = 42;
+
+function subscribeReducedMotion(onStoreChange: () => void) {
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function reducedMotionMatches() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function reducedMotionSnapshotServer() {
+  return false;
+}
+
+function BookCallLink({
+  href,
+  className,
+  label,
+  onClick,
+  centerInContainer,
+}: {
+  href: string;
+  className?: string;
+  label: string;
+  onClick?: () => void;
+  /** Full-width row (e.g. mobile menu): keep label centered like `text-center` */
+  centerInContainer?: boolean;
+}) {
+  const [displayed, setDisplayed] = useState(label);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeReducedMotion,
+    reducedMotionMatches,
+    reducedMotionSnapshotServer,
+  );
+
+  useEffect(() => {
+    setDisplayed(label);
+  }, [label]);
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const stopTyper = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const handleEnter = () => {
+    if (prefersReducedMotion) return;
+    stopTyper();
+    setDisplayed("");
+    let i = 0;
+    intervalRef.current = setInterval(() => {
+      i += 1;
+      setDisplayed(label.slice(0, i));
+      if (i >= label.length) stopTyper();
+    }, TYPE_INTERVAL_MS);
+  };
+
+  const handleLeave = () => {
+    stopTyper();
+    setDisplayed(label);
+  };
+
+  const body = (
+    <span className="relative inline-grid place-items-center">
+      <span
+        className="invisible col-start-1 row-start-1 select-none"
+        aria-hidden
+      >
+        {label}
+      </span>
+      <span className="col-start-1 row-start-1">{displayed}</span>
+    </span>
+  );
+
+  return (
+    <Link
+      href={href}
+      className={className}
+      aria-label={label}
+      onClick={onClick}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      {centerInContainer ? (
+        <span className="flex w-full justify-center">{body}</span>
+      ) : (
+        body
+      )}
+    </Link>
+  );
+}
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -150,13 +258,13 @@ export function Navbar() {
             scrolled && "md:hidden",
           )}
         >
-          <Link
+          <BookCallLink
             href={cta.href}
             className={`${talkNowButtonClass} block w-full rounded-[4px] py-2.5 text-center`}
+            label={cta.label}
             onClick={() => setOpen(false)}
-          >
-            {cta.label}
-          </Link>
+            centerInContainer
+          />
         </li>
       </ul>
     </>
@@ -245,23 +353,21 @@ export function Navbar() {
                   scrolled && "min-w-0 md:min-w-[1px]",
                 )}
               >
-                <Link
+                <BookCallLink
                   href={cta.href}
                   className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
-                >
-                  {cta.label}
-                </Link>
+                  label={cta.label}
+                />
               </div>
             </>
           ) : (
             <div className="flex h-9 shrink-0 items-center gap-2 md:gap-3">
               {desktopLinks}
-              <Link
+              <BookCallLink
                 href={cta.href}
                 className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
-              >
-                {cta.label}
-              </Link>
+                label={cta.label}
+              />
               <div className="md:hidden">{menuToolbar}</div>
             </div>
           )}
