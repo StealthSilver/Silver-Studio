@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, IBM_Plex_Sans, Inter } from "next/font/google";
-import Script from "next/script";
 
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
 
-/** Runs before hydration; keeps `dark` class in sync with localStorage (avoids client-only `<script>` warnings). */
+/**
+ * Runs synchronously in <head> before body/CSS paint — avoids light-theme flash.
+ * Logic must stay aligned with `applyTheme` in theme-provider.tsx.
+ */
 const themeInitScript = `!function(){try{var t=localStorage.getItem("theme")||"system",d=document.documentElement,r="dark"===t||"system"===t&&window.matchMedia("(prefers-color-scheme: dark)").matches;d.classList.toggle("dark",r),d.style.colorScheme=r?"dark":"light"}catch(e){}}();`;
 
 /** Origin only (no path). Override locally with NEXT_PUBLIC_SITE_URL if needed. */
@@ -112,14 +114,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          id="theme-init"
+          // eslint-disable-next-line react/no-danger -- blocking theme bootstrap (same pattern as next-themes)
+          dangerouslySetInnerHTML={{ __html: themeInitScript }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${ibmPlexSans.variable} ${geistMono.variable} flex min-h-full flex-col bg-background text-foreground antialiased`}
       >
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeInitScript }}
-        />
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePathname } from "next/navigation";
 import {
   useEffect,
@@ -58,6 +58,97 @@ function serverScrollSnapshot() {
 
 const scrollGaugeClass =
   "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-zinc-200/90 bg-zinc-50 px-2 text-xs font-semibold tabular-nums text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
+
+const menuMorphTransition = {
+  type: "spring" as const,
+  stiffness: 460,
+  damping: 34,
+};
+
+/** Mobile dropdown: panel + link rows reveal (matches “slow, one-by-one” request) */
+const MOBILE_MENU_EASE = [0.22, 1, 0.36, 1] as const;
+const MOBILE_MENU_PANEL_DURATION_S = 0.42;
+const MOBILE_MENU_STAGGER_BETWEEN_ITEMS_S = 0.11;
+const MOBILE_MENU_DELAY_BEFORE_FIRST_ITEM_S = 0.18;
+const MOBILE_MENU_ITEM_DURATION_S = 0.52;
+
+function MobileMenuMorphIcon({
+  open,
+  reducedMotion,
+}: {
+  open: boolean;
+  reducedMotion: boolean;
+}) {
+  if (reducedMotion) {
+    return (
+      <svg
+        className="size-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+        aria-hidden
+      >
+        {open ? (
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        ) : (
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        )}
+      </svg>
+    );
+  }
+
+  const lineClass = "block h-0.5 w-5 shrink-0 origin-center rounded-full bg-current shadow-none";
+  /** Echo nav letter-wave cadence: bars resolve in sequence when opening / closing */
+  const topDelay = open ? 0 : 0.07;
+  const midDelay = open ? 0.035 : 0.035;
+  const botDelay = open ? 0.07 : 0;
+
+  return (
+    <span className="flex h-5 w-5 shrink-0 flex-col items-center justify-center gap-[5px]" aria-hidden>
+      <motion.span
+        className={lineClass}
+        initial={false}
+        animate={{
+          rotate: open ? 45 : 0,
+          y: open ? 7 : 0,
+        }}
+        transition={{ ...menuMorphTransition, delay: topDelay }}
+      />
+      <motion.span
+        className={lineClass}
+        initial={false}
+        animate={{
+          scaleX: open ? 0 : 1,
+          opacity: open ? 0 : 1,
+        }}
+        transition={{
+          ...menuMorphTransition,
+          stiffness: 520,
+          damping: 28,
+          delay: midDelay,
+        }}
+      />
+      <motion.span
+        className={lineClass}
+        initial={false}
+        animate={{
+          rotate: open ? -45 : 0,
+          y: open ? -7 : 0,
+        }}
+        transition={{ ...menuMorphTransition, delay: botDelay }}
+      />
+    </span>
+  );
+}
 
 export function Navbar() {
   const pathname = usePathname();
@@ -121,31 +212,13 @@ export function Navbar() {
       className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
       aria-expanded={open}
       aria-controls="mobile-nav"
+      aria-label={open ? "Close menu" : "Open menu"}
       onClick={() => setOpen((v) => !v)}
     >
-      <span className="sr-only">Toggle menu</span>
-      <svg
-        className="size-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="2"
-        aria-hidden
-      >
-        {open ? (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M6 18L18 6M6 6l12 12"
-          />
-        ) : (
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        )}
-      </svg>
+      <MobileMenuMorphIcon
+        open={open}
+        reducedMotion={prefersReducedMotion}
+      />
     </button>
   );
 
@@ -160,45 +233,6 @@ export function Navbar() {
     </span>
   );
 
-  const menuLinksBody = () => (
-    <>
-      <ul className="flex flex-col gap-0 px-1 py-1 text-center">
-        {links.map(({ href, label }) => (
-          <li
-            key={href}
-            className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-800"
-          >
-            <LetterWaveLink
-              href={href}
-              className={cn(
-                navLinkMobileClass,
-                "rounded-none text-center before:rounded-none hover:before:rounded-none",
-              )}
-              label={label}
-              onClick={() => setOpen(false)}
-              centerInContainer
-              variant="nav"
-            />
-          </li>
-        ))}
-        <li
-          className={cn(
-            "border-t border-zinc-200 px-1 pt-1 dark:border-zinc-700",
-            scrolled && "md:hidden",
-          )}
-        >
-          <LetterWaveLink
-            href={cta.href}
-            className={`${talkNowButtonClass} block w-full rounded-[4px] py-2.5 text-center`}
-            label={cta.label}
-            onClick={() => setOpen(false)}
-            centerInContainer
-          />
-        </li>
-      </ul>
-    </>
-  );
-
   const menuToolbar = (
     <div className="flex items-center gap-2">
       {menuButton}
@@ -206,22 +240,112 @@ export function Navbar() {
     </div>
   );
 
+  const menuListVariants = useMemo(() => {
+    if (prefersReducedMotion) {
+      return {
+        hidden: {},
+        visible: {},
+      };
+    }
+    return {
+      hidden: {},
+      visible: {
+        transition: {
+          staggerChildren: MOBILE_MENU_STAGGER_BETWEEN_ITEMS_S,
+          delayChildren: MOBILE_MENU_DELAY_BEFORE_FIRST_ITEM_S,
+        },
+      },
+    };
+  }, [prefersReducedMotion]);
+
+  const menuItemVariants = useMemo(() => {
+    if (prefersReducedMotion) {
+      return {
+        hidden: {},
+        visible: {},
+      };
+    }
+    return {
+      hidden: { opacity: 0, y: 14 },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+          duration: MOBILE_MENU_ITEM_DURATION_S,
+          ease: MOBILE_MENU_EASE,
+        },
+      },
+    };
+  }, [prefersReducedMotion]);
+
   /** Fixed, viewport-centered panel just below the navbar (mobile + desktop when scrolled) */
   const overlayMenuPanel = (
-    <div
-      id="mobile-nav"
-      role="region"
-      aria-label="Navigation menu"
-      className={cn(
-        "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-950",
-        "rounded-[4px]",
-        "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
-        open ? "block" : "hidden",
-        !scrolled && "md:hidden",
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          id="mobile-nav"
+          key="mobile-nav-panel"
+          role="region"
+          aria-label="Navigation menu"
+          className={cn(
+            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-950",
+            "rounded-[4px]",
+            "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
+            !scrolled && "md:hidden",
+          )}
+          {...(prefersReducedMotion
+            ? {
+                initial: { opacity: 1 },
+                animate: { opacity: 1 },
+                exit: { opacity: 0, transition: { duration: 0 } },
+              }
+            : {
+                initial: { opacity: 0, y: -12, scale: 0.97 },
+                animate: { opacity: 1, y: 0, scale: 1 },
+                exit: {
+                  opacity: 0,
+                  y: -8,
+                  scale: 0.98,
+                  transition: {
+                    duration: 0.24,
+                    ease: [0.4, 0, 1, 1] as const,
+                  },
+                },
+                transition: {
+                  duration: MOBILE_MENU_PANEL_DURATION_S,
+                  ease: MOBILE_MENU_EASE,
+                },
+              })}
+        >
+          <motion.ul
+            className="flex flex-col gap-0 px-1 py-1 text-center"
+            variants={menuListVariants}
+            initial={prefersReducedMotion ? "visible" : "hidden"}
+            animate="visible"
+          >
+            {links.map(({ href, label }) => (
+              <motion.li
+                key={href}
+                variants={menuItemVariants}
+                className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-800"
+              >
+                <LetterWaveLink
+                  href={href}
+                  className={cn(
+                    navLinkMobileClass,
+                    "rounded-none text-center before:rounded-none hover:before:rounded-none",
+                  )}
+                  label={label}
+                  onClick={() => setOpen(false)}
+                  centerInContainer
+                  variant="nav"
+                />
+              </motion.li>
+            ))}
+          </motion.ul>
+        </motion.div>
       )}
-    >
-      {menuLinksBody()}
-    </div>
+    </AnimatePresence>
   );
 
   return (
@@ -299,8 +423,12 @@ export function Navbar() {
               >
                 <LetterWaveLink
                   href={cta.href}
-                  className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
+                  className={cn(
+                    `${talkNowButtonClass} inline-flex h-9 !leading-none shrink-0 items-center justify-center px-4`,
+                    "max-md:max-w-[min(108px,calc((100vw-10rem)-1rem))] max-md:truncate max-md:!px-2.5 max-md:text-[clamp(10px,2.85vw,0.75rem)]",
+                  )}
                   label={cta.label}
+                  onClick={() => setOpen(false)}
                 />
               </div>
             </>

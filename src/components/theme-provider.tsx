@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -43,14 +44,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     undefined,
   );
 
-  useEffect(() => {
-    const stored = (localStorage.getItem(STORAGE_KEY) as ThemeName | null) ?? "system";
+  useLayoutEffect(() => {
+    const stored =
+      (localStorage.getItem(STORAGE_KEY) as ThemeName | null) ?? "system";
     setSystemTheme(getSystemTheme());
     setThemeState(stored);
     applyTheme(stored);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (theme === undefined) return;
     applyTheme(theme);
   }, [theme, systemTheme]);
