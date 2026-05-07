@@ -209,6 +209,44 @@ export const workSection = {
   ] satisfies readonly WorkCard[],
 };
 
+export const processSection = {
+  id: "process" as const,
+  sectionAriaLabel: "Our process",
+  heading: "Our Modus Operandi",
+  steps: [
+    {
+      letter: "A",
+      title: "Discovery",
+      description:
+        'We align on goals, audience, constraints, and what "done" looks like—gathering context so later choices stay grounded in outcomes, not assumptions.',
+    },
+    {
+      letter: "B",
+      title: "Direction",
+      description:
+        "We shape positioning, narrative, and structure—defining the journey, key messaging, and milestones so design and build share one clear north star.",
+    },
+    {
+      letter: "C",
+      title: "Design",
+      description:
+        "We translate strategy into layouts, type, motion, and UI patterns—iterating with you until the experience feels intentional, legible, and on-brand.",
+    },
+    {
+      letter: "D",
+      title: "Development",
+      description:
+        "We implement performant, accessible front ends with tidy architecture—hooked up to your content and tooling so the site is stable as it scales.",
+    },
+    {
+      letter: "E",
+      title: "Deployment",
+      description:
+        "We launch carefully—checks for speed, SEO basics, and analytics—then hand off what's needed so your team can own releases with confidence.",
+    },
+  ],
+} as const;
+
 export const heroLogoTicker = {
   heading: "Trusted by leading teams worldwide",
   labelId: "hero-logo-ticker-label",
