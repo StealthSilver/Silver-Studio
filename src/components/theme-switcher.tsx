@@ -2,11 +2,10 @@
 
 import { MonitorIcon, MoonStarIcon, SunIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { useTheme } from "next-themes";
 import type { JSX } from "react";
-import { useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/components/theme-provider";
 
 function ThemeOption({
   icon,
@@ -64,19 +63,13 @@ const THEME_OPTIONS = [
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
 
-  const isMounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
-
-  if (!isMounted) {
-    return <div className="flex h-8 w-24" />;
+  if (theme === undefined) {
+    return <div className="flex h-8 w-24" aria-hidden />;
   }
 
   return (
     <motion.div
-      key={String(isMounted)}
+      key={theme}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}

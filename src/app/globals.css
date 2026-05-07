@@ -15,6 +15,19 @@ html {
   /* Hero wash: cool silver, multi-stop for a softer falloff */
   --hero-silver-1: rgb(130 138 154 / 0.12);
   --hero-silver-2: rgb(130 138 154 / 0.045);
+  /* Hero SVG tiles — light */
+  --hero-tile-ring: rgb(161 161 170 / 0.48);
+  --hero-tile-border: rgb(130 138 154 / 0.72);
+  --hero-tile-inner: rgb(113 113 122 / 0.3);
+  --hero-tile-ink: rgb(63 63 70 / 0.9);
+  --hero-tile-accent: rgb(100 116 139);
+  --hero-tile-sheen-top: rgb(252 252 253);
+  --hero-tile-sheen-mid: rgb(244 244 245);
+  --hero-tile-sheen-bot: rgb(228 228 231);
+  --hero-tile-glow: rgb(100 116 139 / 0.38);
+  --hero-tile-shadow: rgb(24 24 27 / 0.2);
+  /* Hero glass tiles — contact shadow under stack (light) */
+  --hero-glass-ground: rgb(24 24 27 / 0.12);
 }
 
 @media (min-width: 640px) {
@@ -28,6 +41,19 @@ html {
   --foreground: #fafafa;
   --hero-silver-1: rgb(218 222 232 / 0.1);
   --hero-silver-2: rgb(218 222 232 / 0.028);
+  /* Hero SVG tiles — dark */
+  --hero-tile-ring: rgb(82 82 91 / 0.55);
+  --hero-tile-border: rgb(113 113 122 / 0.82);
+  --hero-tile-inner: rgb(161 161 170 / 0.22);
+  --hero-tile-ink: rgb(212 212 216 / 0.88);
+  --hero-tile-accent: rgb(186 198 215);
+  --hero-tile-sheen-top: rgb(58 58 62);
+  --hero-tile-sheen-mid: rgb(39 39 42);
+  --hero-tile-sheen-bot: rgb(24 24 27);
+  --hero-tile-glow: rgb(186 198 215 / 0.32);
+  --hero-tile-shadow: rgb(0 0 0 / 0.55);
+  /* Hero glass tiles — contact shadow under stack (dark) */
+  --hero-glass-ground: rgb(0 0 0 / 0.45);
 }
 
 @theme inline {
