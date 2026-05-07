@@ -124,87 +124,63 @@ export function Navbar() {
     </span>
   );
 
-  const menuLinksBody = (opts?: { narrow?: boolean }) => {
-    const narrow = opts?.narrow;
-    return (
-      <>
-        <ul
-          className={cn(
-            "flex flex-col gap-0 px-1 py-1",
-            narrow ? "items-stretch text-center" : "gap-1 px-2 py-2",
-          )}
-        >
-          {links.map(({ href, label }) => (
-            <li
-              key={href}
-              className={narrow ? "border-b border-zinc-100 last:border-b-0 dark:border-zinc-800" : undefined}
-            >
-              <Link
-                href={href}
-                className={cn(
-                  navLinkMobileClass,
-                  narrow &&
-                    "rounded-none text-center before:rounded-none hover:before:rounded-none",
-                )}
-                onClick={() => setOpen(false)}
-              >
-                <span className="relative z-10">{label}</span>
-              </Link>
-            </li>
-          ))}
+  const menuLinksBody = () => (
+    <>
+      <ul className="flex flex-col gap-0 px-1 py-1 text-center">
+        {links.map(({ href, label }) => (
           <li
-            className={cn(
-              narrow
-                ? "border-t border-zinc-200 px-1 pt-1 dark:border-zinc-700"
-                : "mt-2 border-t border-zinc-100 pt-3 dark:border-zinc-800",
-              scrolled && !narrow && "md:hidden",
-            )}
+            key={href}
+            className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-800"
           >
             <Link
-              href={cta.href}
+              href={href}
               className={cn(
-                talkNowButtonClass,
-                narrow
-                  ? "block w-full rounded-[4px] py-2.5 text-center"
-                  : "block py-2.5 text-center",
+                navLinkMobileClass,
+                "rounded-none text-center before:rounded-none hover:before:rounded-none",
               )}
               onClick={() => setOpen(false)}
             >
-              {cta.label}
+              <span className="relative z-10">{label}</span>
             </Link>
           </li>
-        </ul>
-      </>
-    );
-  };
+        ))}
+        <li
+          className={cn(
+            "border-t border-zinc-200 px-1 pt-1 dark:border-zinc-700",
+            scrolled && "md:hidden",
+          )}
+        >
+          <Link
+            href={cta.href}
+            className={`${talkNowButtonClass} block w-full rounded-[4px] py-2.5 text-center`}
+            onClick={() => setOpen(false)}
+          >
+            {cta.label}
+          </Link>
+        </li>
+      </ul>
+    </>
+  );
 
   const menuToolbar = (
     <div className="flex items-center gap-2">
-      <div className="relative">
-        {menuButton}
-        <div
-          id="mobile-nav"
-          className={cn(
-            "absolute left-1/2 top-[calc(100%+0.375rem)] z-[60] w-[200px] -translate-x-1/2 border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-950 md:hidden",
-            "rounded-[4px]",
-            open ? "block" : "hidden",
-          )}
-        >
-          {menuLinksBody({ narrow: true })}
-        </div>
-      </div>
+      {menuButton}
       {scrollPercentButton}
     </div>
   );
 
-  /** md+: full-width strip below the bar when scrolled */
-  const wideMenuPanel = (
+  /** Fixed, viewport-centered panel just below the navbar (mobile + desktop when scrolled) */
+  const overlayMenuPanel = (
     <div
+      id="mobile-nav"
       role="region"
       aria-label="Navigation menu"
       className={cn(
-        "max-md:hidden rounded-b-[4px] border-t border-zinc-100 bg-transparent dark:border-zinc-800",
-        scrolled && open ? "md:block" : "hidden",
+        "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-950",
+        "rounded-[4px]",
+        "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
+        open ? "block" : "hidden",
+        !scrolled && "md:hidden",
       )}
     >
       {menuLinksBody()}
@@ -291,7 +267,7 @@ export function Navbar() {
           )}
         </nav>
 
-        {wideMenuPanel}
+        {overlayMenuPanel}
       </div>
     </header>
   );
