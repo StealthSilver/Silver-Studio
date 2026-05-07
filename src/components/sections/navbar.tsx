@@ -110,26 +110,26 @@ export function Navbar() {
           className={`rounded-b-[4px] border-t border-zinc-100 bg-white dark:border-zinc-800 dark:bg-zinc-950 md:hidden ${open ? "block" : "hidden"}`}
         >
           <ul className="flex flex-col gap-1 px-2 py-2">
-          {links.map(({ href, label }) => (
-            <li key={href}>
+            {links.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={navLinkMobileClass}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="relative z-10">{label}</span>
+                </Link>
+              </li>
+            ))}
+            <li className="mt-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
               <Link
-                href={href}
-                className={navLinkMobileClass}
+                href="/#talk-now"
+                className={`${talkNowButtonClass} block py-2.5 text-center`}
                 onClick={() => setOpen(false)}
               >
-                <span className="relative z-10">{label}</span>
+                BOOK A CALL
               </Link>
             </li>
-          ))}
-          <li className="mt-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-            <Link
-              href="/#talk-now"
-              className={`${talkNowButtonClass} block py-2.5 text-center`}
-              onClick={() => setOpen(false)}
-            >
-              BOOK A CALL
-            </Link>
-          </li>
           </ul>
         </div>
       </div>

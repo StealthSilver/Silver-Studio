@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist_Mono, IBM_Plex_Sans, Inter } from "next/font/google";
 import Script from "next/script";
 
@@ -64,6 +64,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+/** Same visual scale in Chromium on Windows/macOS — pairs with scrollbar-gutter + text-size-adjust in globals.css. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${siteOrigin}/`),

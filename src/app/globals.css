@@ -5,6 +5,12 @@
 html {
   height: 100%;
   overflow-x: clip;
+  /* Normalize automatic text sizing (mostly mobile engines; harmless on desktop). */
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  /* Windows often reserves a scrollbar gutter; macOS overlays it — reserve consistently so widths match. */
+  scrollbar-gutter: stable;
 }
 
 :root {
