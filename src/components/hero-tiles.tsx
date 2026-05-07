@@ -128,13 +128,13 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
         />
 
         <div className="relative z-[1] flex flex-1 flex-col justify-center gap-2.5 px-3 py-3 sm:gap-3 sm:px-4 sm:py-3.5">
-          <div className="space-y-2 opacity-[0.11] dark:opacity-[0.14]">
+          <div className="space-y-2 opacity-[0.52] dark:opacity-[0.14]">
             <div
               className={cn(
                 "h-2.5 rounded-md sm:h-3",
                 accent
                   ? "bg-zinc-400/58 shadow-[0_0_18px_rgb(63_63_70/0.11)] dark:bg-zinc-500/35 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]"
-                  : "bg-white shadow-[0_0_20px_rgb(255_255_255/0.06)] dark:bg-zinc-500/35 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]",
+                  : "bg-zinc-500/68 shadow-[0_0_16px_rgb(63_63_70/0.12)] dark:bg-zinc-500/35 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]",
                 mock.headline[0],
               )}
             />
@@ -143,13 +143,13 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
                 "h-2 rounded-md sm:h-2.5",
                 accent
                   ? "bg-zinc-400/45 shadow-[0_0_14px_rgb(63_63_70/0.09)] dark:bg-zinc-500/28 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]"
-                  : "bg-white/90 shadow-[0_0_16px_rgb(255_255_255/0.05)] dark:bg-zinc-500/28 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]",
+                  : "bg-zinc-500/55 shadow-[0_0_12px_rgb(63_63_70/0.1)] dark:bg-zinc-500/28 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]",
                 mock.headline[1],
               )}
             />
           </div>
 
-          <div className="space-y-1.5 opacity-[0.09]">
+          <div className="space-y-1.5 opacity-[0.5] dark:opacity-[0.09]">
             {mock.lines.map((w, row) => (
               <div
                 key={row}
@@ -157,20 +157,20 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
                   "h-1 rounded-full",
                   accent
                     ? "bg-zinc-400/55 dark:bg-zinc-500/38"
-                    : "bg-zinc-100/80 dark:bg-zinc-500/38",
+                    : "bg-zinc-500/62 dark:bg-zinc-500/38",
                   w,
                 )}
               />
             ))}
           </div>
 
-          <div className="mt-1 flex gap-2 opacity-[0.1] sm:mt-1.5 sm:gap-2.5">
+          <div className="mt-1 flex gap-2 opacity-[0.48] dark:opacity-[0.1] sm:mt-1.5 sm:gap-2.5">
             <div
               className={cn(
                 "h-7 rounded-lg shadow-sm sm:h-8",
                 accent
                   ? "bg-zinc-300/90 ring-1 ring-zinc-400/35 dark:bg-zinc-600/42 dark:ring-zinc-500/30"
-                  : "bg-white/85 ring-1 ring-white/25 dark:bg-zinc-600/42 dark:ring-zinc-500/30",
+                  : "bg-zinc-300/95 ring-1 ring-zinc-400/45 dark:bg-zinc-600/42 dark:ring-zinc-500/30",
                 mock.ctas[0],
               )}
             />
@@ -179,29 +179,29 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
                 "h-7 rounded-lg shadow-sm sm:h-8",
                 accent
                   ? "bg-zinc-200/85 ring-1 ring-zinc-300/40 dark:bg-zinc-700/38 dark:ring-zinc-600/28"
-                  : "bg-white/40 ring-1 ring-white/20 dark:bg-zinc-700/38 dark:ring-zinc-600/28",
+                  : "bg-zinc-200/92 ring-1 ring-zinc-400/42 dark:bg-zinc-700/38 dark:ring-zinc-600/28",
                 mock.ctas[1],
               )}
             />
           </div>
 
-          <div className="pointer-events-none mt-auto flex items-end justify-center gap-1 pt-2 opacity-[0.08] dark:opacity-[0.12]">
+          <div className="pointer-events-none mt-auto flex items-end justify-center gap-1 pt-2 opacity-[0.45] dark:opacity-[0.12]">
             <div
               className={cn(
                 "h-1 w-8 rounded-full",
-                accent ? "bg-zinc-400/70 dark:bg-zinc-500/40" : "bg-white/70 dark:bg-zinc-500/40",
+                accent ? "bg-zinc-400/70 dark:bg-zinc-500/40" : "bg-zinc-500/58 dark:bg-zinc-500/40",
               )}
             />
             <div
               className={cn(
                 "h-1 w-3 rounded-full",
-                accent ? "bg-zinc-400/45 dark:bg-zinc-500/28" : "bg-white/45 dark:bg-zinc-500/28",
+                accent ? "bg-zinc-400/45 dark:bg-zinc-500/28" : "bg-zinc-500/45 dark:bg-zinc-500/28",
               )}
             />
             <div
               className={cn(
                 "h-1 w-5 rounded-full",
-                accent ? "bg-zinc-400/55 dark:bg-zinc-500/32" : "bg-white/55 dark:bg-zinc-500/32",
+                accent ? "bg-zinc-400/55 dark:bg-zinc-500/32" : "bg-zinc-500/52 dark:bg-zinc-500/32",
               )}
             />
           </div>
