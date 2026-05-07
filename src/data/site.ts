@@ -92,6 +92,123 @@ export type HeroTickerItem =
       logoClassName: string;
     };
 
+/** Work preview — PNG shots in `/public/works/`; use `objectFit: "contain"` for logos if needed. */
+export type WorkImageSingle = {
+  type: "single";
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  objectFit?: "cover" | "contain";
+};
+
+export type WorkImageDual = {
+  type: "dual";
+  ariaLabel: string;
+  light: { src: string; width: number; height: number };
+  dark: { src: string; width: number; height: number };
+};
+
+export type WorkCard = {
+  title: string;
+  description: string;
+  tags: readonly string[];
+  link?: { href: string };
+  image?: WorkImageSingle | WorkImageDual;
+};
+
+export const workSection = {
+  id: "work" as const,
+  sectionAriaLabel: "Selected work",
+  heading: "Our work speaks for itself.",
+  items: [
+    {
+      title: "Brilliant.org",
+      description:
+        "Interactive STEM learning experience—product storytelling, responsiveness, and a calm interface that scales across audiences.",
+      tags: ["Education", "UX", "Frontend"],
+      link: { href: "https://brilliant.org/" },
+      image: {
+        type: "single",
+        src: "/works/brilliant.png",
+        width: 1586,
+        height: 809,
+        alt: "Brilliant.org website preview",
+      },
+    },
+    {
+      title: "Sgrids.com",
+      description:
+        "Corporate positioning and structured layouts for enterprise energy—with light and dark brand treatments that carry across breakpoints.",
+      tags: ["Corporate", "Brand", "Responsive"],
+      link: { href: "https://www.sgrids.com/" },
+      image: {
+        type: "single",
+        src: "/works/sgrids.png",
+        width: 3390,
+        height: 1948,
+        alt: "Sgrids.com website preview",
+      },
+    },
+    {
+      title: "8th Light",
+      description:
+        "Craft-led software consultancy site—emphasis on typography, restraint, and a narrative layout that reinforces expertise.",
+      tags: ["Consulting", "Editorial", "Brand"],
+      link: { href: "https://8thlight.com/" },
+      image: {
+        type: "single",
+        src: "/works/8thlight.png",
+        width: 1581,
+        height: 810,
+        alt: "8th Light website preview",
+      },
+    },
+    {
+      title: "Harit",
+      description:
+        "Landing and UX systems that translate a technical product story into approachable, credible marketing—built for clarity and conversion.",
+      tags: ["Landing", "Product", "Systems"],
+      link: { href: "/#contact" },
+      image: {
+        type: "single",
+        src: "/works/harit.png",
+        width: 3388,
+        height: 1960,
+        alt: "Harit website preview",
+      },
+    },
+    {
+      title: "Sol-X",
+      description:
+        "SaaS go-to-market web presence—focused messaging hierarchy, funnel-friendly sections, and a flexible component set for iterative launches.",
+      tags: ["SaaS", "GTM", "UI"],
+      link: { href: "/#contact" },
+      image: {
+        type: "single",
+        src: "/works/sol-x.png",
+        width: 1580,
+        height: 807,
+        alt: "Sol-X website preview",
+      },
+    },
+    {
+      title: "Meshspire",
+      description:
+        "Product-front site with iterative UI delivery—balancing proof, pricing paths, and a lightweight stack for fast stakeholder feedback.",
+      tags: ["Product", "Iteration", "Web"],
+      link: { href: "https://dev.dg4uqajhampr9.amplifyapp.com/" },
+      image: {
+        type: "single",
+        src: "/works/meshspire.png",
+        width: 3380,
+        height: 1954,
+        alt: "Meshspire website preview",
+      },
+    },
+  ] satisfies readonly WorkCard[],
+};
+
 export const heroLogoTicker = {
   heading: "Trusted by leading teams worldwide",
   labelId: "hero-logo-ticker-label",
