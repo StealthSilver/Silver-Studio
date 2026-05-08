@@ -1,11 +1,15 @@
 "use client";
 
 import { MonitorIcon, MoonStarIcon, SunIcon } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { JSX } from "react";
 
 import { useTheme } from "@/components/theme-provider";
+import { useSound } from "@/hooks/use-sound";
 import { cn } from "@/lib/utils";
+import { switch007Sound } from "@/sounds/switch-007";
+
+type ThemeValue = "light" | "dark" | "system";
 
 function ThemeOption({
   icon,
@@ -16,7 +20,7 @@ function ThemeOption({
   icon: JSX.Element;
   value: string;
   isActive?: boolean;
-  onClick: (value: string) => void;
+  onClick: (value: ThemeValue) => void;
 }) {
   return (
     <button
@@ -29,7 +33,7 @@ function ThemeOption({
       role="radio"
       aria-checked={isActive}
       aria-label={`Switch to ${value} theme`}
-      onClick={() => onClick(value)}
+      onClick={() => onClick(value as ThemeValue)}
       type="button"
     >
       {icon}
@@ -62,6 +66,15 @@ const THEME_OPTIONS = [
 
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
+  const prefersReducedMotion = useReducedMotion() === true;
+  const [playSwitch] = useSound(switch007Sound, {
+    soundEnabled: !prefersReducedMotion,
+  });
+
+  const handleThemeSelect = (value: ThemeValue) => {
+    playSwitch();
+    setTheme(value);
+  };
 
   if (theme === undefined) {
     return <div className="flex h-8 w-24" aria-hidden />;
@@ -82,7 +95,7 @@ function ThemeSwitcher() {
           icon={option.icon}
           value={option.value}
           isActive={theme === option.value}
-          onClick={setTheme}
+          onClick={handleThemeSelect}
         />
       ))}
     </motion.div>

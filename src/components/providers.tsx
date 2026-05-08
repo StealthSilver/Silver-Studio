@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { PageClickSound } from "@/components/page-click-sound";
 import { ThemeProvider } from "@/components/theme-provider";
 
 type ProvidersProps = {
@@ -9,5 +10,10 @@ type ProvidersProps = {
 };
 
 export function Providers({ children }: ProvidersProps) {
-  return <ThemeProvider>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider>
+      <PageClickSound />
+      {children}
+    </ThemeProvider>
+  );
 }

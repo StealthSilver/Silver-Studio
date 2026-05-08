@@ -1,10 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, IBM_Plex_Sans, Inter } from "next/font/google";
+import { Geist_Mono, IBM_Plex_Sans, Inter, Geist } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
 import "@/styles/work-showcase.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 /**
  * Runs synchronously in <head> before body/CSS paint — avoids light-theme flash.
@@ -114,7 +117,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <head>
         <script
           id="theme-init"

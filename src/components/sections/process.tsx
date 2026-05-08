@@ -1,78 +1,69 @@
-import {
-  Code2,
-  Compass,
-  PenLine,
-  Rocket,
-  Telescope,
-  type LucideIcon,
-} from "lucide-react";
+import type { FC } from "react";
 
 import { processSection } from "@/data/site";
 
-/** Step letter → icon; matches `processSection.steps` order. */
-const STEP_ICONS = {
-  A: Telescope,
-  B: Compass,
-  C: PenLine,
-  D: Code2,
-  E: Rocket,
-} as const satisfies Record<
-  (typeof processSection.steps)[number]["letter"],
-  LucideIcon
->;
+import {
+  DeploymentAnimation,
+  DesignAnimation,
+  DevelopmentAnimation,
+  DirectionAnimation,
+  DiscoveryAnimation,
+} from "./process-animations";
 
-const iconTileClass =
-  "flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-2xl border border-zinc-200/90 bg-zinc-50/90 text-zinc-700 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.7)] dark:border-white/12 dark:bg-zinc-900/50 dark:text-zinc-200 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]";
+import "@/styles/process-section.css";
 
-const iconStroke = 1.65;
+const glassPanelClass =
+  "flex aspect-square h-[min(28vh,260px)] w-[min(28vh,260px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-6 shadow-sm backdrop-blur-xl dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]";
 
-const cardClass =
-  "relative flex h-full flex-col rounded-2xl border border-zinc-200/90 bg-white/45 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md transition-[border-color,box-shadow,background-color] duration-200 sm:px-6 sm:py-7 dark:border-white/12 dark:bg-zinc-950/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)] hover:border-zinc-300/95 hover:shadow-[0_8px_30px_rgb(24_24_27_/_0.06)] dark:hover:border-white/18 dark:hover:shadow-[0_12px_40px_rgb(0_0_0_/_0.35)]";
+const STEP_ANIMATIONS = {
+  Discovery: DiscoveryAnimation,
+  Direction: DirectionAnimation,
+  Design: DesignAnimation,
+  Development: DevelopmentAnimation,
+  Deployment: DeploymentAnimation,
+} as const satisfies Record<(typeof processSection.steps)[number]["title"], FC>;
 
 export function Process() {
-  const { id, sectionAriaLabel, heading, intro, steps } = processSection;
+  const { id, sectionAriaLabel, steps } = processSection;
 
   return (
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-200/70 pt-16 dark:border-zinc-800/80 sm:scroll-mt-32 sm:pt-20"
+      className="w-full scroll-mt-28 border-t border-zinc-950/[0.06] bg-background text-foreground dark:border-white/15"
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-            {heading}
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
-            {intro}
-          </p>
-        </div>
+      <ul className="m-0 flex list-none flex-col p-0">
+        {steps.map((step, index) => {
+          const num = String(index + 1).padStart(2, "0");
+          const Animation = STEP_ANIMATIONS[step.title];
+          const phase = step.title.toUpperCase();
 
-        <ul className="mt-12 grid list-none grid-cols-1 gap-4 p-0 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:gap-6 xl:grid-cols-3">
-          {steps.map((step) => {
-            const Icon = STEP_ICONS[step.letter];
-            return (
-              <li key={step.letter} className="min-w-0">
-                <article className={cardClass}>
-                  <div className="flex gap-4">
-                    <div className={iconTileClass} aria-hidden>
-                      <Icon className="h-10 w-10" strokeWidth={iconStroke} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-                        {step.title}
-                      </h3>
-                      <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+          return (
+            <li key={step.title} className="m-0 border-t border-zinc-950/[0.055] p-0 first:border-t-0 dark:border-white/[0.12]">
+              <article className="flex min-h-[50vh] flex-col gap-8 px-5 py-8 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-10 lg:px-12 xl:mx-auto xl:max-w-7xl">
+                <div className="flex min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
+                  <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
+                    {num}
+                  </span>
+                  <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
+                    {phase}
+                  </h2>
+                  <p
+                    className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
+                    title={step.description}
+                  >
+                    {step.description}
+                  </p>
+                </div>
+
+                <div className={glassPanelClass}>
+                  <Animation />
+                </div>
+              </article>
+            </li>
+          );
+        })}
+      </ul>
     </section>
   );
 }
