@@ -28,11 +28,12 @@ export const navbar = {
   links: [
     { href: "/#work", label: "Work" },
     { href: "/#services", label: "Services" },
+    { href: "/#why", label: "Why us" },
     { href: "/#process", label: "Process" },
-    { href: "/#about", label: "About" },
     { href: "/#pricing", label: "Pricing" },
+    { href: "/#faq", label: "FAQ" },
   ],
-  cta: { href: "/#talk-now", label: "BOOK A CALL" },
+  cta: { href: "/#contact", label: "BOOK A CALL" },
 } as const;
 
 export const footer = {
@@ -100,6 +101,11 @@ export type WorkImageSingle = {
   height: number;
   alt: string;
   objectFit?: "cover" | "contain";
+  /**
+   * When set, drives preview frame aspect ratio only (`width` / (`frameHeight` × visible fraction)).
+   * Use when the PNG is taller than other slides so the glass box matches; image still uses `height`.
+   */
+  frameHeight?: number;
 };
 
 export type WorkImageDual = {
@@ -205,6 +211,7 @@ export const workSection = {
         src: "/works/meshspire.png",
         width: 3380,
         height: 1954,
+        frameHeight: 1724,
         alt: "Meshspire website preview",
       },
     },
@@ -215,10 +222,65 @@ export function getWorkBySlug(slug: string): WorkCard | undefined {
   return workSection.items.find((item) => item.slug === slug);
 }
 
+export type ServiceIconId =
+  | "landing"
+  | "frontend"
+  | "brand"
+  | "systems"
+  | "application";
+
+export type ServiceItem = {
+  title: string;
+  description: string;
+  icon: ServiceIconId;
+};
+
+export const servicesSection = {
+  id: "services" as const,
+  sectionAriaLabel: "Services",
+  heading: "Services",
+  intro:
+    "Focused offerings for teams that want a sharp front end—strategy to deployment—with craft baked in.",
+  items: [
+    {
+      title: "Landing Page",
+      icon: "landing",
+      description:
+        "Campaign-ready pages that convert—clear hierarchy, fast loads, and brand-forward visuals tuned for your audience.",
+    },
+    {
+      title: "Frontend Development",
+      icon: "frontend",
+      description:
+        "Production interfaces with resilient layouts, accessible markup, and performance budgets that hold up in the wild.",
+    },
+    {
+      title: "Brand Direction",
+      icon: "brand",
+      description:
+        "Positioning and narrative that sharpen how you show up—tone, structure, and visual cues that stay consistent everywhere.",
+    },
+    {
+      title: "Design Systems",
+      icon: "systems",
+      description:
+        "Tokens, components, and patterns your team can reuse—documented so design and engineering stay aligned as you scale.",
+    },
+    {
+      title: "Full web applications",
+      icon: "application",
+      description:
+        "Multi-surface web products—from dashboards to marketing funnels—wired up with maintainable architecture and polish.",
+    },
+  ] satisfies readonly ServiceItem[],
+} as const;
+
 export const processSection = {
   id: "process" as const,
   sectionAriaLabel: "Our process",
   heading: "Our Modus Operandi",
+  intro:
+    "Five beats from first conversation to production—transparent checkpoints, intentional craft, nothing wasted.",
   steps: [
     {
       letter: "A",
@@ -251,6 +313,202 @@ export const processSection = {
         "We launch carefully—checks for speed, SEO basics, and analytics—then hand off what's needed so your team can own releases with confidence.",
     },
   ],
+} as const;
+
+export type WhyIconId =
+  | "precision"
+  | "velocity"
+  | "signal"
+  | "partnership";
+
+export type WhyItem = {
+  title: string;
+  description: string;
+  icon: WhyIconId;
+};
+
+export const whySection = {
+  id: "why" as const,
+  sectionAriaLabel: "Why Silver Studios",
+  heading: "Why Silver Studios",
+  intro:
+    "A small studio mindset with senior execution—fewer layers, clearer communication, and work that earns attention without shouting.",
+  items: [
+    {
+      title: "Taste meets technical depth",
+      icon: "precision",
+      description:
+        "We obsess over typography, rhythm, motion, and performance—not as garnish, but as the interface people actually feel when they trust a brand.",
+    },
+    {
+      title: "Speed without reckless shortcuts",
+      icon: "velocity",
+      description:
+        "Modern stacks and tight feedback loops ship outcomes faster—paired with pragmatic scope so timelines stay honest and launches stay calm.",
+    },
+    {
+      title: "Messaging that survives contact with reality",
+      icon: "signal",
+      description:
+        "Layouts and copy are wired to clarify what you sell, who it's for, and why it wins—built to convert stakeholders, not just win a slideshow.",
+    },
+    {
+      title: "Partnership, not vendor theater",
+      icon: "partnership",
+      description:
+        "You get direct collaboration with makers who own outcomes—async updates when it helps, real conversation when decisions matter.",
+    },
+  ] satisfies readonly WhyItem[],
+} as const;
+
+export const poweredBySilverUiSection = {
+  id: "silver-ui" as const,
+  sectionAriaLabel: "Powered by Silver UI",
+  eyebrow: "Design system backbone",
+  heading: "Powered by Silver UI",
+  intro:
+    "Silver UI is our in-house component language—tokens, patterns, and production-ready primitives tuned for luminous, restrained interfaces.",
+  highlights: [
+    "Consistent layouts and motion primitives across landing pages and product surfaces.",
+    "Accessible markup and pragmatic performance budgets baked in from the first screen.",
+    "Composable pieces that keep brands coherent as you iterate toward market fit.",
+  ],
+} as const;
+
+export type TestimonialItem = {
+  quote: string;
+  name: string;
+  role: string;
+};
+
+export const testimonialsSection = {
+  id: "testimonials" as const,
+  sectionAriaLabel: "Client testimonials",
+  heading: "What teams notice first",
+  intro:
+    "Anonymous until we publish named case studies—but the recurring themes sound like this.",
+  items: [
+    {
+      quote:
+        "The site finally matches how thoughtful our product actually is—clarity went up overnight and sales calls got easier.",
+      name: "Head of Growth",
+      role: "Seed-stage SaaS",
+    },
+    {
+      quote:
+        "Rare blend: strong visual direction with engineering that holds up once marketing wants to iterate every week.",
+      name: "Founding Designer",
+      role: "B2B marketplace",
+    },
+    {
+      quote:
+        "We stopped apologizing for our homepage—the narrative, structure, and polish feel deliberate top to bottom.",
+      name: "CEO",
+      role: "Climate infrastructure",
+    },
+  ] satisfies readonly TestimonialItem[],
+} as const;
+
+export type PricingTier = {
+  name: string;
+  description: string;
+  priceHint: string;
+  features: readonly string[];
+  highlighted?: boolean;
+  cta: { label: string; href: string };
+};
+
+export const pricingSection = {
+  id: "pricing" as const,
+  sectionAriaLabel: "Pricing",
+  heading: "Engagement shapes",
+  intro:
+    "Every build is scoped to outcomes—tell us timelines, stacks, and must-win moments; we tailor a sprint plan that fits.",
+  tiers: [
+    {
+      name: "Launch Sprint",
+      description: "Landing, narrative refresh, or campaign page when you need to ship cleanly and fast.",
+      priceHint: "From $12k • 2–3 weeks",
+      features: [
+        "Single-purpose experience with distilled messaging",
+        "Responsive layouts + interaction polish",
+        "Analytics + SEO basics wired for launch",
+      ],
+      cta: { label: "Book a discovery call", href: "/#contact" },
+    },
+    {
+      name: "Product Web",
+      description: "Marketing site + repeatable sections for launches, hires, pricing, and product storytelling.",
+      priceHint: "From $35k • 4–8 weeks",
+      features: [
+        "Multi-section narrative with reusable blocks",
+        "Design system hooks for marketing velocity",
+        "Performance + accessibility QA before handoff",
+      ],
+      highlighted: true,
+      cta: { label: "Discuss scope", href: "/#contact" },
+    },
+    {
+      name: "Embedded Studio",
+      description: "Dedicated front-end bandwidth for iterating funnels, product UI, or design-system rollout.",
+      priceHint: "Monthly retainer",
+      features: [
+        "Prioritized backlog with weekly shipping rhythm",
+        "Shared Slack + async Loom reviews",
+        "Fractional design + engineering leadership",
+      ],
+      cta: { label: "Talk retainers", href: "/#contact" },
+    },
+  ] satisfies readonly PricingTier[],
+} as const;
+
+export type FaqItem = {
+  question: string;
+  answer: string;
+};
+
+export const faqSection = {
+  id: "faq" as const,
+  sectionAriaLabel: "Frequently asked questions",
+  heading: "FAQ",
+  intro: "Straight answers to the questions teams ask before kicking off.",
+  items: [
+    {
+      question: "How do engagements usually start?",
+      answer:
+        "We begin with a short discovery sync—goals, audience, constraints, and timeline. You'll get a concise proposal outlining scope, milestones, and pricing before anyone commits deeply.",
+    },
+    {
+      question: "Can you plug into our existing team and tools?",
+      answer:
+        "Yes. We're comfortable pairing with designers, marketers, or internal engineers across Figma, GitHub, Notion, Slack, Linear, your CMS—whatever keeps decisions moving.",
+    },
+    {
+      question: "What stacks do you build on?",
+      answer:
+        "We lean heavily on Next.js/React, TypeScript, and Tailwind for production front ends, but we'll match sane constraints if your product already dictates a preferred stack.",
+    },
+    {
+      question: "How do revisions work?",
+      answer:
+        "Direction is iterative by design—we schedule structured review windows so feedback stays decisive, approvals stay documented, and the schedule stays honest.",
+    },
+    {
+      question: "Who owns the code and assets?",
+      answer:
+        "You do. Deliverables ship in your repositories and accounts with sensible documentation so your team can extend or migrate without guessing.",
+    },
+  ] satisfies readonly FaqItem[],
+} as const;
+
+export const finalCtaSection = {
+  id: "contact" as const,
+  sectionAriaLabel: "Get in touch",
+  heading: "Ready when you are",
+  description:
+    "Share what you're launching, who's it for, and what success looks like—we'll propose a pragmatic path inside a couple of days.",
+  primaryCta: { href: "/#contact", label: hero.primaryCta.label },
+  secondaryCta: hero.secondaryCta,
 } as const;
 
 export const heroLogoTicker = {

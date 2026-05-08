@@ -1,7 +1,14 @@
+import { Faq } from "@/components/sections/faq";
+import { FinalCta } from "@/components/sections/final-cta";
 import { Footer } from "@/components/sections/footer";
 import { Hero } from "@/components/sections/hero";
 import { Navbar } from "@/components/sections/navbar";
+import { PoweredBySilverUi } from "@/components/sections/powered-by-silver-ui";
+import { Pricing } from "@/components/sections/pricing";
 import { Process } from "@/components/sections/process";
+import { Services } from "@/components/sections/services";
+import { Testimonials } from "@/components/sections/testimonials";
+import { WhySilverStudios } from "@/components/sections/why-silver-studios";
 import { Work } from "@/components/sections/work";
 
 export default function Home() {
@@ -12,10 +19,15 @@ export default function Home() {
         <div className="shrink-0">
           <Hero />
         </div>
-         <Work />
-        <div className="shrink-0">
-          {/* <Process /> */}
-        </div>
+        <Work />
+        <Services />
+        {/* <WhySilverStudios />
+        <PoweredBySilverUi />
+        <Process />
+        <Testimonials />
+        <Pricing />
+        <Faq />
+        <FinalCta /> */}
       </main>
       <Footer />
     </>

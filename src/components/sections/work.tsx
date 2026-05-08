@@ -154,10 +154,11 @@ function WorkBottomSingle({
   externalHref?: string;
   externalAriaLabel?: string;
 }) {
+  const frameHeight = image.frameHeight ?? image.height;
   return (
     <WorkBottomFrame
       naturalWidth={image.width}
-      naturalHeight={image.height}
+      naturalHeight={frameHeight}
       externalHref={externalHref}
       externalAriaLabel={externalAriaLabel}
     >

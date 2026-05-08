@@ -74,7 +74,8 @@ export function WorkStackSlide({
     >
       <div className="sticky top-0 h-screen min-h-screen w-full overflow-hidden">
         <motion.div
-          className="relative h-full min-h-screen w-full origin-top will-change-transform"
+          /* Rounded rect when slides scale down behind the next panel (~8px). */
+          className="relative h-full min-h-screen w-full origin-top overflow-hidden rounded-[8px] will-change-transform"
           style={{ y, scale }}
         >
           {children}
