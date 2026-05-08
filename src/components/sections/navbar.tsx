@@ -12,14 +12,12 @@ import {
 } from "react";
 
 import { LetterWaveLink } from "@/components/ui/letter-wave-link";
-import { useSound } from "@/hooks/use-sound";
 import { navbar as navbarData, site } from "@/data/site";
 import {
   getHomeHeroRevealCompleteDelayMs,
   NAVBAR_AFTER_HERO_FADE_IN_S,
 } from "@/lib/hero-intro-timing";
 import { cn } from "@/lib/utils";
-import { switch007Sound } from "@/sounds/switch-007";
 
 const { links, cta } = navbarData;
 
@@ -158,11 +156,6 @@ export function Navbar() {
   const deferHeroSyncedIntro =
     pathname === "/" && !prefersReducedMotion;
 
-  const [playNavHoverSound] = useSound(switch007Sound, {
-    interrupt: true,
-    soundEnabled: !prefersReducedMotion,
-  });
-
   const [navInteractable, setNavInteractable] = useState(
     () => !deferHeroSyncedIntro,
   );
@@ -207,9 +200,6 @@ export function Navbar() {
             className={navLinkClass}
             label={label}
             variant="nav"
-            onPointerEnter={() => {
-              playNavHoverSound();
-            }}
           />
         </li>
       ))}
@@ -223,9 +213,6 @@ export function Navbar() {
       aria-expanded={open}
       aria-controls="mobile-nav"
       aria-label={open ? "Close menu" : "Open menu"}
-      onPointerEnter={() => {
-        playNavHoverSound();
-      }}
       onClick={() => setOpen((v) => !v)}
     >
       <MobileMenuMorphIcon
@@ -350,9 +337,6 @@ export function Navbar() {
                   )}
                   label={label}
                   onClick={() => setOpen(false)}
-                  onPointerEnter={() => {
-                    playNavHoverSound();
-                  }}
                   centerInContainer
                   variant="nav"
                 />
@@ -403,9 +387,6 @@ export function Navbar() {
               "flex shrink-0 items-center gap-1 transition-opacity hover:opacity-80",
               scrolled && "md:justify-self-start",
             )}
-            onPointerEnter={() => {
-              playNavHoverSound();
-            }}
             onClick={() => setOpen(false)}
           >
             <span className="sr-only">{site.homeSrLabel}</span>
@@ -448,9 +429,6 @@ export function Navbar() {
                   )}
                   label={cta.label}
                   onClick={() => setOpen(false)}
-                  onPointerEnter={() => {
-                    playNavHoverSound();
-                  }}
                 />
               </div>
             </>
@@ -461,9 +439,6 @@ export function Navbar() {
                 href={cta.href}
                 className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
                 label={cta.label}
-                onPointerEnter={() => {
-                  playNavHoverSound();
-                }}
               />
               <div className="md:hidden">{menuToolbar}</div>
             </div>

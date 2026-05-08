@@ -1,6 +1,7 @@
 import type { FC } from "react";
 
 import { processSection } from "@/data/site";
+import { cn } from "@/lib/utils";
 
 import {
   DeploymentAnimation,
@@ -12,8 +13,11 @@ import {
 
 import "@/styles/process-section.css";
 
+/** Each step is exactly half the viewport tall; stack scrolls with the page. */
+const PROCESS_BLOCK_HEIGHT_CLASS = "h-[50vh] min-h-[50vh]";
+
 const glassPanelClass =
-  "flex aspect-square h-[min(28vh,260px)] w-[min(28vh,260px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-6 shadow-sm backdrop-blur-xl dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]";
+  "flex aspect-square h-[min(20vh,180px)] w-[min(20vh,180px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-4 shadow-sm backdrop-blur-xl sm:h-[min(22vh,200px)] sm:w-[min(22vh,200px)] sm:p-6 dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]";
 
 const STEP_ANIMATIONS = {
   Discovery: DiscoveryAnimation,
@@ -39,9 +43,17 @@ export function Process() {
           const phase = step.title.toUpperCase();
 
           return (
-            <li key={step.title} className="m-0 border-t border-zinc-950/[0.055] p-0 first:border-t-0 dark:border-white/[0.12]">
-              <article className="flex min-h-[50vh] flex-col gap-8 px-5 py-8 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-10 lg:px-12 xl:mx-auto xl:max-w-7xl">
-                <div className="flex min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
+            <li
+              key={step.title}
+              className="m-0 border-t border-zinc-950/[0.055] p-0 first:border-t-0 dark:border-white/[0.12]"
+            >
+              <article
+                className={cn(
+                  "box-border flex min-h-0 flex-col gap-6 overflow-hidden px-5 py-6 sm:px-8 md:flex-row md:items-center md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",
+                  PROCESS_BLOCK_HEIGHT_CLASS,
+                )}
+              >
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-center md:max-w-[min(52%,560px)]">
                   <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
                     {num}
                   </span>
@@ -55,7 +67,6 @@ export function Process() {
                     {step.description}
                   </p>
                 </div>
-
                 <div className={glassPanelClass}>
                   <Animation />
                 </div>

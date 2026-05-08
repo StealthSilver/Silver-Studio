@@ -20,7 +20,6 @@ export function LetterWaveLink({
   label,
   ariaLabel,
   onClick,
-  onPointerEnter,
   centerInContainer,
   variant = "default",
 }: {
@@ -30,7 +29,6 @@ export function LetterWaveLink({
   /** Overrides default `aria-label` (the visible label) when context needs more detail */
   ariaLabel?: string;
   onClick?: () => void;
-  onPointerEnter?: () => void;
   /** Full-width row with centered label (e.g. mobile menu links) */
   centerInContainer?: boolean;
   /** Navbar section links: slower easing + stagger than hero / CTA buttons */
@@ -68,7 +66,6 @@ export function LetterWaveLink({
       )}
       aria-label={ariaLabel ?? label}
       onClick={onClick}
-      onPointerEnter={onPointerEnter}
     >
       <span
         aria-hidden
