@@ -28,10 +28,22 @@ const LOGO_CSS_PX = 112;
 
 const MIN_SPLASH_MS = 1100;
 const PROGRESS_CAP_BEFORE_LOAD = 92;
+/** E-folding time (ms) for smooth % toward cap while assets load. */
+const PROGRESS_TAU_MS = 1300;
+
+/** Shared timeline so zoom + dissolve read as one “open the cutout” moment. */
+const EXIT_SYNC_MS = 1.66;
+const EXIT_EASE_CUTOUT: [number, number, number, number] = [0.18, 0.9, 0.14, 1];
+/** Slightly softer fade so framing dissolves while the silhouette expands. */
+const EXIT_EASE_FADE: [number, number, number, number] = [0.2, 0.55, 0.35, 1];
 
 function endCutoutScale(w: number, h: number) {
   const halfDiagonal = Math.hypot(w / 2, h / 2);
   return Math.max((halfDiagonal / 108) * 1.45, 14);
+}
+
+function maskTransform(w: number, h: number, scale: number) {
+  return `translate(${w / 2}, ${h / 2}) scale(${scale}) translate(-108, -108)`;
 }
 
 type Phase = "loading" | "exiting" | "done";
@@ -48,7 +60,6 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [viewport, setViewport] = useState({ w: 1920, h: 1080 });
   const [progress, setProgress] = useState(0);
-  const [cutoutScale, setCutoutScale] = useState(0);
   const [logoOverlayOpacity, setLogoOverlayOpacity] = useState(1);
   const [logoScaleMul, setLogoScaleMul] = useState(1);
 
@@ -57,6 +68,8 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
   const exitStartedRef = useRef(false);
   const progressRef = useRef(0);
   const exitControlsRef = useRef<{ stop: () => void }[]>([]);
+  const maskGRef = useRef<SVGGElement>(null);
+  const maskRectRef = useRef<SVGRectElement>(null);
 
   useLayoutEffect(() => {
     const read = () =>
@@ -83,7 +96,6 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
     exitStartedRef.current = true;
 
     if (reduceMotion) {
-      setCutoutScale(endCutoutScale(window.innerWidth, window.innerHeight));
       setLogoOverlayOpacity(0);
       setLogoScaleMul(1);
       setProgress(100);
@@ -91,60 +103,118 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
       return;
     }
 
+    setPhase("exiting");
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    return () => killExitAnimations();
+  }, [killExitAnimations]);
+
+  /** Imperative SVG mask updates every frame → no React re-render jank during zoom. */
+  useLayoutEffect(() => {
+    if (phase !== "exiting") {
+      return;
+    }
+
+    const vw = viewport.w;
+    const vh = viewport.h;
+    const gEl = maskGRef.current;
+    const rectEl = maskRectRef.current;
     const initialCutout = LOGO_CSS_PX / LOGO_VIEW;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
     const endScale = endCutoutScale(vw, vh);
     const p0 = progressRef.current;
+    let cancelled = false;
 
     killExitAnimations();
-    setCutoutScale(initialCutout);
-    setLogoOverlayOpacity(1);
-    setLogoScaleMul(1);
-    setPhase("exiting");
+    gEl?.setAttribute("transform", maskTransform(vw, vh, initialCutout));
+    rectEl?.setAttribute("fill-opacity", "1");
 
     const ctrls: { stop: () => void }[] = [];
+    let cutoutEnded = false;
+    let fadeEnded = false;
+
+    function tryRevealDone() {
+      if (!cancelled && cutoutEnded && fadeEnded) {
+        setPhase("done");
+      }
+    }
 
     ctrls.push(
       animate(p0, 100, {
-        duration: 0.28,
-        ease: "easeOut",
-        onUpdate: (v) => setProgress(Number(v)),
+        duration: 0.42,
+        ease: [0.33, 1, 0.68, 1],
+        onUpdate: (v) => {
+          if (!cancelled) setProgress(Number(v.toFixed(4)));
+        },
       })
     );
 
     ctrls.push(
       animate(initialCutout, endScale, {
-        duration: 1.28,
-        ease: [0.16, 0.84, 0.24, 1],
-        onUpdate: (v) => setCutoutScale(Number(v)),
-        onComplete: () => setPhase("done"),
-      })
-    );
-
-    ctrls.push(
-      animate(1, endScale / initialCutout, {
-        duration: 1.28,
-        ease: [0.16, 0.84, 0.24, 1],
-        onUpdate: (v) => setLogoScaleMul(Number(v)),
+        duration: EXIT_SYNC_MS,
+        ease: EXIT_EASE_CUTOUT,
+        onUpdate: (v) => {
+          const s = Number(v.toPrecision(14));
+          gEl?.setAttribute("transform", maskTransform(vw, vh, s));
+        },
+        onComplete: () => {
+          cutoutEnded = true;
+          tryRevealDone();
+        },
       })
     );
 
     ctrls.push(
       animate(1, 0, {
-        duration: 0.55,
-        delay: 0.35,
+        duration: EXIT_SYNC_MS,
+        delay: 0,
+        ease: EXIT_EASE_FADE,
+        onUpdate: (o) => {
+          rectEl?.setAttribute("fill-opacity", String(Number(o.toPrecision(4))));
+        },
+        onComplete: () => {
+          fadeEnded = true;
+          tryRevealDone();
+        },
+      })
+    );
+
+    ctrls.push(
+      animate(1, endScale / initialCutout, {
+        duration: EXIT_SYNC_MS,
+        ease: EXIT_EASE_CUTOUT,
+        onUpdate: (v) => {
+          if (!cancelled) setLogoScaleMul(Number(v.toPrecision(8)));
+        },
+      })
+    );
+
+    ctrls.push(
+      animate(1, 0, {
+        duration: 0.62,
+        delay: 0.38,
         ease: [0.4, 0, 0.2, 1],
-        onUpdate: (v) => setLogoOverlayOpacity(Number(v)),
+        onUpdate: (v) => {
+          if (!cancelled) setLogoOverlayOpacity(Number(v.toPrecision(4)));
+        },
       })
     );
 
     exitControlsRef.current = ctrls;
-  }, [killExitAnimations, reduceMotion]);
 
-  useEffect(() => {
-    return () => killExitAnimations();
-  }, [killExitAnimations]);
+    return () => {
+      cancelled = true;
+      killExitAnimations();
+    };
+  }, [phase, viewport.w, viewport.h, killExitAnimations]);
+
+  /** Reset mask DOM while loading so first paint stays a solid black field. */
+  useLayoutEffect(() => {
+    if (phase !== "loading") return;
+    const { w, h } = viewport;
+    maskGRef.current?.setAttribute("transform", maskTransform(w, h, 0));
+    maskRectRef.current?.setAttribute("fill-opacity", "1");
+  }, [phase, viewport.w, viewport.h]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -169,25 +239,23 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
     };
   }, [tryFinishLoading]);
 
+  /** Monotone % tied to elapsed time — bar width matches aria value (no CSS width transition). */
   useEffect(() => {
     if (phase !== "loading") return;
+    const start = performance.now();
+    let raf = 0;
 
-    let alive = true;
-    const tick = () => {
-      if (!alive) return;
-      const cap = loadDoneRef.current ? 100 : PROGRESS_CAP_BEFORE_LOAD;
-      setProgress((prev) => {
-        if (prev >= cap) return prev;
-        const next = prev + Math.max(0.35, Math.random() * 3.8);
-        return Math.min(next, cap);
-      });
-      window.requestAnimationFrame(tick);
-    };
-    const raf = window.requestAnimationFrame(tick);
-    return () => {
-      alive = false;
-      window.cancelAnimationFrame(raf);
-    };
+    function tick(now: number) {
+      const elapsed = now - start;
+      const target =
+        PROGRESS_CAP_BEFORE_LOAD *
+        (1 - Math.exp(-elapsed / PROGRESS_TAU_MS));
+      setProgress((prev) => Math.max(prev, Math.min(PROGRESS_CAP_BEFORE_LOAD, target)));
+      raf = window.requestAnimationFrame(tick);
+    }
+
+    raf = window.requestAnimationFrame(tick);
+    return () => window.cancelAnimationFrame(raf);
   }, [phase]);
 
   useEffect(() => {
@@ -244,15 +312,13 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
                 height={viewport.h}
               >
                 <rect width={viewport.w} height={viewport.h} fill="white" />
-                <g
-                  fill="black"
-                  transform={`translate(${viewport.w / 2}, ${viewport.h / 2}) scale(${cutoutScale}) translate(-108, -108)`}
-                >
+                <g ref={maskGRef} fill="black">
                   {LOGO_MASK_PATHS}
                 </g>
               </mask>
             </defs>
             <rect
+              ref={maskRectRef}
               width={viewport.w}
               height={viewport.h}
               fill="#000000"
@@ -317,13 +383,16 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
                   aria-valuemin={0}
                   aria-valuemax={100}
                 >
+                  {/* No transition — width stays locked to the same value as % text */}
                   <div
-                    className="h-full rounded-full bg-white duration-150 ease-out [transition-property:width]"
-                    style={{ width: `${Math.min(100, progress)}%` }}
+                    className="h-full rounded-full bg-white"
+                    style={{
+                      width: `${Math.min(100, Math.max(0, progress))}%`,
+                    }}
                   />
                 </div>
                 <p className="mt-3 font-mono text-sm tabular-nums text-white/70">
-                  {Math.round(Math.min(100, progress))}%
+                  {Math.round(Math.min(100, Math.max(0, progress)))}%
                 </p>
               </div>
             )}
