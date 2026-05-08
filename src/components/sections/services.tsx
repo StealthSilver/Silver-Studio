@@ -16,10 +16,7 @@ const TILES = [
   { num: "04", label: "BRANDING" },
 ] as const;
 
-/** Dark theme token — matches `globals.css` `.dark` background */
-const BRAND_NEAR_BLACK = "#09090b";
-
-/** Timeline: dark fades early; tiles begin mid-ramp */
+/** Timeline: wash layer fades in; tiles begin mid-ramp */
 const DARK_PHASE_END = 0.36;
 const TILE_PHASE_START = 0.2;
 const TILE_SEGMENT = 0.115;
@@ -46,12 +43,25 @@ const TILE_STACK_VARS =
   "[contain:inline-size] [--tile-w:min(34vw,9rem)] [--tile-step:calc(var(--tile-w)*0.45)] sm:[--tile-w:min(42vw,11rem)] sm:[--tile-step:calc(var(--tile-w)*0.55)] lg:[--tile-w:min(32vw,min(19rem,300px))] lg:[--tile-step:calc(var(--tile-w)*0.8)]";
 
 const GLASS_TILE_BASE =
-  "cursor-default rounded-[6px] bg-gradient-to-br from-white/[0.14] via-white/[0.06] to-white/[0.03] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.18),0_24px_48px_rgb(0_0_0_/_0.35)] backdrop-blur-[28px] backdrop-saturate-[0.65] transition-[border-color,box-shadow,filter] duration-200 ease-out";
+  "cursor-default rounded-[6px] backdrop-blur-[28px] backdrop-saturate-[0.65] transition-[border-color,box-shadow,filter] duration-200 ease-out " +
+  "bg-gradient-to-br from-white/85 via-white/55 to-zinc-100/80 " +
+  "shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.95),0_18px_40px_rgb(24_24_27_/_0.07),0_2px_8px_rgb(24_24_27_/_0.04)] " +
+  "dark:from-white/[0.14] dark:via-white/[0.06] dark:to-white/[0.03] " +
+  "dark:shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.18),0_24px_48px_rgb(0_0_0_/_0.35)]";
 
-const TILE_BORDER_REST = "border-[3px] border-white/[0.18]";
+const TILE_BORDER_REST =
+  "border-[3px] border-zinc-300/75 dark:border-white/[0.18]";
 
 const TILE_BORDER_HOVER =
-  "border-[3px] border-white/55 shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.22),0_28px_56px_rgb(0_0_0_/_0.55)] brightness-[1.06]";
+  "border-[3px] border-zinc-400/95 shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.85),0_26px_52px_rgb(24_24_27_/_0.11)] brightness-[1.02] " +
+  "dark:border-white/55 dark:shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.22),0_28px_56px_rgb(0_0_0_/_0.55)] dark:brightness-[1.06]";
+
+/** Light: no section fill (page background shows). Dark: near-black wash. */
+const SERVICES_BACKDROP = "bg-transparent dark:bg-[#09090b]";
+
+/** Pinned section backdrop: scrubs in with ScrollTrigger */
+const SECTION_WASH =
+  "pointer-events-none absolute inset-0 z-[1] rounded-none " + SERVICES_BACKDROP;
 
 const HOVER_Z = 90;
 
@@ -165,13 +175,13 @@ export function Services() {
         <div className="flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
           <p
             className={cn(
-              "font-normal leading-none tracking-tight text-white/95",
+              "font-normal leading-none tracking-tight text-zinc-900 dark:text-white/95",
               "text-[clamp(2.75rem,10vw,4.5rem)]",
             )}
           >
             {tile.num}
           </p>
-          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-white/88 sm:text-xs [font-family:var(--font-ibm-plex-sans)]">
+          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-zinc-600 sm:text-xs dark:text-white/88 [font-family:var(--font-ibm-plex-sans)]">
             {tile.label}
           </p>
         </div>
@@ -184,11 +194,13 @@ export function Services() {
       <section
         id={id}
         aria-label={sectionAriaLabel}
-        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
+        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32 border-t border-zinc-200/70 dark:border-transparent"
       >
         <div
-          className="relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 py-16 sm:px-6 lg:px-8"
-          style={{ backgroundColor: BRAND_NEAR_BLACK }}
+          className={cn(
+            "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 py-16 sm:px-6 lg:px-8",
+            SERVICES_BACKDROP,
+          )}
         >
           <div className="relative flex w-full max-w-3xl flex-col">{tilesMarkup}</div>
         </div>
@@ -205,14 +217,9 @@ export function Services() {
       <div className="relative w-full">
         <div
           ref={pinRef}
-          className="relative flex h-[100vh] w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8"
+          className="relative flex h-[100vh] w-full max-w-7xl flex-col border-t border-zinc-200/70 px-4 dark:border-transparent sm:px-6 lg:px-8"
         >
-          <div
-            ref={darkRef}
-            className="pointer-events-none absolute inset-0 z-[1] rounded-none"
-            style={{ backgroundColor: BRAND_NEAR_BLACK }}
-            aria-hidden
-          />
+          <div ref={darkRef} className={SECTION_WASH} aria-hidden />
           <div className="relative z-[2] flex h-full min-h-0 w-full flex-1">
             <div
               className={cn(

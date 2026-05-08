@@ -23,9 +23,8 @@ export default function Home() {
         {/* <WhySilverStudios />
         <PoweredBySilverUi /> */}
         <Process />
-        {/* <Testimonials />
-      
         <Faq />
+        {/* <Testimonials />
         <FinalCta /> */}
       </main>
       <Footer />

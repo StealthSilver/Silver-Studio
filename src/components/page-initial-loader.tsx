@@ -7,46 +7,135 @@ import {
   useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 
 import { cn } from "@/lib/utils";
+import {
+  PageSplashRevealContext,
+  type PageSplashPhase,
+  SPLASH_LOGO_CSS_PX,
+  splashInitialCutoutScale,
+  splashViewportMinCutoutScale,
+} from "@/components/page-splash-reveal";
 
-/** Same paths as `/Logos/silverui-d.svg` — mask paths use fill black to punch the hole. */
+/** Geometry from `/Logos/silverui-d.svg` — shared by mask + on-screen mark. */
+const PATH_D_RIGHT = "M136.581 28.1782C136.581 25.099 139.914 23.1745 142.581 24.7141L194.331 54.592C196.998 56.1316 196.998 59.9806 194.331 61.5202L142.581 91.3981C139.914 92.9377 136.581 91.0132 136.581 87.934L136.581 28.1782Z";
+const PATH_D_LEFT = "M79.3061 187.224C79.3061 190.303 75.9728 192.227 73.3061 190.688L21.5561 160.81C18.8894 159.27 18.8894 155.421 21.5561 153.882L73.3061 124.004C75.9728 122.464 79.3061 124.389 79.3061 127.468L79.3061 187.224Z";
+const RECT_BAR = { x: 87.4957, y: 22.8352, w: 41, h: 170, rx: 4 } as const;
+
+/** Mask paths use fill black to punch the hole. */
 const LOGO_MASK_PATHS = (
   <>
-    <path d="M136.581 28.1782C136.581 25.099 139.914 23.1745 142.581 24.7141L194.331 54.592C196.998 56.1316 196.998 59.9806 194.331 61.5202L142.581 91.3981C139.914 92.9377 136.581 91.0132 136.581 87.934L136.581 28.1782Z" />
-    <path d="M79.3061 187.224C79.3061 190.303 75.9728 192.227 73.3061 190.688L21.5561 160.81C18.8894 159.27 18.8894 155.421 21.5561 153.882L73.3061 124.004C75.9728 122.464 79.3061 124.389 79.3061 127.468L79.3061 187.224Z" />
-    <rect x="87.4957" y="22.8352" width="41" height="170" rx="4" />
+    <path d={PATH_D_RIGHT} />
+    <path d={PATH_D_LEFT} />
+    <rect x={RECT_BAR.x} y={RECT_BAR.y} width={RECT_BAR.w} height={RECT_BAR.h} rx={RECT_BAR.rx} />
   </>
 );
 
-const LOGO_VIEW = 216;
-/** Tailwind `w-28` — mask opening matches on-screen logo for a seamless reveal. */
-const LOGO_CSS_PX = 112;
+const TRACE_DURATION = 2.75;
+/** Short dash orbits each closed edge (`pathLength={1}`). */
+const TRACE_DASH = "0.1 0.9";
+
+function LoaderLogoSvg({ traceOutline }: { traceOutline: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 216 216"
+      className="block size-full select-none"
+      aria-hidden
+    >
+      <g fill="white">
+        <path d={PATH_D_RIGHT} />
+        <path d={PATH_D_LEFT} />
+        <rect
+          x={RECT_BAR.x}
+          y={RECT_BAR.y}
+          width={RECT_BAR.w}
+          height={RECT_BAR.h}
+          rx={RECT_BAR.rx}
+        />
+      </g>
+      {traceOutline && (
+        <g
+          fill="none"
+          stroke="rgb(252 252 254)"
+          strokeWidth={2.25}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="will-change-[stroke-dashoffset]"
+        >
+          <motion.path
+            d={PATH_D_RIGHT}
+            pathLength={1}
+            vectorEffect="nonScalingStroke"
+            style={{ strokeDasharray: TRACE_DASH }}
+            animate={{ strokeDashoffset: [0, -1] }}
+            transition={{
+              duration: TRACE_DURATION,
+              repeat: Infinity,
+              ease: "linear",
+              delay: 0,
+            }}
+          />
+          <motion.path
+            d={PATH_D_LEFT}
+            pathLength={1}
+            vectorEffect="nonScalingStroke"
+            style={{ strokeDasharray: TRACE_DASH }}
+            animate={{ strokeDashoffset: [0, -1] }}
+            transition={{
+              duration: TRACE_DURATION,
+              repeat: Infinity,
+              ease: "linear",
+              delay: -TRACE_DURATION / 3,
+            }}
+          />
+          <motion.rect
+            x={RECT_BAR.x}
+            y={RECT_BAR.y}
+            width={RECT_BAR.w}
+            height={RECT_BAR.h}
+            rx={RECT_BAR.rx}
+            pathLength={1}
+            vectorEffect="nonScalingStroke"
+            style={{ strokeDasharray: TRACE_DASH }}
+            animate={{ strokeDashoffset: [0, -1] }}
+            transition={{
+              duration: TRACE_DURATION,
+              repeat: Infinity,
+              ease: "linear",
+              delay: (-2 * TRACE_DURATION) / 3,
+            }}
+          />
+        </g>
+      )}
+    </svg>
+  );
+}
 
 const MIN_SPLASH_MS = 1100;
 const PROGRESS_CAP_BEFORE_LOAD = 92;
 /** E-folding time (ms) for smooth % toward cap while assets load. */
 const PROGRESS_TAU_MS = 1300;
 
-/** Shared timeline so zoom + dissolve read as one “open the cutout” moment. */
-const EXIT_SYNC_MS = 1.66;
-const EXIT_EASE_CUTOUT: [number, number, number, number] = [0.18, 0.9, 0.14, 1];
+/** Longer exit so the mark keeps opening until the page is fully revealed. */
+const EXIT_SYNC_MS = 2.38;
+const EXIT_EASE_CUTOUT: [number, number, number, number] = [0.16, 0.92, 0.12, 1];
 /** Slightly softer fade so framing dissolves while the silhouette expands. */
 const EXIT_EASE_FADE: [number, number, number, number] = [0.2, 0.55, 0.35, 1];
 
 function endCutoutScale(w: number, h: number) {
+  const viewportCover = splashViewportMinCutoutScale(w, h);
   const halfDiagonal = Math.hypot(w / 2, h / 2);
-  return Math.max((halfDiagonal / 108) * 1.45, 14);
+  const diagonalPull = (halfDiagonal / 108) * 1.78;
+  return Math.max(viewportCover, diagonalPull, 18);
 }
 
 function maskTransform(w: number, h: number, scale: number) {
   return `translate(${w / 2}, ${h / 2}) scale(${scale}) translate(-108, -108)`;
 }
-
-type Phase = "loading" | "exiting" | "done";
 
 type PageInitialLoaderProps = {
   children: ReactNode;
@@ -57,11 +146,13 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
   const maskId = `silver-splash-mask-${rawId}`;
   const reduceMotion = useReducedMotion();
 
-  const [phase, setPhase] = useState<Phase>("loading");
+  const [phase, setPhase] = useState<PageSplashPhase>("loading");
   const [viewport, setViewport] = useState({ w: 1920, h: 1080 });
   const [progress, setProgress] = useState(0);
   const [logoOverlayOpacity, setLogoOverlayOpacity] = useState(1);
   const [logoScaleMul, setLogoScaleMul] = useState(1);
+  const [exitZoomLinear, setExitZoomLinear] = useState<number | null>(null);
+  const [exitCutoutScale, setExitCutoutScale] = useState<number | null>(null);
 
   const loadDoneRef = useRef(false);
   const minElapsedRef = useRef(false);
@@ -82,6 +173,26 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
+
+  useLayoutEffect(() => {
+    if (phase === "loading" || phase === "done") {
+      setExitZoomLinear(null);
+      setExitCutoutScale(null);
+    } else if (phase === "exiting") {
+      const ic = splashInitialCutoutScale();
+      setExitZoomLinear(0);
+      setExitCutoutScale(ic);
+    }
+  }, [phase]);
+
+  const splashRevealValue = useMemo(
+    () => ({
+      phase,
+      exitZoomLinear,
+      exitCutoutScale,
+    }),
+    [phase, exitCutoutScale, exitZoomLinear],
+  );
 
   const killExitAnimations = useCallback(() => {
     exitControlsRef.current.forEach((c) => c.stop());
@@ -120,7 +231,7 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
     const vh = viewport.h;
     const gEl = maskGRef.current;
     const rectEl = maskRectRef.current;
-    const initialCutout = LOGO_CSS_PX / LOGO_VIEW;
+    const initialCutout = splashInitialCutoutScale();
     const endScale = endCutoutScale(vw, vh);
     const p0 = progressRef.current;
     let cancelled = false;
@@ -135,6 +246,8 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
 
     function tryRevealDone() {
       if (!cancelled && cutoutEnded && fadeEnded) {
+        setExitZoomLinear(null);
+        setExitCutoutScale(null);
         setPhase("done");
       }
     }
@@ -156,6 +269,15 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
         onUpdate: (v) => {
           const s = Number(v.toPrecision(14));
           gEl?.setAttribute("transform", maskTransform(vw, vh, s));
+          const span = endScale - initialCutout;
+          const linear =
+            span > 0
+              ? Math.min(1, Math.max(0, (s - initialCutout) / span))
+              : 1;
+          if (!cancelled) {
+            setExitZoomLinear(linear);
+            setExitCutoutScale(s);
+          }
         },
         onComplete: () => {
           cutoutEnded = true;
@@ -191,8 +313,8 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
 
     ctrls.push(
       animate(1, 0, {
-        duration: 0.62,
-        delay: 0.38,
+        duration: 0.82,
+        delay: 0.52,
         ease: [0.4, 0, 0.2, 1],
         onUpdate: (v) => {
           if (!cancelled) setLogoOverlayOpacity(Number(v.toPrecision(4)));
@@ -278,7 +400,8 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
   const contentVisible = phase === "exiting" || phase === "done";
 
   return (
-    <>
+    <PageSplashRevealContext.Provider value={splashRevealValue}>
+      <>
       <div
         className={cn(
           "relative min-h-0 flex-1",
@@ -327,30 +450,15 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
           </svg>
 
           <div className="absolute inset-0 flex flex-col items-center justify-center px-6 pb-[18vh]">
-            <motion.div
+            <div
               aria-hidden={phase !== "loading"}
               className={cn(
-                "relative shrink-0 will-change-[filter]",
+                "relative shrink-0",
                 phase === "exiting" && "pointer-events-none"
               )}
               style={{
-                width: LOGO_CSS_PX,
-                height: LOGO_CSS_PX,
-              }}
-              animate={{
-                filter:
-                  phase === "loading" && !reduceMotion
-                    ? [
-                        "drop-shadow(0 0 10px rgb(255 255 255 / 0.25))",
-                        "drop-shadow(0 0 22px rgb(255 255 255 / 0.58))",
-                        "drop-shadow(0 0 10px rgb(255 255 255 / 0.25))",
-                      ]
-                    : "drop-shadow(0 0 12px rgb(255 255 255 / 0.35))",
-              }}
-              transition={{
-                duration: phase === "loading" && !reduceMotion ? 2.1 : 0.2,
-                repeat: phase === "loading" && !reduceMotion ? Infinity : 0,
-                ease: "easeInOut",
+                width: SPLASH_LOGO_CSS_PX,
+                height: SPLASH_LOGO_CSS_PX,
               }}
             >
               <div
@@ -361,18 +469,11 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
                   transformOrigin: "center center",
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- SVG mark; avoids next/image SVG restrictions */}
-                <img
-                  src="/Logos/silverui-d.svg"
-                  alt=""
-                  width={LOGO_VIEW}
-                  height={LOGO_VIEW}
-                  draggable={false}
-                  fetchPriority="high"
-                  className="block h-full w-full object-contain select-none"
+                <LoaderLogoSvg
+                  traceOutline={phase === "loading" && !reduceMotion}
                 />
               </div>
-            </motion.div>
+            </div>
 
             {phase === "loading" && (
               <div className="mt-10 flex w-[min(18rem,calc(100vw-3rem))] flex-col items-center">
@@ -399,6 +500,7 @@ export function PageInitialLoader({ children }: PageInitialLoaderProps) {
           </div>
         </div>
       )}
-    </>
+      </>
+    </PageSplashRevealContext.Provider>
   );
 }

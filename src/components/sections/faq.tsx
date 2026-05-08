@@ -5,6 +5,16 @@ import { useCallback, useId, useMemo, useState } from "react";
 
 import type { FaqItem } from "@/data/site";
 import { faqSection } from "@/data/site";
+import { cn } from "@/lib/utils";
+
+const faqAccordionItemClass = (isOpen: boolean) =>
+  cn(
+    "rounded-2xl border border-border/80 bg-muted/35 shadow-sm backdrop-blur-xl transition-[border-color,box-shadow]",
+    "dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]",
+    isOpen
+      ? "border-zinc-400/80 shadow-md dark:border-white/20"
+      : "hover:border-zinc-300/90 dark:hover:border-white/18",
+  );
 
 function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly FaqItem[] }) {
   const reactId = useId();
@@ -19,43 +29,44 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
   }, []);
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-3 sm:space-y-3.5">
       {items.map((item, idx) => {
         const slug = `${base}-${reactId}-${idx}`;
         const panelId = `${slug}-panel`;
         const triggerId = `${slug}-trigger`;
         const isOpen = openIndex === idx;
+        const itemNum = String(idx + 1).padStart(2, "0");
 
         return (
-          <div
-            key={item.question}
-            className={[
-              "rounded-2xl border border-zinc-200/90 bg-white/40 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.65)] backdrop-blur-md transition-[border-color,box-shadow] dark:border-white/12 dark:bg-zinc-950/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]",
-              isOpen
-                ? "border-zinc-300/95 dark:border-white/18"
-                : "hover:border-zinc-300/95 dark:hover:border-white/14",
-            ].join(" ")}
-          >
+          <div key={item.question} className={faqAccordionItemClass(isOpen)}>
             <h3>
               <button
                 type="button"
                 id={triggerId}
-                className={[
-                  "flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl px-4 py-4 text-left outline-none transition-colors sm:px-5 sm:py-5",
+                className={cn(
+                  "flex w-full cursor-pointer items-start justify-between gap-4 rounded-2xl px-4 py-4 text-left outline-none transition-colors sm:px-5 sm:py-5",
                   "focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950",
-                ].join(" ")}
+                )}
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => onToggle(idx)}
               >
-                <span className="text-sm font-semibold leading-snug text-zinc-900 sm:text-[15px] dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-                  {item.question}
+                <span className="flex min-w-0 flex-1 flex-col items-start gap-1.5 sm:flex-row sm:items-baseline sm:gap-4">
+                  <span
+                    className="shrink-0 font-mono text-[11px] font-medium tabular-nums tracking-[0.35em] text-muted-foreground sm:text-xs"
+                    aria-hidden
+                  >
+                    {itemNum}
+                  </span>
+                  <span className="min-w-0 text-sm font-semibold leading-snug text-foreground sm:text-[15px] [font-family:var(--font-ibm-plex-sans)]">
+                    {item.question}
+                  </span>
                 </span>
                 <ChevronDown
-                  className={[
-                    "size-5 shrink-0 text-zinc-500 transition-transform duration-200 motion-reduce:transition-none dark:text-zinc-400",
+                  className={cn(
+                    "mt-0.5 size-5 shrink-0 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none",
                     isOpen ? "rotate-180" : "",
-                  ].join(" ")}
+                  )}
                   aria-hidden
                   strokeWidth={2}
                 />
@@ -66,13 +77,13 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
               role="region"
               aria-labelledby={triggerId}
               aria-hidden={!isOpen}
-              className={[
+              className={cn(
                 "grid overflow-hidden transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
                 isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-              ].join(" ")}
+              )}
             >
               <div className="min-h-0">
-                <div className="border-t border-zinc-200/70 px-4 pb-5 pt-3 text-sm leading-relaxed text-zinc-600 sm:px-5 sm:text-[15px] sm:leading-relaxed dark:border-white/10 dark:text-zinc-400">
+                <div className="border-t border-zinc-950/[0.06] px-4 pb-5 pt-3 text-sm leading-relaxed text-muted-foreground sm:px-5 sm:text-[15px] sm:leading-relaxed dark:border-white/[0.12]">
                   {item.answer}
                 </div>
               </div>
@@ -86,24 +97,28 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
 
 export function Faq() {
   const { id, sectionAriaLabel, heading, intro, items } = faqSection;
+  const phaseLabel = heading.toUpperCase();
 
   return (
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-200/70 pt-16 dark:border-zinc-800/80 sm:scroll-mt-32 sm:pt-20"
+      className="w-full scroll-mt-28 border-t border-zinc-950/[0.06] bg-background text-foreground dark:border-white/15"
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-            {heading}
+      <div className="mx-auto box-border flex w-full max-w-7xl flex-col gap-10 px-5 py-14 sm:gap-12 sm:px-8 sm:py-16 md:gap-14 lg:flex-row lg:items-start lg:justify-between lg:gap-12 lg:px-12 lg:py-20 xl:gap-16">
+        <header className="flex max-w-xl shrink-0 flex-col lg:sticky lg:top-28 lg:max-w-[min(52%,560px)]">
+          <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
+            COMMON QUESTIONS
+          </span>
+          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
+            {phaseLabel}
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
+          <p className="mt-4 text-base leading-relaxed text-zinc-600 sm:text-lg dark:text-zinc-400">
             {intro}
           </p>
-        </div>
+        </header>
 
-        <div className="mx-auto mt-12 max-w-3xl sm:mt-14">
+        <div className="min-w-0 flex-1 lg:max-w-[min(100%,640px)] lg:pt-1 xl:max-w-none">
           <FaqAccordion idPrefix={id} items={items} />
         </div>
       </div>

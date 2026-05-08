@@ -23,6 +23,7 @@ type HeroEntryProps = {
   description: string;
   primaryCta: { href: string; label: string };
   secondaryCta: { href: string; label: string };
+  splashRevealBypass?: boolean;
 };
 
 export function HeroEntry({
@@ -31,9 +32,10 @@ export function HeroEntry({
   description,
   primaryCta,
   secondaryCta,
+  splashRevealBypass = false,
 }: HeroEntryProps) {
   const reduceMotion = useReducedMotion();
-  const instant = !!reduceMotion;
+  const instant = !!reduceMotion || splashRevealBypass;
 
   const headlineWords = useMemo(() => splitHeroWords(headline), [headline]);
   const descWords = useMemo(() => splitHeroWords(description), [description]);
