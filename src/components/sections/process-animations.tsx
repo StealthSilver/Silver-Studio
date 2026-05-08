@@ -12,7 +12,7 @@ function SvgFrame({
   return (
     <svg
       viewBox="0 0 200 200"
-      className="h-full w-full max-h-[min(22vh,200px)] text-foreground"
+      className="h-full w-full max-h-[min(26vh,240px)] text-foreground"
       role="img"
       aria-label={title}
     >

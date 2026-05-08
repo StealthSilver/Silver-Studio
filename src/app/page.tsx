@@ -4,7 +4,6 @@ import { Footer } from "@/components/sections/footer";
 import { Hero } from "@/components/sections/hero";
 import { Navbar } from "@/components/sections/navbar";
 import { PoweredBySilverUi } from "@/components/sections/powered-by-silver-ui";
-import { Pricing } from "@/components/sections/pricing";
 import { Process } from "@/components/sections/process";
 import { Services } from "@/components/sections/services";
 import { Testimonials } from "@/components/sections/testimonials";
@@ -25,7 +24,7 @@ export default function Home() {
         <PoweredBySilverUi /> */}
         <Process />
         {/* <Testimonials />
-        <Pricing />
+      
         <Faq />
         <FinalCta /> */}
       </main>
