@@ -12,7 +12,6 @@ import {
 import { WORK_STACK_RUNWAY_VH } from "@/lib/work-stack-constants";
 
 type WorkStackSlideProps = {
-  mod: string;
   itemSlug: string;
   index: number;
   total: number;
@@ -31,7 +30,6 @@ const DROP_Y_MAX_PX = 460;
 const DROP_EASE_EXPONENT = 1.18;
 
 export function WorkStackSlide({
-  mod,
   itemSlug,
   index,
   total,
@@ -65,7 +63,7 @@ export function WorkStackSlide({
   return (
     <li
       ref={ref}
-      className={`work-showcase work-showcase--${mod} text-foreground`}
+      className="work-showcase text-foreground"
       style={{
         height: `${WORK_STACK_RUNWAY_VH}vh`,
         zIndex: index + 1,
@@ -74,8 +72,7 @@ export function WorkStackSlide({
     >
       <div className="sticky top-0 h-screen min-h-screen w-full overflow-hidden">
         <motion.div
-          /* Rounded rect when slides scale down behind the next panel (~8px). */
-          className="relative h-full min-h-screen w-full origin-top overflow-hidden rounded-[8px] will-change-transform"
+          className="work-showcase__panel relative h-full min-h-screen w-full origin-top overflow-hidden rounded-[8px] will-change-transform"
           style={{ y, scale }}
         >
           {children}

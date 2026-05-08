@@ -1,82 +1,229 @@
-import {
-  Code2,
-  Component,
-  LayoutDashboard,
-  LayoutTemplate,
-  Palette,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+"use client";
 
-import type { ServiceIconId } from "@/data/site";
+import { useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import { servicesSection } from "@/data/site";
+import { cn } from "@/lib/utils";
 
-const SERVICE_ICONS: Record<ServiceIconId, LucideIcon> = {
-  /** Hero sections & blocks — landing layout */
-  landing: LayoutTemplate,
-  /** Markup & UI engineering */
-  frontend: Code2,
-  /** Color, type, and visual identity */
-  brand: Palette,
-  /** Reusable UI pieces & composition */
-  systems: Component,
-  /** Dashboards & multi-view apps */
-  application: LayoutDashboard,
-};
+gsap.registerPlugin(ScrollTrigger);
 
-const iconTileClass =
-  "flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-2xl border border-zinc-200/90 bg-zinc-50/90 text-zinc-700 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.7)] dark:border-white/12 dark:bg-zinc-900/50 dark:text-zinc-200 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]";
+const TILES = [
+  { num: "01", label: "LANDING PAGES" },
+  { num: "02", label: "DESIGN SYSTEMS" },
+  { num: "03", label: "FRONTEND DEVELOPMENT" },
+  { num: "04", label: "BRANDING" },
+] as const;
 
-const iconStroke = 1.65;
+/** Dark theme token — matches `globals.css` `.dark` background */
+const BRAND_NEAR_BLACK = "#09090b";
+
+/** Timeline: dark fades early; tiles begin mid-ramp */
+const DARK_PHASE_END = 0.36;
+const TILE_PHASE_START = 0.2;
+const TILE_SEGMENT = 0.115;
+
+/** Scroll distance while pinned — higher = slower scrub through the same timeline */
+const PIN_SCROLL_END = "+=160%";
+
+/** Extra timeline after last tile lands so all four stay on screen before unpin */
+const HOLD_AFTER_LAST_TILE = 0.42;
+
+const lastTileAnimEnd =
+  TILE_PHASE_START + TILES.length * TILE_SEGMENT;
+
+/** Vertical cascade only; horizontal spacing uses `--tile-step` (80% of tile width ≈ 20% overlap). */
+const TILE_TOP = [
+  "top-[8%] lg:top-[9%]",
+  "top-[calc(8%+2.25rem)] lg:top-[calc(9%+3.2rem)]",
+  "top-[calc(8%+4.5rem)] lg:top-[calc(9%+6.4rem)]",
+  "top-[calc(8%+6.75rem)] lg:top-[calc(9%+9.6rem)]",
+] as const;
+
+/** Tile stack: ~20% horizontal overlap on lg (`step = 0.8 * width`); tighter tiles & stride on small screens so four tiles fit. */
+const TILE_STACK_VARS =
+  "[contain:inline-size] [--tile-w:min(34vw,9rem)] [--tile-step:calc(var(--tile-w)*0.45)] sm:[--tile-w:min(42vw,11rem)] sm:[--tile-step:calc(var(--tile-w)*0.55)] lg:[--tile-w:min(32vw,min(19rem,300px))] lg:[--tile-step:calc(var(--tile-w)*0.8)]";
+
+const GLASS_TILE_BASE =
+  "cursor-default rounded-[6px] bg-gradient-to-br from-white/[0.14] via-white/[0.06] to-white/[0.03] shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.18),0_24px_48px_rgb(0_0_0_/_0.35)] backdrop-blur-[28px] backdrop-saturate-[0.65] transition-[border-color,box-shadow,filter] duration-200 ease-out";
+
+const TILE_BORDER_REST = "border-[3px] border-white/[0.18]";
+
+const TILE_BORDER_HOVER =
+  "border-[3px] border-white/55 shadow-[inset_0_0_0_1px_rgb(255_255_255_/_0.22),0_28px_56px_rgb(0_0_0_/_0.55)] brightness-[1.06]";
+
+const HOVER_Z = 90;
 
 export function Services() {
-  const { id, sectionAriaLabel, heading, intro, items } = servicesSection;
+  const { id, sectionAriaLabel } = servicesSection;
+  const pinRef = useRef<HTMLDivElement>(null);
+  const darkRef = useRef<HTMLDivElement>(null);
+  const tileRefs = useRef<(HTMLElement | null)[]>([]);
+
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [hoveredTile, setHoveredTile] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setPrefersReducedMotion(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (prefersReducedMotion) return;
+
+    const pinEl = pinRef.current;
+    const darkEl = darkRef.current;
+    const tiles = tileRefs.current.filter(Boolean) as HTMLElement[];
+    if (!pinEl || !darkEl || tiles.length !== TILES.length) return;
+
+    const ctx = gsap.context(() => {
+      gsap.set(darkEl, { opacity: 0 });
+      tiles.forEach((el) => {
+        gsap.set(el, { opacity: 0, y: 56 });
+      });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: pinEl,
+          start: "top top",
+          end: PIN_SCROLL_END,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.fromTo(
+        darkEl,
+        { opacity: 0 },
+        { opacity: 1, duration: DARK_PHASE_END, ease: "none" },
+        0,
+      );
+
+      TILES.forEach((_, i) => {
+        tl.fromTo(
+          tiles[i],
+          { opacity: 0, y: 56 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: TILE_SEGMENT,
+            ease: "none",
+          },
+          TILE_PHASE_START + i * TILE_SEGMENT,
+        );
+      });
+
+      tl.to(
+        darkEl,
+        { opacity: 1, duration: HOLD_AFTER_LAST_TILE, ease: "none" },
+        lastTileAnimEnd,
+      );
+    }, pinEl);
+
+    return () => ctx.revert();
+  }, [prefersReducedMotion]);
+
+  const tilesMarkup = TILES.map((tile, index) => {
+    const isHover = hoveredTile === index;
+    const stackZ = 10 + index;
+    const z = isHover ? HOVER_Z : stackZ;
+
+    return (
+      <article
+        key={tile.num}
+        ref={(el) => {
+          tileRefs.current[index] = el;
+        }}
+        className={cn(
+          "flex flex-col justify-end",
+          prefersReducedMotion
+            ? "relative left-auto top-auto mx-auto mb-6 aspect-[3/4] w-full max-w-[min(100%,17rem)] opacity-100 last:mb-0 sm:mb-8 sm:max-w-[18rem]"
+            : ["absolute aspect-[3/4] w-[var(--tile-w)] max-w-none", TILE_TOP[index]].join(
+                " ",
+              ),
+          GLASS_TILE_BASE,
+          isHover ? TILE_BORDER_HOVER : TILE_BORDER_REST,
+        )}
+        style={
+          prefersReducedMotion
+            ? {
+                zIndex: z,
+              }
+            : {
+                left: `calc(min(1.25rem, 5%) + ${index} * var(--tile-step))`,
+                zIndex: z,
+              }
+        }
+        onMouseEnter={() => setHoveredTile(index)}
+        onMouseLeave={() => setHoveredTile(null)}
+      >
+        <div className="flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
+          <p
+            className={cn(
+              "font-normal leading-none tracking-tight text-white/95",
+              "text-[clamp(2.75rem,10vw,4.5rem)]",
+            )}
+          >
+            {tile.num}
+          </p>
+          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-white/88 sm:text-xs [font-family:var(--font-ibm-plex-sans)]">
+            {tile.label}
+          </p>
+        </div>
+      </article>
+    );
+  });
+
+  if (prefersReducedMotion) {
+    return (
+      <section
+        id={id}
+        aria-label={sectionAriaLabel}
+        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
+      >
+        <div
+          className="relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 py-16 sm:px-6 lg:px-8"
+          style={{ backgroundColor: BRAND_NEAR_BLACK }}
+        >
+          <div className="relative flex w-full max-w-3xl flex-col">{tilesMarkup}</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-200/70 pt-16 dark:border-zinc-800/80 sm:scroll-mt-32 sm:pt-20"
+      className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-            {heading}
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
-            {intro}
-          </p>
+      <div className="relative w-full">
+        <div
+          ref={pinRef}
+          className="relative flex h-[100vh] w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8"
+        >
+          <div
+            ref={darkRef}
+            className="pointer-events-none absolute inset-0 z-[1] rounded-none"
+            style={{ backgroundColor: BRAND_NEAR_BLACK }}
+            aria-hidden
+          />
+          <div className="relative z-[2] flex h-full min-h-0 w-full flex-1">
+            <div
+              className={cn(
+                "relative isolate mx-auto h-full w-full max-w-7xl",
+                TILE_STACK_VARS,
+              )}
+            >
+              {tilesMarkup}
+            </div>
+          </div>
         </div>
-
-        <ul className="mt-12 grid list-none grid-cols-1 gap-4 p-0 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:gap-6 xl:grid-cols-3">
-          {items.map((item) => {
-            const Icon = SERVICE_ICONS[item.icon];
-            return (
-              <li key={item.title} className="min-w-0">
-                <article
-                  className={[
-                    "relative flex h-full flex-col rounded-2xl border border-zinc-200/90 bg-white/45 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md transition-[border-color,box-shadow,background-color] duration-200 sm:px-6 sm:py-7",
-                    "dark:border-white/12 dark:bg-zinc-950/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]",
-                    "hover:border-zinc-300/95 hover:shadow-[0_8px_30px_rgb(24_24_27_/_0.06)] dark:hover:border-white/18 dark:hover:shadow-[0_12px_40px_rgb(0_0_0_/_0.35)]",
-                  ].join(" ")}
-                >
-                  <div className="flex gap-4">
-                    <div className={iconTileClass} aria-hidden>
-                      <Icon className="h-10 w-10" strokeWidth={iconStroke} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </li>
-            );
-          })}
-        </ul>
       </div>
     </section>
   );

@@ -21,10 +21,6 @@ const IMAGE_VISIBLE_FRACTION = 0.5;
 const PLACEHOLDER_FULL_WIDTH = 1600;
 const PLACEHOLDER_FULL_HEIGHT = 1000;
 
-function workSlugToClass(slug: string): string {
-  return slug.replace(/[^a-z0-9-]/gi, "-");
-}
-
 function formatWorkIndex(index: number): string {
   return String(index + 1).padStart(2, "0");
 }
@@ -248,13 +244,11 @@ function WorkItemRow({
   index: number;
   total: number;
 }) {
-  const mod = workSlugToClass(item.slug);
   const titleId = `work-item-title-${item.slug}`;
   const indexLabel = formatWorkIndex(index);
 
   return (
     <WorkStackSlide
-      mod={mod}
       itemSlug={item.slug}
       index={index}
       total={total}

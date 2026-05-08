@@ -222,57 +222,9 @@ export function getWorkBySlug(slug: string): WorkCard | undefined {
   return workSection.items.find((item) => item.slug === slug);
 }
 
-export type ServiceIconId =
-  | "landing"
-  | "frontend"
-  | "brand"
-  | "systems"
-  | "application";
-
-export type ServiceItem = {
-  title: string;
-  description: string;
-  icon: ServiceIconId;
-};
-
 export const servicesSection = {
   id: "services" as const,
   sectionAriaLabel: "Services",
-  heading: "Services",
-  intro:
-    "Focused offerings for teams that want a sharp front end—strategy to deployment—with craft baked in.",
-  items: [
-    {
-      title: "Landing Page",
-      icon: "landing",
-      description:
-        "Campaign-ready pages that convert—clear hierarchy, fast loads, and brand-forward visuals tuned for your audience.",
-    },
-    {
-      title: "Frontend Development",
-      icon: "frontend",
-      description:
-        "Production interfaces with resilient layouts, accessible markup, and performance budgets that hold up in the wild.",
-    },
-    {
-      title: "Brand Direction",
-      icon: "brand",
-      description:
-        "Positioning and narrative that sharpen how you show up—tone, structure, and visual cues that stay consistent everywhere.",
-    },
-    {
-      title: "Design Systems",
-      icon: "systems",
-      description:
-        "Tokens, components, and patterns your team can reuse—documented so design and engineering stay aligned as you scale.",
-    },
-    {
-      title: "Full web applications",
-      icon: "application",
-      description:
-        "Multi-surface web products—from dashboards to marketing funnels—wired up with maintainable architecture and polish.",
-    },
-  ] satisfies readonly ServiceItem[],
 } as const;
 
 export const processSection = {
