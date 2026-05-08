@@ -40,6 +40,17 @@ export const footer = {
   /** Shown as: © {year} {copyrightOrg}. {copyrightSuffix} */
   copyrightOrg: site.name,
   copyrightSuffix: "All rights reserved.",
+  description:
+    "Design-forward web studio for startups and product teams. We craft high-conversion marketing sites with clean execution and fast iteration.",
+  contactEmail: "hello@silverstudios.dev",
+  location: "Remote • Worldwide",
+  availability: "Booking projects for Q3 2026",
+  primaryCta: { href: "/#contact", label: "Book a call" },
+  secondaryCta: { href: "/#work", label: "See work" },
+  legalLinks: [
+    { href: "/privacy", label: "Privacy" },
+    { href: "/terms", label: "Terms" },
+  ],
 } as const;
 
 /** Logo strip below the hero — order matches render order */

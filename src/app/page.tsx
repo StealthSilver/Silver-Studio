@@ -24,8 +24,8 @@ export default function Home() {
         <PoweredBySilverUi /> */}
         <Process />
         <Faq />
-        {/* <Testimonials />
-        <FinalCta /> */}
+        <FinalCta />
+        {/* <Testimonials /> */}
       </main>
       <Footer />
     </>
