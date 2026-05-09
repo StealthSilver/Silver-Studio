@@ -13,7 +13,7 @@ export function MeshspireLogo({ className, "aria-label": ariaLabel }: MeshspireL
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 251 43"
       className={cn(
-        "h-9 w-auto max-w-[min(100%,11rem)] shrink-0 text-zinc-900 dark:text-zinc-100",
+        "h-9 w-auto max-w-[min(100%,11rem)] shrink-0 text-foreground",
         className,
       )}
       aria-hidden={ariaLabel ? undefined : true}

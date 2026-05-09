@@ -53,18 +53,18 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
         "border shadow-md transition-[box-shadow,border-color] duration-300",
         accent
           ? cn(
-              "border-zinc-300/85",
-              "shadow-[0_10px_36px_-12px_rgb(63_63_70/0.16),0_4px_14px_-6px_rgb(100_116_139/0.12),inset_0_1px_0_rgb(255_255_255/0.75)]",
-              "bg-gradient-to-b from-white/80 via-zinc-50/45 to-zinc-200/28",
-              "dark:border-zinc-400/42 dark:shadow-[0_8px_30px_-8px_rgb(186_198_215/0.14)]",
-              "dark:from-zinc-700/[0.48] dark:via-zinc-800/[0.26] dark:to-zinc-950/[0.52]",
+              "border-border/90",
+              "shadow-[0_10px_36px_-12px_rgb(15_23_42/0.1),0_4px_14px_-6px_rgb(100_116_139/0.1),inset_0_1px_0_rgb(255_255_255/0.8)]",
+              "bg-gradient-to-b from-card/88 via-secondary/50 to-border/35",
+              "dark:border-border/55 dark:shadow-[0_8px_30px_-8px_rgb(186_198_215/0.12)]",
+              "dark:from-muted/52 dark:via-card/38 dark:to-background/58",
             )
           : cn(
-              "border-zinc-200/75",
-              "shadow-[0_4px_28px_-10px_rgb(39_39_42/0.08),0_2px_8px_-4px_rgb(82_82_91/0.05)]",
-              "bg-gradient-to-b from-white/58 via-white/32 to-zinc-100/[0.14]",
-              "dark:border-zinc-600/35",
-              "dark:from-zinc-800/[0.45] dark:via-zinc-900/[0.32] dark:to-zinc-950/[0.55]",
+              "border-border/78",
+              "shadow-[0_4px_28px_-10px_rgb(15_23_42/0.06),0_2px_8px_-4px_rgb(15_23_42/0.04)]",
+              "bg-gradient-to-b from-card/62 via-card/38 to-secondary/22",
+              "dark:border-border/42",
+              "dark:from-card/48 dark:via-muted/32 dark:to-background/60",
               "dark:shadow-[0_4px_28px_-6px_rgb(0_0_0/0.5)]",
             ),
       )}
@@ -72,20 +72,20 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
       {/* Browser chrome */}
       <div
         className={cn(
-          "flex shrink-0 items-center gap-2 border-b border-zinc-200/60 px-2.5 py-2 sm:px-3 sm:py-2.5 dark:border-zinc-700/45",
-          "bg-white/48 dark:bg-zinc-900/[0.55]",
+          "flex shrink-0 items-center gap-2 border-b border-border/65 px-2.5 py-2 sm:px-3 sm:py-2.5 dark:border-border/48",
+          "bg-card/50 dark:bg-muted/58",
         )}
       >
         <div className="flex gap-1">
           {[0, 1, 2].map((d) => (
             <span
               key={d}
-              className="size-2 rounded-full bg-zinc-600/20 dark:bg-zinc-300/22"
+              className="size-2 rounded-full bg-foreground/[0.12] dark:bg-foreground/[0.2]"
               aria-hidden
             />
           ))}
         </div>
-        <div className="ms-0.5 h-2 flex-1 rounded-full bg-zinc-600/12 dark:bg-zinc-300/14" />
+        <div className="ms-0.5 h-2 flex-1 rounded-full bg-foreground/[0.08] dark:bg-foreground/[0.14]" />
       </div>
 
       {/* Mini landing hero — neutral glass only */}
@@ -94,8 +94,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
           className={cn(
             "pointer-events-none absolute inset-0 backdrop-blur-[2px]",
             accent
-              ? "bg-gradient-to-br from-zinc-400/[0.09] via-transparent to-slate-400/[0.06] dark:from-zinc-400/[0.1] dark:to-slate-500/[0.07]"
-              : "bg-gradient-to-br from-zinc-500/[0.07] via-transparent to-zinc-400/[0.05] dark:from-zinc-400/[0.05] dark:to-zinc-500/[0.04]",
+              ? "bg-gradient-to-br from-zinc-400/[0.09] via-transparent to-slate-400/[0.06] dark:from-border/35 dark:to-border/22"
+              : "bg-gradient-to-br from-zinc-500/[0.07] via-transparent to-zinc-400/[0.05] dark:from-border/25 dark:to-border/14",
           )}
           aria-hidden
         />
@@ -103,8 +103,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
           className={cn(
             "pointer-events-none absolute -left-6 top-2 size-[4.5rem] rounded-full blur-2xl",
             accent
-              ? "bg-zinc-300/[0.26] dark:bg-zinc-300/[0.1]"
-              : "bg-zinc-500/[0.08] dark:bg-zinc-400/[0.06]",
+              ? "bg-zinc-300/[0.26] dark:bg-border/28"
+              : "bg-zinc-500/[0.08] dark:bg-border/18",
           )}
           aria-hidden
         />
@@ -112,8 +112,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
           className={cn(
             "pointer-events-none absolute -right-5 bottom-8 size-[5rem] rounded-full blur-2xl",
             accent
-              ? "bg-slate-300/[0.22] dark:bg-slate-400/[0.09]"
-              : "bg-zinc-400/[0.07] dark:bg-zinc-500/[0.06]",
+              ? "bg-slate-300/[0.22] dark:bg-border/26"
+              : "bg-zinc-400/[0.07] dark:bg-border/16",
           )}
           aria-hidden
         />
@@ -121,8 +121,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
           className={cn(
             "pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent to-transparent opacity-[0.12]",
             accent
-              ? "via-zinc-400/28 dark:via-zinc-400/12"
-              : "via-white/35 dark:via-zinc-400/12",
+              ? "via-zinc-400/28 dark:via-border/22"
+              : "via-white/35 dark:via-border/18",
           )}
           aria-hidden
         />
@@ -133,8 +133,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
               className={cn(
                 "h-2.5 rounded-md sm:h-3",
                 accent
-                  ? "bg-zinc-400/58 shadow-[0_0_18px_rgb(63_63_70/0.11)] dark:bg-zinc-500/35 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]"
-                  : "bg-zinc-500/68 shadow-[0_0_16px_rgb(63_63_70/0.12)] dark:bg-zinc-500/35 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]",
+                  ? "bg-zinc-400/58 shadow-[0_0_18px_rgb(63_63_70/0.11)] dark:bg-border/45 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]"
+                  : "bg-zinc-500/68 shadow-[0_0_16px_rgb(63_63_70/0.12)] dark:bg-border/42 dark:shadow-[0_0_20px_rgb(0_0_0/0.2)]",
                 mock.headline[0],
               )}
             />
@@ -142,8 +142,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
               className={cn(
                 "h-2 rounded-md sm:h-2.5",
                 accent
-                  ? "bg-zinc-400/45 shadow-[0_0_14px_rgb(63_63_70/0.09)] dark:bg-zinc-500/28 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]"
-                  : "bg-zinc-500/55 shadow-[0_0_12px_rgb(63_63_70/0.1)] dark:bg-zinc-500/28 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]",
+                  ? "bg-zinc-400/45 shadow-[0_0_14px_rgb(63_63_70/0.09)] dark:bg-border/32 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]"
+                  : "bg-zinc-500/55 shadow-[0_0_12px_rgb(63_63_70/0.1)] dark:bg-border/30 dark:shadow-[0_0_16px_rgb(0_0_0/0.15)]",
                 mock.headline[1],
               )}
             />
@@ -156,8 +156,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
                 className={cn(
                   "h-1 rounded-full",
                   accent
-                    ? "bg-zinc-400/55 dark:bg-zinc-500/38"
-                    : "bg-zinc-500/62 dark:bg-zinc-500/38",
+                    ? "bg-zinc-400/55 dark:bg-border/40"
+                    : "bg-zinc-500/62 dark:bg-border/36",
                   w,
                 )}
               />
@@ -169,8 +169,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
               className={cn(
                 "h-7 rounded-lg shadow-sm sm:h-8",
                 accent
-                  ? "bg-zinc-300/90 ring-1 ring-zinc-400/35 dark:bg-zinc-600/42 dark:ring-zinc-500/30"
-                  : "bg-zinc-300/95 ring-1 ring-zinc-400/45 dark:bg-zinc-600/42 dark:ring-zinc-500/30",
+                  ? "bg-zinc-300/90 ring-1 ring-zinc-400/35 dark:bg-muted/72 dark:ring-border/45"
+                  : "bg-zinc-300/95 ring-1 ring-zinc-400/45 dark:bg-muted/72 dark:ring-border/42",
                 mock.ctas[0],
               )}
             />
@@ -178,8 +178,8 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
               className={cn(
                 "h-7 rounded-lg shadow-sm sm:h-8",
                 accent
-                  ? "bg-zinc-200/85 ring-1 ring-zinc-300/40 dark:bg-zinc-700/38 dark:ring-zinc-600/28"
-                  : "bg-zinc-200/92 ring-1 ring-zinc-400/42 dark:bg-zinc-700/38 dark:ring-zinc-600/28",
+                  ? "bg-zinc-200/85 ring-1 ring-zinc-300/40 dark:bg-muted/62 dark:ring-border/38"
+                  : "bg-zinc-200/92 ring-1 ring-zinc-400/42 dark:bg-muted/62 dark:ring-border/35",
                 mock.ctas[1],
               )}
             />
@@ -189,19 +189,19 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
             <div
               className={cn(
                 "h-1 w-8 rounded-full",
-                accent ? "bg-zinc-400/70 dark:bg-zinc-500/40" : "bg-zinc-500/58 dark:bg-zinc-500/40",
+                accent ? "bg-zinc-400/70 dark:bg-border/45" : "bg-zinc-500/58 dark:bg-border/40",
               )}
             />
             <div
               className={cn(
                 "h-1 w-3 rounded-full",
-                accent ? "bg-zinc-400/45 dark:bg-zinc-500/28" : "bg-zinc-500/45 dark:bg-zinc-500/28",
+                accent ? "bg-zinc-400/45 dark:bg-border/30" : "bg-zinc-500/45 dark:bg-border/28",
               )}
             />
             <div
               className={cn(
                 "h-1 w-5 rounded-full",
-                accent ? "bg-zinc-400/55 dark:bg-zinc-500/32" : "bg-zinc-500/52 dark:bg-zinc-500/32",
+                accent ? "bg-zinc-400/55 dark:bg-border/34" : "bg-zinc-500/52 dark:bg-border/32",
               )}
             />
           </div>

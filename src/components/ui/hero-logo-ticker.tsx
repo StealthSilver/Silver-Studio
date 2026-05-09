@@ -33,7 +33,7 @@ const tickerItemClass =
   "flex min-h-[2rem] items-center justify-center px-4";
 
 const linkClass =
-  "inline-flex items-center justify-center rounded-sm outline-offset-4 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400 dark:focus-visible:outline-zinc-500";
+  "inline-flex items-center justify-center rounded-sm outline-offset-4 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
 
 function TickerExternalLink({
   href,
@@ -139,7 +139,7 @@ export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
     <div className={cn("mt-36 w-full sm:mt-36 lg:mt-44", className)}>
       <p
         id={labelId}
-        className="mb-8 px-4 text-center text-sm font-medium leading-snug tracking-wide text-zinc-500 dark:text-zinc-400 sm:mb-9 sm:text-base"
+        className="mb-8 px-4 text-center text-sm font-medium leading-snug tracking-wide text-muted-foreground sm:mb-9 sm:text-base"
       >
         {headingContent}
       </p>

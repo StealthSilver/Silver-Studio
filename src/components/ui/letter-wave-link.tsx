@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 /** Outline CTA: hero "SEE WORK" and matching links (LetterWaveLink). */
 export const OUTLINE_CTA_BUTTON_CLASSNAME =
-  "inline-flex h-11 items-center justify-center rounded-[4px] border border-zinc-300 bg-background px-6 text-sm font-semibold tracking-wide text-zinc-900 shadow-sm transition-colors hover:border-zinc-400 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-50 dark:hover:border-zinc-600 dark:hover:bg-zinc-900";
+  "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent";
 
 /** Stagger between characters (buttons / CTAs); nav uses LETTER_WAVE_NAV_STAGGER_MS */
 export const LETTER_WAVE_STAGGER_MS = 12;

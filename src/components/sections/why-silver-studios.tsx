@@ -12,12 +12,12 @@ const WHY_ICONS: Record<WhyIconId, LucideIcon> = {
 };
 
 const iconTileClass =
-  "flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-2xl border border-zinc-200/90 bg-zinc-50/90 text-zinc-700 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.7)] dark:border-white/12 dark:bg-zinc-900/50 dark:text-zinc-200 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]";
+  "flex h-[62px] w-[62px] shrink-0 items-center justify-center rounded-2xl border border-border/90 bg-secondary/95 text-foreground/85 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.72)] dark:border-border/55 dark:bg-muted/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]";
 
 const iconStroke = 1.65;
 
 const cardSurfaceClass =
-  "relative flex h-full flex-col rounded-2xl border border-zinc-200/90 bg-white/45 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md transition-[border-color,box-shadow,background-color] duration-200 sm:px-6 sm:py-7 dark:border-white/12 dark:bg-zinc-950/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)] hover:border-zinc-300/95 hover:shadow-[0_8px_30px_rgb(24_24_27_/_0.06)] dark:hover:border-white/18 dark:hover:shadow-[0_12px_40px_rgb(0_0_0_/_0.35)]";
+  "relative flex h-full flex-col rounded-2xl border border-border/90 bg-card/48 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md transition-[border-color,box-shadow,background-color] duration-200 sm:px-6 sm:py-7 dark:border-border/55 dark:bg-card/42 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)] hover:border-border hover:shadow-[0_8px_30px_rgb(15_23_42_/_0.05)] dark:hover:border-border/75 dark:hover:shadow-[0_12px_40px_rgb(0_0_0_/_0.35)]";
 
 export function WhySilverStudios() {
   const { id, sectionAriaLabel, heading, intro, items } = whySection;
@@ -26,14 +26,14 @@ export function WhySilverStudios() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-200/70 pt-16 dark:border-zinc-800/80 sm:scroll-mt-32 sm:pt-20"
+      className="w-full scroll-mt-28 border-t border-border/70 pt-16 sm:scroll-mt-32 sm:pt-20"
     >
       <div className="mx-auto w-full max-w-6xl">
         <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
             {heading}
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
             {intro}
           </p>
         </div>
@@ -49,10 +49,10 @@ export function WhySilverStudios() {
                       <Icon className="h-10 w-10" strokeWidth={iconStroke} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold tracking-tight text-zinc-900 sm:text-xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+                      <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
                         {item.title}
                       </h3>
-                      <p className="mt-3 text-sm leading-relaxed text-zinc-600 sm:text-[15px] dark:text-zinc-400">
+                      <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
                         {item.description}
                       </p>
                     </div>

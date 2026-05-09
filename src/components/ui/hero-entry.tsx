@@ -67,7 +67,7 @@ export function HeroEntry({
     >
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
         <div className="flex min-w-0 flex-col items-start gap-8 sm:gap-10">
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-zinc-900 sm:text-5xl sm:leading-[1.1] lg:text-6xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl sm:leading-[1.1] lg:text-6xl [font-family:var(--font-ibm-plex-sans)]">
             {headlineWords.map((word, i) => (
               <FadeRevealSpan
                 key={`hero-headline-${i}`}
@@ -81,7 +81,7 @@ export function HeroEntry({
               </FadeRevealSpan>
             ))}
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg dark:text-zinc-400">
+          <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             {descWords.map((word, i) => (
               <FadeRevealSpan
                 key={`hero-desc-${i}`}

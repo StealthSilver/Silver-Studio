@@ -25,7 +25,7 @@ const PROCESS_BLOCK_HEIGHT_CLASS = "h-[min(92vh,760px)] min-h-[min(92vh,760px)]"
 
 
 const glassPanelClass =
-  "flex aspect-square h-[min(24vh,210px)] w-[min(24vh,210px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-5 shadow-sm backdrop-blur-xl sm:h-[min(26vh,240px)] sm:w-[min(26vh,240px)] sm:p-7 dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]";
+  "flex aspect-square h-[min(24vh,210px)] w-[min(24vh,210px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-5 shadow-sm backdrop-blur-xl sm:h-[min(26vh,240px)] sm:w-[min(26vh,240px)] sm:p-7 dark:border-border/55 dark:bg-card/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]";
 
 const STEP_ANIMATIONS = {
   Discovery: DiscoveryAnimation,
@@ -170,7 +170,7 @@ export function Process() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-950/[0.06] bg-background text-foreground dark:border-white/15"
+      className="w-full scroll-mt-28 border-t border-border/60 bg-background text-foreground"
     >
       {prefersReducedMotion ? (
         <ul className="m-0 flex list-none flex-col p-0">
@@ -182,7 +182,7 @@ export function Process() {
         <div
           ref={pinRef}
           className={cn(
-            "relative isolate w-full overflow-hidden border-zinc-950/[0.06] dark:border-white/[0.12]",
+            "relative isolate w-full overflow-hidden border-border/50",
             PROCESS_BLOCK_HEIGHT_CLASS,
           )}
         >
@@ -208,7 +208,7 @@ export function Process() {
                     "box-border flex min-h-0 h-full flex-col gap-6 overflow-hidden border-t px-5 py-6 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",
                     index === 0
                       ? "border-transparent bg-background"
-                      : "border-zinc-950/[0.055] bg-background dark:border-white/[0.12]",
+                      : "border-border/55 bg-background",
                   )}
                 >
                   <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
@@ -253,7 +253,7 @@ function ProcessStepRow({
   const phase = step.title.toUpperCase();
 
   return (
-    <li className="m-0 border-t border-zinc-950/[0.055] p-0 first:border-t-0 dark:border-white/[0.12]">
+    <li className="m-0 border-t border-border/55 p-0 first:border-t-0">
       <article
         className={cn(
           "box-border flex min-h-0 flex-col gap-6 overflow-hidden px-5 py-6 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",

@@ -24,10 +24,10 @@ const { links, cta } = navbarData;
 const talkNowButtonClass = "talk-now-btn rounded-[4px]";
 
 const navLinkClass =
-  "group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-[4px] px-3 text-sm font-medium leading-none text-zinc-600 transition-colors duration-300 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:origin-left before:scale-x-0 before:rounded-[4px] before:bg-zinc-100 before:transition-[transform] before:duration-300 before:ease-out before:content-[''] hover:text-zinc-900 hover:before:scale-x-100 motion-reduce:before:duration-0 dark:text-zinc-400 dark:before:bg-zinc-800 dark:hover:text-zinc-50";
+  "group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-[4px] px-3 text-sm font-medium leading-none text-muted-foreground transition-colors duration-300 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:origin-left before:scale-x-0 before:rounded-[4px] before:bg-accent before:transition-[transform] before:duration-300 before:ease-out before:content-[''] hover:text-foreground hover:before:scale-x-100 motion-reduce:before:duration-0";
 
 const navLinkMobileClass =
-  "group relative block overflow-hidden rounded-[4px] px-3 py-2.5 text-sm font-medium text-zinc-700 transition-colors duration-300 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:origin-left before:scale-x-0 before:rounded-[4px] before:bg-zinc-100 before:transition-[transform] before:duration-300 before:ease-out before:content-[''] hover:text-zinc-900 hover:before:scale-x-100 motion-reduce:before:duration-0 dark:text-zinc-300 dark:before:bg-zinc-800 dark:hover:text-zinc-50";
+  "group relative block overflow-hidden rounded-[4px] px-3 py-2.5 text-sm font-medium text-foreground/90 transition-colors duration-300 before:pointer-events-none before:absolute before:inset-0 before:z-0 before:origin-left before:scale-x-0 before:rounded-[4px] before:bg-accent before:transition-[transform] before:duration-300 before:ease-out before:content-[''] hover:text-foreground hover:before:scale-x-100 motion-reduce:before:duration-0";
 
 const SCROLL_THRESHOLD_PX = 8;
 
@@ -57,7 +57,7 @@ function serverScrollSnapshot() {
 }
 
 const scrollGaugeClass =
-  "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-zinc-200/90 bg-zinc-50 px-2 text-xs font-semibold tabular-nums text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200";
+  "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary px-2 text-xs font-semibold tabular-nums text-foreground";
 
 const menuMorphTransition = {
   type: "spring" as const,
@@ -209,7 +209,7 @@ export function Navbar() {
   const menuButton = (
     <button
       type="button"
-      className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+      className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       aria-expanded={open}
       aria-controls="mobile-nav"
       aria-label={open ? "Close menu" : "Open menu"}
@@ -288,7 +288,7 @@ export function Navbar() {
           role="region"
           aria-label="Navigation menu"
           className={cn(
-            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-zinc-300 bg-white shadow-md dark:border-zinc-600 dark:bg-zinc-950",
+            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-border bg-card shadow-md",
             "rounded-[4px]",
             "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
             !scrolled && "md:hidden",
@@ -327,7 +327,7 @@ export function Navbar() {
               <motion.li
                 key={href}
                 variants={menuItemVariants}
-                className="border-b border-zinc-100 last:border-b-0 dark:border-zinc-800"
+                className="border-b border-border/60 last:border-b-0"
               >
                 <LetterWaveLink
                   href={href}
@@ -367,10 +367,10 @@ export function Navbar() {
     >
       <div
         className={cn(
-          "mx-auto rounded-[4px] bg-transparent text-zinc-900 transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none dark:text-zinc-50",
+          "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none",
           scrolled
             ? "max-w-full overflow-visible shadow-none ring-0 dark:shadow-none"
-            : "max-w-7xl max-md:overflow-visible md:overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(15,23,42,0.04),0_2px_8px_rgba(15,23,42,0.05),0_6px_16px_rgba(15,23,42,0.05),0_12px_24px_rgba(15,23,42,0.04)] ring-1 ring-zinc-200/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.25),0_6px_16px_rgba(0,0,0,0.2),0_12px_24px_rgba(0,0,0,0.15)] dark:ring-zinc-800/80",
+            : "max-w-7xl max-md:overflow-visible md:overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(15,23,42,0.04),0_2px_8px_rgba(15,23,42,0.05),0_6px_16px_rgba(15,23,42,0.05),0_12px_24px_rgba(15,23,42,0.04)] ring-1 ring-border/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.25),0_6px_16px_rgba(0,0,0,0.2),0_12px_24px_rgba(0,0,0,0.15)] dark:ring-border/85",
         )}
       >
         <nav
@@ -405,7 +405,7 @@ export function Navbar() {
               height={site.logo.height}
               className="hidden size-8 dark:block"
             />
-            <span className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
+            <span className="text-lg font-semibold tracking-tight text-foreground sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
               {site.name}
             </span>
           </Link>

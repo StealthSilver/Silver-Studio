@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 const faqAccordionItemClass = (isOpen: boolean) =>
   cn(
     "rounded-2xl border border-border/80 bg-muted/35 shadow-sm backdrop-blur-xl transition-[border-color,box-shadow]",
-    "dark:border-white/[0.12] dark:bg-white/[0.06] dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.1),0_12px_40px_rgb(0_0_0_/_0.35)]",
+    "dark:border-border/55 dark:bg-card/38 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]",
     isOpen
-      ? "border-zinc-400/80 shadow-md dark:border-white/20"
-      : "hover:border-zinc-300/90 dark:hover:border-white/18",
+      ? "border-border shadow-md shadow-foreground/[0.04] dark:border-border/80"
+      : "hover:border-border dark:hover:border-border/65",
   );
 
 function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly FaqItem[] }) {
@@ -45,7 +45,7 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
                 id={triggerId}
                 className={cn(
                   "flex w-full cursor-pointer items-start justify-between gap-4 rounded-2xl px-4 py-4 text-left outline-none transition-colors sm:px-5 sm:py-5",
-                  "focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950",
+                  "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-expanded={isOpen}
                 aria-controls={panelId}
@@ -83,7 +83,7 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
               )}
             >
               <div className="min-h-0">
-                <div className="border-t border-zinc-950/[0.06] px-4 pb-5 pt-3 text-sm leading-relaxed text-muted-foreground sm:px-5 sm:text-[15px] sm:leading-relaxed dark:border-white/[0.12]">
+                <div className="border-t border-border/60 px-4 pb-5 pt-3 text-sm leading-relaxed text-muted-foreground sm:px-5 sm:text-[15px] sm:leading-relaxed">
                   {item.answer}
                 </div>
               </div>
@@ -103,7 +103,7 @@ export function Faq() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-zinc-950/[0.06] bg-background text-foreground dark:border-white/15"
+      className="w-full scroll-mt-28 border-t border-border/60 bg-background text-foreground"
     >
       <div className="mx-auto box-border flex w-full max-w-7xl flex-col gap-10 px-5 py-14 sm:gap-12 sm:px-8 sm:py-16 md:gap-14 lg:flex-row lg:items-start lg:justify-between lg:gap-12 lg:px-12 lg:py-20 xl:gap-16">
         <header className="flex max-w-xl shrink-0 flex-col lg:sticky lg:top-28 lg:max-w-[min(52%,560px)]">
@@ -113,7 +113,7 @@ export function Faq() {
           <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
             {phaseLabel}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-zinc-600 sm:text-lg dark:text-zinc-400">
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
             {intro}
           </p>
         </header>

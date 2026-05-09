@@ -12,7 +12,7 @@ const copyrightYear = new Date().getFullYear();
 
 export function Footer() {
   return (
-    <footer className="mt-auto w-full border-t border-zinc-200/80 pt-14 dark:border-zinc-800/80 sm:pt-16">
+    <footer className="mt-auto w-full border-t border-border/80 pt-14 sm:pt-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="py-2 sm:py-4 lg:py-6">
           <div className="grid gap-10">
@@ -36,7 +36,7 @@ export function Footer() {
                   height={site.logo.height}
                   className="hidden size-8 dark:block"
                 />
-                <span className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+                <span className="text-lg font-semibold tracking-tight text-foreground [font-family:var(--font-ibm-plex-sans)]">
                   {site.name}
                 </span>
               </Link>
@@ -45,7 +45,7 @@ export function Footer() {
                 <a
                   href="mailto:saraswatrajat12@gmail.com"
                   aria-label="Email"
-                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-zinc-300/80 bg-white/70 text-zinc-700 transition-colors hover:text-zinc-950 dark:border-white/15 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:text-zinc-100"
+                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-border/70 bg-muted/40 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
                 >
                   <FaEnvelope className="size-4" />
                 </a>
@@ -54,7 +54,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="X"
-                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-zinc-300/80 bg-white/70 text-zinc-700 transition-colors hover:text-zinc-950 dark:border-white/15 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:text-zinc-100"
+                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-border/70 bg-muted/40 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
                 >
                   <FaXTwitter className="size-4" />
                 </a>
@@ -63,7 +63,7 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label="Discord"
-                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-zinc-300/80 bg-white/70 text-zinc-700 transition-colors hover:text-zinc-950 dark:border-white/15 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:text-zinc-100"
+                  className="inline-flex size-10 items-center justify-center rounded-[4px] border border-border/70 bg-muted/40 text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground"
                 >
                   <FaDiscord className="size-4" />
                 </a>
@@ -74,10 +74,10 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mt-6 w-full border-t border-zinc-200/80 dark:border-zinc-800/90" />
+      <div className="mt-6 w-full border-t border-border/80" />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p className="min-w-0 text-left text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="min-w-0 text-left text-xs text-muted-foreground">
           © {copyrightYear} {footerData.copyrightOrg}.{" "}
           {footerData.copyrightSuffix}
         </p>
@@ -87,7 +87,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-xs text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                  className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {link.label}
                 </Link>

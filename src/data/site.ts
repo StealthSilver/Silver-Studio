@@ -508,7 +508,7 @@ export const heroLogoTicker = {
       href: "https://brilliant.org/home/",
       ariaLabel: "Brilliant",
       logoClassName:
-        "h-5 w-auto max-w-[min(100%,6.5rem)] sm:h-5 sm:max-w-[min(100%,7rem)] text-zinc-900 dark:text-zinc-100",
+        "h-5 w-auto max-w-[min(100%,6.5rem)] sm:h-5 sm:max-w-[min(100%,7rem)] text-foreground",
     },
     {
       type: "singleImage",
@@ -524,7 +524,7 @@ export const heroLogoTicker = {
       href: "https://8thlight.com/",
       ariaLabel: "8th Light",
       logoClassName:
-        "h-5 w-auto max-w-[min(100%,8rem)] sm:h-5 sm:max-w-[min(100%,8.5rem)] text-zinc-900 dark:text-zinc-100",
+        "h-5 w-auto max-w-[min(100%,8rem)] sm:h-5 sm:max-w-[min(100%,8.5rem)] text-foreground",
     },
     {
       type: "meshspire",

@@ -26,7 +26,7 @@ function formatWorkIndex(index: number): string {
 }
 
 const workGlassFrameClass =
-  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-white/14 dark:bg-zinc-950/28 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.08)] sm:px-4 sm:pt-4";
+  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-4 sm:pt-4";
 
 function WorkBottomGlassInner({
   naturalWidth,
@@ -78,7 +78,7 @@ function WorkBottomFrame({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={externalAriaLabel}
-        className="mx-auto block w-full max-w-7xl transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2 dark:focus-visible:ring-zinc-500 dark:focus-visible:ring-offset-zinc-950"
+        className="mx-auto block w-full max-w-7xl transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
         {inner}
       </a>
@@ -94,13 +94,13 @@ function WorkBottomPlaceholder() {
       naturalWidth={PLACEHOLDER_FULL_WIDTH}
       naturalHeight={PLACEHOLDER_FULL_HEIGHT}
     >
-      <div className="absolute inset-0 bg-zinc-200/80 dark:bg-zinc-800/80">
+      <div className="absolute inset-0 bg-zinc-200/80 dark:bg-muted/92">
         <div
           className="absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_100%,var(--hero-silver-2)_0%,transparent_55%),linear-gradient(to_top,var(--hero-silver-1)_0%,transparent_58%)]"
           aria-hidden
         />
         <div className="relative z-[1] flex h-full w-full items-center justify-center">
-          <div className="h-16 w-[50%] max-w-[10rem] rounded-lg border border-zinc-300/60 bg-background/50 backdrop-blur-sm dark:border-zinc-600/60 dark:bg-zinc-950/40" />
+          <div className="h-16 w-[50%] max-w-[10rem] rounded-lg border border-border/70 bg-background/55 backdrop-blur-sm dark:border-border/65 dark:bg-card/50" />
         </div>
       </div>
     </WorkBottomFrame>
@@ -270,13 +270,13 @@ function WorkItemRow({
                 <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
                   <h3
                     id={titleId}
-                    className="text-left text-3xl font-normal uppercase leading-[1.05] tracking-tight text-zinc-900 sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]"
+                    className="text-left text-3xl font-normal uppercase leading-[1.05] tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl [font-family:var(--font-ibm-plex-sans)]"
                   >
                     {item.title}
                   </h3>
                 </div>
                 <div className="shrink-0" aria-hidden>
-                  <span className="font-thin tabular-nums tracking-tight text-zinc-900 [font-family:var(--font-ibm-plex-sans)] text-5xl leading-none dark:text-zinc-50 sm:text-6xl md:text-7xl lg:text-8xl">
+                  <span className="font-thin tabular-nums tracking-tight text-foreground [font-family:var(--font-ibm-plex-sans)] text-5xl leading-none sm:text-6xl md:text-7xl lg:text-8xl">
                     {indexLabel}
                   </span>
                 </div>
@@ -285,7 +285,7 @@ function WorkItemRow({
 
             {/* Center: description + Read more */}
             <div className="absolute left-1/2 top-1/2 z-20 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 px-5 text-center sm:max-w-2xl sm:px-8">
-              <p className="text-base leading-relaxed text-zinc-700 sm:text-[17px] dark:text-zinc-300">
+              <p className="text-base leading-relaxed text-muted-foreground sm:text-[17px]">
                 {item.description}
               </p>
               <div className="mt-8 flex justify-center sm:mt-10">
@@ -321,7 +321,7 @@ export function Work() {
     >
       {showHeading ? (
         <div className="mx-auto w-full max-w-7xl">
-          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50 [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
             {heading}
           </h2>
         </div>

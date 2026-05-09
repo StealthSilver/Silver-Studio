@@ -48,7 +48,7 @@ const Slide = ({
           ease: layoutEase,
         },
       }}
-      className="relative h-[360px] min-w-0 shrink-0 cursor-pointer overflow-hidden rounded-2xl border border-zinc-200/90 bg-white/45 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md dark:border-white/12 dark:bg-zinc-950/35 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:h-[400px] sm:px-6 sm:py-7"
+      className="relative h-[360px] min-w-0 shrink-0 cursor-pointer overflow-hidden rounded-2xl border border-border/90 bg-card/45 px-5 py-6 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] backdrop-blur-md dark:border-border/55 dark:bg-card/42 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:h-[400px] sm:px-6 sm:py-7"
       style={{
         width: `${widthPct}%`,
         zIndex: isActive ? 2 : isNextPreview ? 1 : 0,
@@ -71,18 +71,18 @@ const Slide = ({
         }}
       >
         <Quote
-          className="size-8 shrink-0 text-zinc-300 dark:text-zinc-600"
+          className="size-8 shrink-0 text-muted-foreground/45"
           strokeWidth={1.25}
           aria-hidden
         />
-        <p className="mt-4 flex-1 text-sm leading-relaxed text-zinc-700 sm:text-[15px] dark:text-zinc-300">
+        <p className="mt-4 flex-1 text-sm leading-relaxed text-foreground/85 sm:text-[15px]">
           "{slide.quote}"
         </p>
-        <footer className="mt-6 border-t border-zinc-200/80 pt-4 dark:border-white/10">
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+        <footer className="mt-6 border-t border-border/80 pt-4">
+          <p className="text-sm font-semibold text-foreground">
             {slide.name}
           </p>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{slide.role}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{slide.role}</p>
         </footer>
       </motion.div>
     </motion.li>
@@ -157,7 +157,7 @@ export function TestimonialsCarousel({
       <motion.p
         key={current}
         aria-live="polite"
-        className="mt-6 w-full max-w-[min(100%,55vw)] text-left font-mono text-xs uppercase leading-snug tracking-[0.14em] text-zinc-600 sm:mt-8 sm:text-sm md:mt-10 dark:text-zinc-400"
+        className="mt-6 w-full max-w-[min(100%,55vw)] text-left font-mono text-xs uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:mt-8 sm:text-sm md:mt-10"
         initial={reduce ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: reduce ? 0 : 0.28, ease: contentEase }}
