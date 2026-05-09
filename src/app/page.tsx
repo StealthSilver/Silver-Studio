@@ -1,8 +1,10 @@
+import { ScrollToTopButton } from "@/components/scroll-to-top-button";
 import { Faq } from "@/components/sections/faq";
 import { FinalCta } from "@/components/sections/final-cta";
 import { Footer } from "@/components/sections/footer";
 import { Hero } from "@/components/sections/hero";
 import { Navbar } from "@/components/sections/navbar";
+import { PoweredBySilverUi } from "@/components/sections/powered-by-silver-ui";
 import { Process } from "@/components/sections/process";
 import { Services } from "@/components/sections/services";
 import { Testimonials } from "@/components/sections/testimonials";
@@ -19,7 +21,7 @@ export default function Home() {
         <Work />
         <Services />
 
-        {/* <PoweredBySilverUi />  */}
+        <PoweredBySilverUi />
         <Process />
         <Faq />
         <Testimonials />
@@ -27,6 +29,7 @@ export default function Home() {
 
       </main>
       <Footer />
+      <ScrollToTopButton />
     </>
   );
 }

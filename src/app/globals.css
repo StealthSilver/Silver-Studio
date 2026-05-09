@@ -19,6 +19,12 @@ html {
   scrollbar-gutter: stable;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 :root {
   /* Collapsed navbar: header mt-1 + nav min-h (border-box incl. py-2). Sync with navbar.tsx */
   --site-header-height: calc(0.25rem + 3.25rem);

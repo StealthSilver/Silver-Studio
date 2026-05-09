@@ -327,6 +327,11 @@ export const poweredBySilverUiSection = {
     "Accessible markup and pragmatic performance budgets baked in from the first screen.",
     "Composable pieces that keep brands coherent as you iterate toward market fit.",
   ],
+  /** Product site — opened in a new browser tab */
+  externalHref: "https://silver-ui.vercel.app/" as const,
+  externalCtaLabel: "Explore Silver UI" as const,
+  externalCtaAriaLabel:
+    "Explore Silver UI on silver-ui.vercel.app (opens in a new tab)" as const,
 } as const;
 
 export type TestimonialItem = {
