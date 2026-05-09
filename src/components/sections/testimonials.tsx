@@ -31,7 +31,7 @@ export function Testimonials() {
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 sm:gap-10">
         <div className="flex w-full flex-wrap items-start justify-between gap-6 sm:gap-8">
           <div className="max-w-2xl">
-            <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+            <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {heading}
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
@@ -120,7 +120,7 @@ export function Testimonials() {
               <p className="text-xs font-mono uppercase tracking-[0.14em] text-muted-foreground">
                 Testimonial {activeIndex + 1} / {slideCount}
               </p>
-              <p className="mt-3 max-w-[22ch] text-xl font-semibold leading-tight text-foreground [font-family:var(--font-ibm-plex-sans)] sm:text-2xl">
+              <p className="mt-3 max-w-[22ch] text-xl font-semibold leading-tight text-foreground sm:text-2xl">
                 What clients say when the work lands right.
               </p>
             </div>

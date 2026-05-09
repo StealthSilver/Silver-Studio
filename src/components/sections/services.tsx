@@ -181,7 +181,7 @@ export function Services() {
           >
             {tile.num}
           </p>
-          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs [font-family:var(--font-ibm-plex-sans)]">
+          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs">
             {tile.label}
           </p>
         </div>

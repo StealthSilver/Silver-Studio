@@ -58,7 +58,7 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
                   >
                     {itemNum}
                   </span>
-                  <span className="min-w-0 text-sm font-semibold leading-snug text-foreground sm:text-[15px] [font-family:var(--font-ibm-plex-sans)]">
+                  <span className="min-w-0 text-sm font-semibold leading-snug text-foreground sm:text-[15px]">
                     {item.question}
                   </span>
                 </span>
@@ -110,7 +110,7 @@ export function Faq() {
           <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
             COMMON QUESTIONS
           </span>
-          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
             {phaseLabel}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">

@@ -30,7 +30,7 @@ export function WhySilverStudios() {
     >
       <div className="mx-auto w-full max-w-6xl">
         <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {heading}
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
@@ -49,7 +49,7 @@ export function WhySilverStudios() {
                       <Icon className="h-10 w-10" strokeWidth={iconStroke} />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
+                      <h3 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
                         {item.title}
                       </h3>
                       <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">

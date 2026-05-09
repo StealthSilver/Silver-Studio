@@ -16,7 +16,7 @@ export function ProjectDetail({ item }: { item: WorkCard }) {
         <p className="text-[0.6rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Selected work
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {item.title}
         </h1>
         <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">

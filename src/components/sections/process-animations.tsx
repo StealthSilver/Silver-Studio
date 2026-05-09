@@ -108,7 +108,7 @@ export function DirectionAnimation() {
         fill="currentColor"
         fillOpacity={0.35}
         className="text-[11px] font-semibold tracking-[0.2em]"
-        style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
+        style={{ fontFamily: "var(--font-sans)" }}
       >
         N
       </text>

@@ -61,7 +61,7 @@ export function PoweredBySilverUi() {
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 {eyebrow}
               </p>
-              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+              <h2 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {heading}
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">

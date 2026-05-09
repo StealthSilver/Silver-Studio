@@ -36,7 +36,7 @@ export function Footer() {
                   height={site.logo.height}
                   className="hidden size-8 dark:block"
                 />
-                <span className="text-lg font-semibold tracking-tight text-foreground [font-family:var(--font-ibm-plex-sans)]">
+                <span className="text-lg font-semibold tracking-tight text-foreground">
                   {site.name}
                 </span>
               </Link>

@@ -366,7 +366,7 @@ export function Navbar() {
               height={site.logo.height}
               className="hidden size-8 dark:block"
             />
-            <span className="text-lg font-semibold tracking-tight text-foreground sm:text-xl [font-family:var(--font-ibm-plex-sans)]">
+            <span className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
               {site.name}
             </span>
           </Link>

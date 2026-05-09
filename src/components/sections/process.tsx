@@ -215,7 +215,7 @@ export function Process() {
                     <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
                       {num}
                     </span>
-                    <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
+                    <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
                       {phase}
                     </h2>
                     <p
@@ -264,7 +264,7 @@ function ProcessStepRow({
           <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
             {num}
           </span>
-          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
             {phase}
           </h2>
           <p

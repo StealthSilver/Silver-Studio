@@ -270,13 +270,13 @@ function WorkItemRow({
                 <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
                   <h3
                     id={titleId}
-                    className="text-left text-3xl font-normal uppercase leading-[1.05] tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl [font-family:var(--font-ibm-plex-sans)]"
+                    className="text-left text-3xl font-normal uppercase leading-[1.05] tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
                   >
                     {item.title}
                   </h3>
                 </div>
                 <div className="shrink-0" aria-hidden>
-                  <span className="font-thin tabular-nums tracking-tight text-foreground [font-family:var(--font-ibm-plex-sans)] text-5xl leading-none sm:text-6xl md:text-7xl lg:text-8xl">
+                  <span className="font-thin tabular-nums tracking-tight text-foreground text-5xl leading-none sm:text-6xl md:text-7xl lg:text-8xl">
                     {indexLabel}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export function Work() {
     >
       {showHeading ? (
         <div className="mx-auto w-full max-w-7xl">
-          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             {heading}
           </h2>
         </div>

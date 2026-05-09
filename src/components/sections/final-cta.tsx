@@ -35,7 +35,7 @@ export function FinalCta() {
 
           <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-8">
             <div className="space-y-4">
-              <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [font-family:var(--font-ibm-plex-sans)]">
+              <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
                 {heading}
               </h2>
               <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">

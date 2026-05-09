@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, IBM_Plex_Sans, Inter, Geist } from "next/font/google";
+import { IBM_Plex_Sans } from "next/font/google";
 
 import { Providers } from "@/components/providers";
 
@@ -7,7 +7,11 @@ import "./globals.css";
 import "@/styles/work-showcase.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  weight: ["100", "400", "500", "600", "700"],
+});
 
 /**
  * Runs synchronously in <head> before body/CSS paint — avoids light-theme flash.
@@ -56,22 +60,6 @@ const title = {
   default: titleDefault,
   template: `%s · ${siteName}`,
 };
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const ibmPlexSans = IBM_Plex_Sans({
-  variable: "--font-ibm-plex-sans",
-  subsets: ["latin"],
-  weight: ["100", "400", "500", "600", "700"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 /** Same visual scale in Chromium on Windows/macOS — pairs with scrollbar-gutter + text-size-adjust in globals.css. */
 export const viewport: Viewport = {
@@ -122,7 +110,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("font-sans", geist.variable)}
+      className={cn("font-sans", ibmPlexSans.variable)}
       data-scroll-behavior="smooth"
     >
       <head>
@@ -132,9 +120,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: themeInitScript }}
         />
       </head>
-      <body
-        className={`${inter.variable} ${ibmPlexSans.variable} ${geistMono.variable} flex min-h-full flex-col bg-background text-foreground antialiased`}
-      >
+      <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
