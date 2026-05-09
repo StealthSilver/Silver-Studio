@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { usePathname } from "next/navigation";
 import {
   useEffect,
   useMemo,
@@ -13,10 +12,6 @@ import {
 
 import { LetterWaveLink } from "@/components/ui/letter-wave-link";
 import { navbar as navbarData, site } from "@/data/site";
-import {
-  getHomeHeroRevealCompleteDelayMs,
-  NAVBAR_AFTER_HERO_FADE_IN_S,
-} from "@/lib/hero-intro-timing";
 import { cn } from "@/lib/utils";
 
 const { links, cta } = navbarData;
@@ -151,26 +146,7 @@ function MobileMenuMorphIcon({
 }
 
 export function Navbar() {
-  const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion() === true;
-  const deferHeroSyncedIntro =
-    pathname === "/" && !prefersReducedMotion;
-
-  const [navInteractable, setNavInteractable] = useState(
-    () => !deferHeroSyncedIntro,
-  );
-
-  useEffect(() => {
-    if (!deferHeroSyncedIntro) setNavInteractable(true);
-  }, [deferHeroSyncedIntro]);
-
-  const heroRevealDoneDelaySec = deferHeroSyncedIntro
-    ? getHomeHeroRevealCompleteDelayMs() / 1000
-    : 0;
-
-  const navFadeInDuration = deferHeroSyncedIntro
-    ? NAVBAR_AFTER_HERO_FADE_IN_S
-    : 0;
 
   const [open, setOpen] = useState(false);
   const scrollSnap = useSyncExternalStore(
@@ -288,7 +264,7 @@ export function Navbar() {
           role="region"
           aria-label="Navigation menu"
           className={cn(
-            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-border bg-card shadow-md",
+            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-border bg-background shadow-md",
             "rounded-[4px]",
             "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
             !scrolled && "md:hidden",
@@ -349,22 +325,7 @@ export function Navbar() {
   );
 
   return (
-    <motion.header
-      className="sticky top-2 z-50 mt-1 w-full px-2"
-      initial={{ opacity: deferHeroSyncedIntro ? 0 : 1 }}
-      animate={{ opacity: 1 }}
-      transition={{
-        opacity: {
-          delay: heroRevealDoneDelaySec,
-          duration: navFadeInDuration,
-          ease: [0.22, 1, 0.36, 1],
-        },
-      }}
-      onAnimationComplete={() => {
-        if (deferHeroSyncedIntro) setNavInteractable(true);
-      }}
-      inert={deferHeroSyncedIntro && !navInteractable ? true : undefined}
-    >
+    <header className="sticky top-2 z-50 mt-1 w-full px-2">
       <div
         className={cn(
           "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none",
@@ -447,6 +408,6 @@ export function Navbar() {
 
         {overlayMenuPanel}
       </div>
-    </motion.header>
+    </header>
   );
 }
