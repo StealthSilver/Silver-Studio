@@ -229,7 +229,10 @@ export function HeroTiles({
 
   return (
     <figure
-      className={cn("relative m-0 overflow-x-auto overflow-y-visible", className)}
+      className={cn(
+        "relative m-0 overflow-x-visible overflow-y-visible",
+        className,
+      )}
       aria-label="Interactive glass webpage tiles"
     >
       <figcaption className="sr-only">
@@ -258,7 +261,7 @@ export function HeroTiles({
               <motion.div
                 key={i}
                 className={cn(
-                  "relative shrink-0 cursor-grab first:ml-0 active:cursor-grabbing",
+                  "relative shrink-0 cursor-grab touch-none select-none first:ml-0 active:cursor-grabbing",
                   "-ml-[9.5rem] sm:-ml-[12.5rem]",
                 )}
                 style={{

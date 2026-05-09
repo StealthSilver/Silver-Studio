@@ -384,7 +384,7 @@ export function Navbar() {
           <Link
             href={site.homeHref}
             className={cn(
-              "flex shrink-0 items-center gap-1 transition-opacity hover:opacity-80",
+              "flex shrink-0 cursor-pointer items-center gap-1 text-inherit no-underline",
               scrolled && "md:justify-self-start",
             )}
             onClick={() => setOpen(false)}
