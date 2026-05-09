@@ -28,10 +28,9 @@ export const navbar = {
   links: [
     { href: "/#work", label: "Work" },
     { href: "/#services", label: "Services" },
-    { href: "/#why", label: "Why us" },
     { href: "/#process", label: "Process" },
-    { href: "/#pricing", label: "Pricing" },
     { href: "/#faq", label: "FAQ" },
+    { href: "/#silver-ui", label: "Silver UI" },
   ],
   cta: { href: "/#contact", label: "BOOK A CALL" },
 } as const;
