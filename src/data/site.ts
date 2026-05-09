@@ -361,6 +361,18 @@ export const testimonialsSection = {
       name: "CEO",
       role: "Climate infrastructure",
     },
+    {
+      quote:
+        "Execution felt senior from day one. We made fast decisions, shipped without drama, and conversions moved in the right direction.",
+      name: "Product Marketing Lead",
+      role: "Developer tools startup",
+    },
+    {
+      quote:
+        "They brought order to a messy story. The new site is easier to scan, easier to trust, and finally sounds like us.",
+      name: "Co-founder",
+      role: "AI workflow platform",
+    },
   ] satisfies readonly TestimonialItem[],
 } as const;
 
