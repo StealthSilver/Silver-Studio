@@ -23,9 +23,9 @@ const siteOrigin = (
 const siteName = "Silver Studios";
 
 const titleDefault =
-  "Silver Studios — Modern Startup Design & Development Studio";
+  "Silver Studios — Web Design & Development for Startups and Brands";
 const description =
-  "Silver Studios designs and develops premium landing pages, SaaS websites, and modern digital experiences for startups that want to stand out.";
+  "Silver Studios designs and develops premium landing pages, SaaS websites, and modern digital experiences for startups and growing companies that want to stand out.";
 
 const keywords = [
   "startup design agency",
@@ -33,14 +33,16 @@ const keywords = [
   "landing page design",
   "Next.js agency",
   "startup branding",
+  "company website design",
   "modern web design",
   "frontend development agency",
 ] as const;
 
 /** Shorter copy for Open Graph / Twitter cards. */
-const socialTitle = "Silver Studios — Modern Startup Design Studio";
+const socialTitle =
+  "Silver Studios — Modern Web Studio for Startups & Established Brands";
 const socialDescription =
-  "Premium landing pages and startup websites designed for SaaS founders and modern brands.";
+  "Premium landing pages and marketing sites for startups, SaaS teams, and established companies.";
 
 const ogImagePath = "/Logos/silverui-d.svg" as const;
 const ogImage = {

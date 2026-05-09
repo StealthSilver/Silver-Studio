@@ -19,7 +19,7 @@ export const hero = {
   sectionAriaLabel: "Introduction",
   headline: "Built to stand out.",
   description:
-    "We create modern websites and landing pages for startups that care about design, performance, and perception.",
+    "We create modern websites and landing pages for startups and established brands that care about design, performance, and perception.",
   primaryCta: { href: "/#contact", label: "BOOK A CALL" },
   secondaryCta: { href: "/#work", label: "SEE WORK" },
 } as const;
@@ -40,7 +40,7 @@ export const footer = {
   copyrightOrg: site.name,
   copyrightSuffix: "All rights reserved.",
   description:
-    "Design-forward web studio for startups and product teams. We craft high-conversion marketing sites with clean execution and fast iteration.",
+    "Design-forward web studio for startups, growth-stage companies, and product teams. We craft high-conversion marketing sites with clean execution and fast iteration.",
   contactEmail: "hello@silverstudios.dev",
   location: "Remote • Worldwide",
   availability: "Booking projects for Q3 2026",
