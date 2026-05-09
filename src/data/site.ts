@@ -322,11 +322,12 @@ export const poweredBySilverUiSection = {
   heading: "Powered by Silver UI",
   intro:
     "Silver UI is our in-house component language—tokens, patterns, and production-ready primitives tuned for luminous, restrained interfaces.",
-  highlights: [
-    "Consistent layouts and motion primitives across landing pages and product surfaces.",
-    "Accessible markup and pragmatic performance budgets baked in from the first screen.",
-    "Composable pieces that keep brands coherent as you iterate toward market fit.",
-  ],
+  /** Short labels for the footer row (same rhythm as the final CTA section). */
+  footerTags: [
+    "TOKENS & PATTERNS",
+    "ACCESSIBLE BY DEFAULT",
+    "COMPOSABLE PRIMITIVES",
+  ] as const,
   /** Product site — opened in a new browser tab */
   externalHref: "https://silver-ui.vercel.app/" as const,
   externalCtaLabel: "Explore Silver UI" as const,

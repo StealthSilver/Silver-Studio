@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { servicesSection } from "@/data/site";
+import { CardSpotlight } from "@/components/ui/card-spotlight";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -172,19 +173,28 @@ export function Services() {
         onMouseEnter={() => setHoveredTile(index)}
         onMouseLeave={() => setHoveredTile(null)}
       >
-        <div className="flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
-          <p
-            className={cn(
-              "font-normal leading-none tracking-tight text-foreground",
-              "text-[clamp(2.75rem,10vw,4.5rem)]",
-            )}
-          >
-            {tile.num}
-          </p>
-          <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs">
-            {tile.label}
-          </p>
-        </div>
+        <CardSpotlight
+          className={
+            prefersReducedMotion
+              ? "flex h-full w-full flex-col justify-end"
+              : "absolute inset-0 flex min-h-0 flex-col justify-end"
+          }
+          disableRevealCanvas={prefersReducedMotion}
+        >
+          <div className="flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
+            <p
+              className={cn(
+                "font-normal leading-none tracking-tight text-foreground",
+                "text-[clamp(2.75rem,10vw,4.5rem)]",
+              )}
+            >
+              {tile.num}
+            </p>
+            <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs">
+              {tile.label}
+            </p>
+          </div>
+        </CardSpotlight>
       </article>
     );
   });

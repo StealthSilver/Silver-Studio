@@ -11,7 +11,7 @@ export function FinalCta() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-border/70 py-14 sm:scroll-mt-32 sm:py-20"
+      className="w-full scroll-mt-28 pb-16 pt-20 sm:scroll-mt-32 sm:pb-24 sm:pt-28"
     >
       <div className="mx-auto w-full max-w-6xl">
         <div
