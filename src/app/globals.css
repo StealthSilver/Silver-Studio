@@ -78,7 +78,7 @@ html {
 }
 
 .dark {
-  --background: rgb(12, 12, 12);
+  --background: #0b1215;
   --foreground: oklch(0.985 0 0);
   --hero-silver-1: rgb(218 222 232 / 0.1);
   --hero-silver-2: rgb(218 222 232 / 0.028);
