@@ -88,7 +88,7 @@ export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
         {headingContent}
       </p>
       <ul
-        className="m-0 flex list-none flex-wrap items-center justify-center gap-x-16 gap-y-12 px-2 max-md:justify-start max-md:gap-x-6 max-md:gap-y-6 max-md:px-0 sm:gap-x-24 sm:gap-y-14 md:justify-center md:px-2"
+        className="m-0 flex list-none flex-wrap items-center justify-center gap-x-16 gap-y-12 px-2 max-md:justify-start max-md:gap-x-10 max-md:gap-y-8 max-md:px-0 sm:gap-x-24 sm:gap-y-14 md:justify-center md:px-2"
         aria-labelledby={labelId}
       >
         {items.map((item, index) => {

@@ -139,7 +139,7 @@ export function Testimonials() {
       <TestimonialsHeading headingId={headingId} reduced={reduce} />
       <TestimonialsHeadingToContentSpacer />
       <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 max-md:px-4 max-md:pb-20 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
-        <div className="relative grid grid-cols-1 gap-14 max-md:gap-9 md:grid-cols-2 md:gap-20 lg:gap-24">
+        <div className="relative grid grid-cols-1 gap-14 max-md:gap-14 md:grid-cols-2 md:gap-20 lg:gap-24">
           <div className="flex flex-col justify-between gap-10 py-4 max-md:gap-7 md:py-6">
             <AnimatePresence mode="wait">
               <motion.div

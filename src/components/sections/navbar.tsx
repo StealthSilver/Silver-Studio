@@ -601,7 +601,7 @@ export function Navbar() {
     <header className="sticky top-2 z-50 mt-1 w-full px-2 max-md:top-1.5 max-md:mt-1 max-md:px-1.5">
       <div
         className={cn(
-          "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none",
+          "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out max-md:bg-background motion-reduce:transition-none",
           layoutScrolled
             ? "max-w-full overflow-visible shadow-none ring-0 dark:shadow-none"
             : "max-w-7xl max-md:overflow-visible md:overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(15,23,42,0.04),0_2px_8px_rgba(15,23,42,0.05),0_6px_16px_rgba(15,23,42,0.05),0_12px_24px_rgba(15,23,42,0.04)] ring-1 ring-border/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.25),0_6px_16px_rgba(0,0,0,0.2),0_12px_24px_rgba(0,0,0,0.15)] dark:ring-border/85",
@@ -644,6 +644,7 @@ export function Navbar() {
                 width={site.logo.width}
                 height={site.logo.height}
                 className="hidden size-8 max-md:size-7 dark:block"
+                priority
               />
             </BlurRevealBlock>
             <BlurRevealWordsInline

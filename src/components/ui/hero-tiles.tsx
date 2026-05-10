@@ -48,10 +48,10 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
   return (
     <div
       className={cn(
-        "relative flex w-[13rem] flex-col overflow-hidden rounded-2xl max-sm:w-[10.75rem] sm:w-[16.5rem]",
+        "relative flex w-[13rem] flex-col overflow-hidden rounded-2xl max-sm:w-[10rem] sm:w-[16.5rem]",
         accent
-          ? "h-[17rem] max-sm:h-[14rem] sm:h-[19.5rem]"
-          : "h-[16rem] max-sm:h-[13.25rem] sm:h-[18.5rem]",
+          ? "h-[17rem] max-sm:h-[13rem] sm:h-[19.5rem]"
+          : "h-[16rem] max-sm:h-[12.25rem] sm:h-[18.5rem]",
         "backdrop-blur-xl",
         "border shadow-md transition-[box-shadow,border-color] duration-300",
         accent
@@ -255,7 +255,7 @@ function HeroTileDraggable({
         allowDrag
           ? "cursor-grab touch-none active:cursor-grabbing"
           : "cursor-default touch-pan-y",
-        "-ml-[9.5rem] max-sm:-ml-[7.35rem] sm:-ml-[12.5rem]",
+        "-ml-[9.5rem] max-sm:-ml-[6.85rem] sm:-ml-[12.5rem]",
       )}
       style={{
         zIndex: stackZ,

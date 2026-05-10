@@ -87,7 +87,7 @@ export function HeroEntry({
 
   return (
     <section
-      className="hero flex w-full shrink-0 flex-col justify-center"
+      className="hero flex w-full shrink-0 flex-col justify-center max-md:justify-start max-md:pt-6"
       aria-label={sectionAriaLabel}
     >
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left max-md:gap-6 max-md:px-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
