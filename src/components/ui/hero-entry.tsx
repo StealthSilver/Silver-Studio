@@ -90,19 +90,19 @@ export function HeroEntry({
       className="hero flex w-full shrink-0 flex-col justify-center"
       aria-label={sectionAriaLabel}
     >
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
-        <div className="flex min-w-0 flex-col items-start gap-8 sm:gap-10">
-          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl sm:leading-[1.1] lg:text-6xl">
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left max-md:gap-6 max-md:px-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
+        <div className="flex min-w-0 flex-col items-start gap-8 max-sm:gap-5 sm:gap-10">
+          <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground max-sm:text-[1.625rem] max-sm:leading-[1.12] sm:text-5xl sm:leading-[1.1] lg:text-6xl">
             <BlurRevealWordsInline text={headline} reduced={instant} />
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="max-w-xl text-base leading-relaxed text-muted-foreground max-md:text-[0.9375rem] max-md:leading-snug sm:text-lg">
             <BlurRevealWordsInline
               text={description}
               reduced={instant}
               startDelayMs={headlineWords.length * staggerMs}
             />
           </p>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 max-md:gap-2">
             <motion.span
               className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}
               initial={
@@ -121,7 +121,7 @@ export function HeroEntry({
             >
               <LetterWaveLink
                 href={primaryCta.href}
-                className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
+                className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide max-md:h-9 max-md:px-4 max-md:text-xs max-md:tracking-normal"
                 label={primaryCta.label}
               />
             </motion.span>

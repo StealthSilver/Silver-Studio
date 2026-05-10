@@ -20,10 +20,12 @@ const FULL_BLEED_ROW =
   "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
 
 const TESTIMONIALS_HEADING_CLASS =
-  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground max-sm:text-xl max-sm:leading-[1.1] sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
 function TestimonialsPreRuleSpacer() {
-  return <div className="h-10 shrink-0 sm:h-14 lg:h-16" aria-hidden />;
+  return (
+    <div className="h-10 shrink-0 max-md:h-8 sm:h-14 lg:h-16" aria-hidden />
+  );
 }
 
 function TestimonialsTopRule() {
@@ -42,7 +44,7 @@ function TestimonialsHeading({
   reduced: boolean;
 }) {
   return (
-    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 max-md:px-3 max-md:pt-14 max-md:pb-5 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={TESTIMONIALS_HEADING_CLASS}>
@@ -59,7 +61,9 @@ function TestimonialsHeading({
 
 /** A bit more air than FAQ heading spacer so the carousel doesn’t feel tight. */
 function TestimonialsHeadingToContentSpacer() {
-  return <div className="h-8 shrink-0 sm:h-10 lg:h-12" aria-hidden />;
+  return (
+    <div className="h-8 shrink-0 max-md:h-6 sm:h-10 lg:h-12" aria-hidden />
+  );
 }
 
 /**
@@ -89,7 +93,7 @@ const TILE_FRAME =
 /** Carousel arrows: shared icon-button styles; 6px radius for this section. */
 const TESTIMONIALS_ARROW_CLASS = cn(
   STANDARD_ICON_BUTTON_CLASS,
-  "rounded-[6px] [&_svg]:size-4",
+  "rounded-[6px] [&_svg]:size-4 max-md:size-9 max-md:[&_svg]:size-[0.9rem]",
 );
 
 export function Testimonials() {
@@ -134,9 +138,9 @@ export function Testimonials() {
       <TestimonialsTopRule />
       <TestimonialsHeading headingId={headingId} reduced={reduce} />
       <TestimonialsHeadingToContentSpacer />
-      <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
-        <div className="relative grid grid-cols-1 gap-14 md:grid-cols-2 md:gap-20 lg:gap-24">
-          <div className="flex flex-col justify-between gap-10 py-4 md:py-6">
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 max-md:px-4 max-md:pb-20 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
+        <div className="relative grid grid-cols-1 gap-14 max-md:gap-10 md:grid-cols-2 md:gap-20 lg:gap-24">
+          <div className="flex flex-col justify-between gap-10 py-4 max-md:gap-7 md:py-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -150,7 +154,7 @@ export function Testimonials() {
                   ease: "easeInOut",
                 }}
               >
-                <h3 className="text-2xl font-semibold tracking-tight text-foreground">
+                <h3 className="text-2xl font-semibold tracking-tight text-foreground max-md:text-xl">
                   <BlurRevealWordsWhen
                     key={`t-name-${active}`}
                     text={activeItem.name}
@@ -168,7 +172,7 @@ export function Testimonials() {
                   />
                 </p>
 
-                <p className="mt-8 text-lg leading-relaxed text-muted-foreground">
+                <p className="mt-8 text-lg leading-relaxed text-muted-foreground max-md:mt-5 max-md:text-base max-md:leading-relaxed">
                   <BlurRevealWordsWhen
                     key={`t-quote-${active}`}
                     text={activeItem.quote}
@@ -213,7 +217,7 @@ export function Testimonials() {
           </div>
 
           <div className="min-w-0 py-2 md:py-6">
-            <div className="relative h-80 w-full md:ml-auto md:max-w-[min(100%,26rem)]">
+            <div className="relative h-80 w-full max-md:h-64 md:ml-auto md:max-w-[min(100%,26rem)]">
               <AnimatePresence mode="sync">
                 {items.map((testimonial, index) => {
                   const gradientClass =
@@ -281,10 +285,10 @@ export function Testimonials() {
                         <div className={TILE_GLASS} aria-hidden />
                         <div className={TILE_INNER_GLOW} aria-hidden />
                         <div
-                          className="relative flex h-full flex-col items-center justify-center px-6 py-8 sm:px-10"
+                          className="relative flex h-full flex-col items-center justify-center px-6 py-8 max-md:px-4 max-md:py-6 sm:px-10"
                           aria-hidden
                         >
-                          <div className="flex min-h-[4.5rem] w-full max-w-[min(100%,15rem)] flex-col items-center justify-center sm:min-h-[5.25rem] sm:max-w-[17rem]">
+                          <div className="flex min-h-[4.5rem] w-full max-w-[min(100%,15rem)] flex-col items-center justify-center max-md:min-h-[3.75rem] max-md:max-w-[min(100%,12.5rem)] sm:min-h-[5.25rem] sm:max-w-[17rem]">
                             <div className="flex w-full items-center justify-center dark:hidden">
                               <HeroTickerLogoMark
                                 item={logoItem}

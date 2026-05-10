@@ -22,7 +22,7 @@ const FULL_BLEED_ROW =
 
 /** Matches `SERVICES_HEADING_CLASS` in `services.tsx`. */
 const HEADING_CLASS =
-  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground max-sm:text-xl max-sm:leading-[1.1] sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
 const SECTION_HEADING_COPY = "POWERED BY SILVER UI";
 
@@ -62,7 +62,7 @@ export function PoweredBySilverUi() {
     >
       <TopRule />
 
-      <div className="flex flex-col px-4 pb-0 pt-0 sm:px-6 lg:px-8">
+      <div className="flex flex-col px-4 pb-0 pt-0 max-md:px-3 sm:px-6 lg:px-8">
         <div className="w-full max-w-7xl pb-6 sm:pb-8 lg:pb-10">
           <div className="flex w-full justify-center">
             <div className="flex w-full max-w-7xl items-start justify-between gap-6">
@@ -78,7 +78,7 @@ export function PoweredBySilverUi() {
                   </div>
                 </div>
 
-                <p className="text-base leading-relaxed text-muted-foreground sm:text-[17px] sm:leading-[1.65]">
+                <p className="text-base leading-relaxed text-muted-foreground max-md:text-[0.9375rem] max-md:leading-relaxed sm:text-[17px] sm:leading-[1.65]">
                   <BlurRevealWordsInView
                     text={intro}
                     reduced={reduceMotion}
@@ -86,7 +86,7 @@ export function PoweredBySilverUi() {
                   />
                 </p>
 
-                <div className="mt-8 flex justify-start sm:mt-10">
+                <div className="mt-8 flex justify-start max-md:mt-6 sm:mt-10">
                   <BlurRevealBlockInView
                     reduced={reduceMotion}
                     delaySec={ctaDelaySec}

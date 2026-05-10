@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { WorkCard } from "@/data/site";
 
 const secondaryBtnClass =
-  "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold uppercase tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent";
+  "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold uppercase tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent max-md:h-9 max-md:px-4 max-md:text-xs max-md:tracking-normal";
 
 export function ProjectDetail({ item }: { item: WorkCard }) {
   const visitLabel = item.siteUrl
@@ -11,18 +11,18 @@ export function ProjectDetail({ item }: { item: WorkCard }) {
     : undefined;
 
   return (
-    <main className="mx-auto flex min-h-[50vh] w-full max-w-7xl flex-1 flex-col bg-background px-4 pb-12 pt-6 text-foreground sm:px-6 sm:pt-8 lg:px-8">
+    <main className="mx-auto flex min-h-[50vh] w-full max-w-7xl flex-1 flex-col bg-background px-4 pb-12 pt-6 text-foreground max-md:px-3 max-md:pt-5 sm:px-6 sm:pt-8 lg:px-8">
       <article className="mx-auto w-full max-w-3xl">
-        <p className="text-[0.6rem] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-[0.6rem] font-medium uppercase tracking-[0.2em] text-muted-foreground max-md:text-[0.55rem]">
           Selected work
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground max-sm:text-[1.375rem] sm:text-4xl">
           {item.title}
         </h1>
-        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground max-md:text-[0.9375rem] sm:text-lg">
           {item.description}
         </p>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="mt-10 flex flex-col gap-3 max-md:mt-8 max-md:gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <Link
             href="/#work"
             className={secondaryBtnClass}

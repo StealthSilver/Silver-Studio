@@ -18,7 +18,11 @@ const linkBase =
   "rounded-[4px] text-sm font-medium text-muted-foreground outline-none transition-colors duration-200 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 /** Social / mail icon targets — same frame as testimonial arrows & theme chips */
-const socialButtonClass = cn(STANDARD_ICON_BUTTON_CLASS, "[&_svg]:size-[15px]");
+const socialButtonClass = cn(
+  STANDARD_ICON_BUTTON_CLASS,
+  "[&_svg]:size-[15px]",
+  "max-md:size-9 max-md:[&_svg]:size-[14px]",
+);
 
 function SocialIcon({ network }: { network: "x" | "discord" }) {
   if (network === "x") {
@@ -48,8 +52,8 @@ export function Footer() {
         aria-hidden
       />
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 pt-10 sm:px-6 sm:pt-12 lg:px-8 lg:pt-14">
-        <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
+      <div className="relative mx-auto w-full max-w-7xl px-4 pt-10 max-md:px-3 max-md:pt-8 sm:px-6 sm:pt-12 lg:px-8 lg:pt-14">
+        <div className="flex flex-col gap-10 max-md:gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12">
           {/* Brand + social */}
           <div className="flex max-w-sm flex-col gap-4">
             <Link
@@ -138,7 +142,7 @@ export function Footer() {
 
       {/* Full-bleed rule; © row stays max-w-7xl */}
       <div className="relative mt-8 w-full border-t border-border/45 dark:border-border/35">
-        <div className="mx-auto w-full max-w-7xl px-4 pb-3 pt-5 sm:px-6 sm:pb-4 lg:px-8 lg:pb-4">
+        <div className="mx-auto w-full max-w-7xl px-4 pb-3 pt-5 max-md:px-3 sm:px-6 sm:pb-4 lg:px-8 lg:pb-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
             <p className="text-[0.8125rem] leading-snug text-muted-foreground">
               <BlurRevealWordsInView text={copyrightCopy} reduced={reduced} />

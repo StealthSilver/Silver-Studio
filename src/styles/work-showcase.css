@@ -22,6 +22,13 @@
   margin-top: -55vh;
 }
 
+/* Stacked-slide overlap is desktop-only; on phones it collapses vertical rhythm. */
+@media (max-width: 767px) {
+  .work-showcase:not(:first-child) {
+    margin-top: 0;
+  }
+}
+
 /* Outer frame: clearer silhouette when the panel scales down behind the next slide. */
 .work-showcase__panel {
   border: 1px solid var(--border);
@@ -143,4 +150,18 @@ html.dark .work-showcase__bg::before {
   position: relative;
   z-index: 2;
   width: 100%;
+}
+
+/*
+ * Mobile / narrow: stacked cards — no negative overlap (desktop stack uses -55vh).
+ * Modifier class is set from `WorkStackSlide` when `useNarrowViewport()` is true.
+ */
+@media (max-width: 767px) {
+  .work-showcase--simple:not(:first-child) {
+    margin-top: 0;
+  }
+
+  .work-showcase--simple .work-showcase__panel {
+    border-radius: 1rem;
+  }
 }

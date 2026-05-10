@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/hero-reveal";
 import { servicesSection, workSection } from "@/data/site";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 const SERVICES_HEADING_COPY = "SERVICES WE PROVIDE";
@@ -22,13 +23,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 /** Small uppercase category line on each tile (muted). */
 const SERVICE_CARD_SUBLINE_CLASS =
-  "max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs";
+  "max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground max-md:text-[10px] sm:text-xs";
 
 /**
  * Same typographic rhythm as section headings (`SERVICES_HEADING_CLASS`), scaled for the card.
  */
 const SERVICE_CARD_ONE_LINER_CLASS =
-  "max-w-[95%] text-left text-[13px] font-normal uppercase leading-[1.14] tracking-[0.06em] text-foreground sm:text-[0.9375rem] sm:leading-[1.12]";
+  "max-w-[95%] text-left text-[13px] font-normal uppercase leading-[1.14] tracking-[0.06em] text-foreground max-md:text-[11.5px] max-md:leading-[1.12] sm:text-[0.9375rem] sm:leading-[1.12]";
 
 const TILES = [
   {
@@ -83,7 +84,7 @@ const TILE_TOP = [
 
 /** Tile stack: ~20% horizontal overlap on lg (`step = 0.8 * width`); tighter tiles & stride on small screens so four tiles fit. */
 const TILE_STACK_VARS =
-  "[contain:inline-size] [--tile-w:min(34vw,9rem)] [--tile-step:calc(var(--tile-w)*0.45)] sm:[--tile-w:min(42vw,11rem)] sm:[--tile-step:calc(var(--tile-w)*0.55)] lg:[--tile-w:min(32vw,min(19rem,300px))] lg:[--tile-step:calc(var(--tile-w)*0.8)]";
+  "[contain:inline-size] [--tile-w:min(34vw,9rem)] [--tile-step:calc(var(--tile-w)*0.45)] max-sm:[--tile-w:min(29vw,7.5rem)] max-sm:[--tile-step:calc(var(--tile-w)*0.41)] sm:[--tile-w:min(42vw,11rem)] sm:[--tile-step:calc(var(--tile-w)*0.55)] lg:[--tile-w:min(32vw,min(19rem,300px))] lg:[--tile-step:calc(var(--tile-w)*0.8)]";
 
 const GLASS_TILE_BASE =
   "cursor-default rounded-[6px] backdrop-blur-[28px] backdrop-saturate-[0.65] transition-[border-color,box-shadow,filter] duration-200 ease-out " +
@@ -113,7 +114,7 @@ const FULL_BLEED_ROW =
   "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
 
 const SERVICES_HEADING_CLASS =
-  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground max-sm:text-xl max-sm:leading-[1.1] sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
 function ServicesTopRule() {
   return (
@@ -139,7 +140,7 @@ function ServicesHeading({
   reduced: boolean;
 }) {
   return (
-    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 max-md:px-3 max-md:pt-14 max-md:pb-5 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={SERVICES_HEADING_CLASS}>
@@ -158,7 +159,7 @@ function ServicesHeading({
 function ServicesPrePinSpacer() {
   return (
     <div className={FULL_BLEED_ROW} aria-hidden>
-      <div className="h-16 shrink-0 bg-background sm:h-24 lg:h-[6.5rem]" />
+      <div className="h-16 shrink-0 bg-background max-md:h-12 sm:h-24 lg:h-[6.5rem]" />
     </div>
   );
 }
@@ -184,7 +185,9 @@ export function Services() {
   const darkRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<(HTMLElement | null)[]>([]);
 
+  const narrowViewport = useNarrowViewport();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const useStaticServices = prefersReducedMotion || narrowViewport;
   const [hoveredTile, setHoveredTile] = useState<number | null>(null);
 
   useLayoutEffect(() => {
@@ -196,7 +199,7 @@ export function Services() {
   }, []);
 
   useLayoutEffect(() => {
-    if (prefersReducedMotion) return;
+    if (useStaticServices) return;
 
     const pinEl = pinRef.current;
     const darkEl = darkRef.current;
@@ -315,7 +318,7 @@ export function Services() {
       fontsDone?.catch(() => {});
       ctx.revert();
     };
-  }, [prefersReducedMotion]);
+  }, [useStaticServices]);
 
   const staggerMs = HERO_REVEAL_STAGGER_MS;
   const servicesHeadingEndMs =
@@ -343,8 +346,8 @@ export function Services() {
         }}
         className={cn(
           "flex flex-col justify-end",
-          prefersReducedMotion
-            ? "relative left-auto top-auto mx-auto mb-6 aspect-[3/4] w-full max-w-[min(100%,17rem)] opacity-100 last:mb-0 sm:mb-8 sm:max-w-[18rem]"
+          useStaticServices
+            ? "relative left-auto top-auto mx-auto mb-6 aspect-[3/4] w-full max-w-[min(100%,17rem)] opacity-100 last:mb-0 max-md:mb-5 max-md:max-w-[min(100%,15rem)] sm:mb-8 sm:max-w-[18rem]"
             : ["absolute aspect-[3/4] w-[var(--tile-w)] max-w-none", TILE_TOP[index]].join(
                 " ",
               ),
@@ -352,7 +355,7 @@ export function Services() {
           isHover ? TILE_BORDER_HOVER : TILE_BORDER_REST,
         )}
         style={
-          prefersReducedMotion
+          useStaticServices
             ? {
                 zIndex: z,
               }
@@ -366,17 +369,17 @@ export function Services() {
       >
         <CardSpotlight
           className={
-            prefersReducedMotion
+            useStaticServices
               ? "flex h-full w-full flex-col justify-end"
               : "absolute inset-0 flex min-h-0 flex-col justify-end"
           }
           disableRevealCanvas
         >
-          <div className="flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
+          <div className="flex flex-col gap-1 px-5 pb-5 pt-6 max-md:px-4 max-md:pb-4 max-md:pt-5 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
             <p
               className={cn(
                 "font-normal leading-none tracking-tight text-foreground",
-                "text-[clamp(2.75rem,10vw,4.5rem)]",
+                "text-[clamp(2.75rem,10vw,4.5rem)] max-md:text-[clamp(2rem,11vw,3.25rem)]",
               )}
             >
               <BlurRevealBlock
@@ -396,7 +399,12 @@ export function Services() {
                 startDelayMs={labelStartMs}
               />
             </p>
-            <p className={cn(SERVICE_CARD_ONE_LINER_CLASS, "mt-4 sm:mt-5")}>
+            <p
+              className={cn(
+                SERVICE_CARD_ONE_LINER_CLASS,
+                "mt-4 max-md:mt-3 sm:mt-5",
+              )}
+            >
               <BlurRevealWordsInline
                 text={tile.oneLiner}
                 reduced={prefersReducedMotion}
@@ -411,7 +419,7 @@ export function Services() {
 
   const headingId = `${id}-heading`;
 
-  if (prefersReducedMotion) {
+  if (useStaticServices) {
     return (
       <section
         id={id}
@@ -419,10 +427,10 @@ export function Services() {
         className="mx-auto w-full max-w-7xl shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 sm:scroll-mt-32"
       >
         <ServicesPrePinSpacer />
-        <ServicesSectionIntro headingId={headingId} reduced />
+        <ServicesSectionIntro headingId={headingId} reduced={prefersReducedMotion} />
         <div
           className={cn(
-            "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 pb-16 pt-0 sm:px-6 lg:px-8",
+            "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 pb-16 pt-0 max-md:min-h-0 max-md:px-3 max-md:pb-12 max-md:pt-4 sm:px-6 lg:px-8",
             SERVICES_BACKDROP,
           )}
         >
@@ -445,7 +453,7 @@ export function Services() {
       >
         <ServicesTopRule />
         <ServicesHeading headingId={headingId} reduced={prefersReducedMotion} />
-        <div className="relative flex min-h-[100vh] w-full flex-col px-4 sm:px-6 lg:px-8">
+        <div className="relative flex min-h-[100vh] w-full flex-col px-4 max-md:px-3 sm:px-6 lg:px-8">
           <div ref={darkRef} className={SECTION_WASH} aria-hidden />
           <div className="relative z-[2] flex h-full min-h-0 w-full flex-1 py-2">
             <div

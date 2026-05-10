@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 /** Outline CTA: hero "SEE WORK" and matching links (LetterWaveLink). */
 export const OUTLINE_CTA_BUTTON_CLASSNAME =
-  "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent";
+  "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent max-md:h-9 max-md:px-4 max-md:text-xs max-md:tracking-normal";
 
 /** Outline + subtle layered shadow (hero SEE WORK, Work READ MORE, Silver UI CTA). */
 export const OUTLINE_CTA_HERO_SHADOW_CLASSNAME = cn(

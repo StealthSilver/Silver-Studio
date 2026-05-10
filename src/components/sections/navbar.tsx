@@ -68,11 +68,11 @@ function serverScrollSnapshot() {
 }
 
 const scrollGaugeClass =
-  "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary px-2 text-xs font-semibold tabular-nums text-foreground";
+  "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary px-2 text-xs font-semibold tabular-nums text-foreground max-md:h-8 max-md:min-w-[2.625rem] max-md:px-1.5 max-md:text-[0.6875rem]";
 
 /** Shared chrome for hamburger + music controls in the navbar toolbars */
 const navToolbarIconButtonClass =
-  "inline-flex size-9 shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary text-muted-foreground transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+  "inline-flex size-9 shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary text-muted-foreground transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background max-md:size-8 max-md:rounded-[3px]";
 
 /** One 480-unit tile (~5 cycles); ends meet y=20 for seamless tiling with translate(480) */
 const NAV_MUSIC_WAVE_PATH_D =
@@ -504,7 +504,7 @@ export function Navbar() {
           role="region"
           aria-label="Navigation menu"
           className={cn(
-            "fixed left-1/2 z-[60] w-[min(200px,calc(100vw-2rem))] max-w-[200px] -translate-x-1/2 overflow-hidden border border-border bg-background shadow-md",
+            "fixed left-1/2 z-[60] w-[min(288px,calc(100vw-1.25rem))] max-w-none -translate-x-1/2 overflow-hidden border border-border bg-background shadow-md",
             "rounded-[4px]",
             "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
             !scrolled && "md:hidden",
@@ -568,7 +568,7 @@ export function Navbar() {
   );
 
   return (
-    <header className="sticky top-2 z-50 mt-1 w-full px-2">
+    <header className="sticky top-2 z-50 mt-1 w-full px-2 max-md:top-1.5 max-md:mt-1 max-md:px-1.5">
       <div
         className={cn(
           "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none",
@@ -579,7 +579,7 @@ export function Navbar() {
       >
         <nav
           className={cn(
-            "relative flex min-h-[3.25rem] items-center gap-3 px-2 py-2 sm:min-h-14",
+            "relative flex min-h-[3.25rem] items-center gap-3 px-2 py-2 max-md:min-h-12 max-md:gap-2 max-md:px-1.5 sm:min-h-14",
             scrolled
               ? "justify-between md:grid md:w-full md:grid-cols-[1fr_auto_1fr] md:items-center"
               : "justify-between",
@@ -605,7 +605,7 @@ export function Navbar() {
                 alt=""
                 width={site.logo.width}
                 height={site.logo.height}
-                className="size-8 dark:hidden"
+                className="size-8 max-md:size-7 dark:hidden"
                 priority
               />
               <Image
@@ -613,7 +613,7 @@ export function Navbar() {
                 alt=""
                 width={site.logo.width}
                 height={site.logo.height}
-                className="hidden size-8 dark:block"
+                className="hidden size-8 max-md:size-7 dark:block"
               />
             </BlurRevealBlock>
             <BlurRevealWordsInline
@@ -622,7 +622,7 @@ export function Navbar() {
               staggerMs={22}
               holdUntilSplashDismissed
               reduced={revealInstant}
-              className="text-lg font-semibold tracking-tight text-foreground sm:text-xl"
+              className="text-lg font-semibold tracking-tight text-foreground max-md:text-[0.9375rem] max-md:leading-tight sm:text-xl"
             />
           </Link>
 

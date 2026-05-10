@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
 import { useHeroRevealHeld } from "@/context/hero-reveal-held-context";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 export const HERO_TILE_COUNT = 5;
@@ -47,10 +48,10 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
   return (
     <div
       className={cn(
-        "relative flex w-[13rem] flex-col overflow-hidden rounded-2xl sm:w-[16.5rem]",
+        "relative flex w-[13rem] flex-col overflow-hidden rounded-2xl max-sm:w-[10.75rem] sm:w-[16.5rem]",
         accent
-          ? "h-[17rem] sm:h-[19.5rem]"
-          : "h-[16rem] sm:h-[18.5rem]",
+          ? "h-[17rem] max-sm:h-[14rem] sm:h-[19.5rem]"
+          : "h-[16rem] max-sm:h-[13.25rem] sm:h-[18.5rem]",
         "backdrop-blur-xl",
         "border shadow-md transition-[box-shadow,border-color] duration-300",
         accent
@@ -236,6 +237,7 @@ function HeroTileDraggable({
   reveal?: HeroTilesReveal;
 }) {
   const reduceMotion = useReducedMotion();
+  const narrowViewport = useNarrowViewport();
   const revealHeld = useHeroRevealHeld();
   const [hovered, setHovered] = useState(false);
   const stackZ = tileStackZ(index);
@@ -243,11 +245,17 @@ function HeroTileDraggable({
   const freezeReveal =
     reveal && !reveal.instant && revealHeld;
 
+  /** Drag + `touch-none` steal vertical scroll on phones — keep transform motion, disable drag. */
+  const allowDrag = reduceMotion !== true && !narrowViewport;
+
   return (
     <motion.div
       className={cn(
-        "relative shrink-0 cursor-grab touch-none select-none first:ml-0 active:cursor-grabbing",
-        "-ml-[9.5rem] sm:-ml-[12.5rem]",
+        "relative shrink-0 select-none first:ml-0",
+        allowDrag
+          ? "cursor-grab touch-none active:cursor-grabbing"
+          : "cursor-default touch-pan-y",
+        "-ml-[9.5rem] max-sm:-ml-[7.35rem] sm:-ml-[12.5rem]",
       )}
       style={{
         zIndex: stackZ,
@@ -282,7 +290,7 @@ function HeroTileDraggable({
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
       whileHover={
-        reduceMotion
+        !allowDrag
           ? undefined
           : {
               y: -12,
@@ -290,9 +298,9 @@ function HeroTileDraggable({
               transition: { type: "spring", stiffness: 380, damping: 24 },
             }
       }
-      whileTap={reduceMotion ? { scale: 0.99 } : { scale: 0.98 }}
+      whileTap={!allowDrag ? undefined : { scale: 0.98 }}
       whileDrag={
-        reduceMotion
+        !allowDrag
           ? undefined
           : {
               scale: 1.04,
@@ -300,7 +308,7 @@ function HeroTileDraggable({
               cursor: "grabbing",
             }
       }
-      drag={reduceMotion ? false : true}
+      drag={allowDrag}
       dragSnapToOrigin
       dragElastic={0.16}
       dragTransition={{
@@ -350,7 +358,7 @@ export function HeroTiles({
       <div
         className={cn(
           "hero-tiles-root relative z-[1] flex min-w-min items-end justify-center",
-          "py-8 pl-6 pr-4 sm:py-10 sm:pl-10 sm:pr-6",
+          "py-8 pl-6 pr-4 max-md:py-6 max-md:pl-4 max-md:pr-3 sm:py-10 sm:pl-10 sm:pr-6",
         )}
       >
         <div className="flex min-w-min items-end">

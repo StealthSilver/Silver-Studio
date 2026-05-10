@@ -28,7 +28,7 @@ export function ScrollToTopButton() {
       aria-hidden={!visible}
       tabIndex={visible ? 0 : -1}
       className={cn(
-        "fixed bottom-6 right-4 z-40 rounded-[6px] shadow-md transition-opacity duration-200 sm:right-6",
+        "fixed bottom-6 right-4 z-40 rounded-[6px] shadow-md transition-opacity duration-200 max-md:bottom-4 max-md:right-3 sm:right-6",
         visible ? "opacity-100" : "pointer-events-none opacity-0",
       )}
       onClick={() => {

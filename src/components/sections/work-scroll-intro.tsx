@@ -5,6 +5,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -50,14 +51,14 @@ const WORK_GRID_PASS: string[] = Array.from(
 /** Tile frame — matches section card borders (light) vs glassy rim (dark). */
 const WORK_GRID_TILE_FRAME =
   "relative overflow-hidden rounded-2xl border border-border/80 shadow-[0_10px_28px_rgb(15_23_42_/_0.08)] ring-1 ring-border/55 " +
-  "aspect-[16/10] min-h-[132px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px] xl:min-h-[220px] " +
+  "aspect-[16/10] min-h-[132px] max-md:min-h-[118px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px] xl:min-h-[220px] " +
   "dark:border-white/14 dark:shadow-[0_10px_32px_rgb(0_0_0_/_0.48)] dark:ring-black/45";
 
 const WORK_GRID_IMAGE_CLASS =
   "object-cover opacity-[0.92] saturate-[0.95] dark:opacity-[0.9]";
 
 const ROW_GAP =
-  "gap-5 sm:gap-7 md:gap-8 lg:gap-10 xl:gap-12" as const;
+  "gap-5 max-md:gap-3.5 sm:gap-7 md:gap-8 lg:gap-10 xl:gap-12" as const;
 
 function chunkIntoRows<T>(items: readonly T[], perRow: number): T[][] {
   const rows: T[][] = [];
@@ -138,7 +139,9 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
   const washRef = useRef<HTMLDivElement>(null);
   const gridMoverRef = useRef<HTMLDivElement>(null);
 
+  const narrowViewport = useNarrowViewport();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const useStaticIntro = prefersReducedMotion || narrowViewport;
 
   const words = useMemo(
     () => heading.trim().split(/\s+/).filter(Boolean),
@@ -154,7 +157,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
   }, []);
 
   useLayoutEffect(() => {
-    if (prefersReducedMotion || words.length === 0) return;
+    if (useStaticIntro || words.length === 0) return;
 
     const pinEl = pinRef.current;
     const trailEl = trailRef.current;
@@ -242,17 +245,17 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
     return () => {
       ctx.revert();
     };
-  }, [prefersReducedMotion, words.length]);
+  }, [useStaticIntro, words.length]);
 
   if (!heading.trim()) {
     return null;
   }
 
-  if (prefersReducedMotion) {
+  if (useStaticIntro) {
     return (
-      <div className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] py-16 text-foreground sm:py-20">
-        <div className="mx-auto max-w-7xl px-4">
-          <p className="flex max-w-5xl flex-row flex-wrap items-baseline gap-x-6 gap-y-2 text-balance text-3xl font-medium uppercase tracking-[0.18em] sm:gap-x-10 sm:text-4xl md:gap-x-14">
+      <div className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] py-12 text-foreground sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 max-md:px-3">
+          <p className="flex max-w-5xl flex-row flex-wrap items-baseline gap-x-4 gap-y-2 text-balance text-2xl font-medium uppercase tracking-[0.18em] sm:gap-x-10 sm:text-4xl md:gap-x-14">
             {words.map((word, i) => (
               <span key={`${word}-${i}`} className="inline-block">
                 {word}

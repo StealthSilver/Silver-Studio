@@ -17,10 +17,12 @@ const FULL_BLEED_ROW =
   "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
 
 const FAQ_HEADING_CLASS =
-  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground max-sm:text-xl max-sm:leading-[1.1] sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
 function FaqPreRuleSpacer() {
-  return <div className="h-10 shrink-0 sm:h-14 lg:h-16" aria-hidden />;
+  return (
+    <div className="h-8 shrink-0 max-md:h-7 sm:h-14 lg:h-16" aria-hidden />
+  );
 }
 
 function FaqTopRule() {
@@ -39,7 +41,7 @@ function FaqHeading({
   reduced: boolean;
 }) {
   return (
-    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 max-md:px-3 max-md:pt-14 max-md:pb-5 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={FAQ_HEADING_CLASS}>
@@ -104,7 +106,7 @@ function FaqAccordion({
                 type="button"
                 id={triggerId}
                 className={cn(
-                  "flex w-full cursor-pointer items-start justify-between gap-4 rounded-2xl px-4 py-4 text-left outline-none transition-colors sm:px-5 sm:py-5",
+                  "flex w-full cursor-pointer items-start justify-between gap-3 rounded-2xl px-4 py-4 text-left outline-none transition-colors max-md:gap-2.5 max-md:py-3.5 sm:px-5 sm:py-5",
                   "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 )}
                 aria-expanded={isOpen}
@@ -185,7 +187,7 @@ export function Faq() {
       <FaqTopRule />
       <FaqHeading headingId={headingId} reduced={reduced} />
       <FaqHeadingToAccordionSpacer />
-      <div className="mx-auto box-border w-full max-w-7xl px-5 pb-14 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
+      <div className="mx-auto box-border w-full max-w-7xl px-5 pb-14 max-md:px-4 max-md:pb-12 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
         <FaqAccordion idPrefix={id} items={items} reduced={reduced} />
       </div>
     </section>

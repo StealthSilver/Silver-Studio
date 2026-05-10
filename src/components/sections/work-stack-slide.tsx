@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 
 import { WORK_STACK_RUNWAY_VH } from "@/lib/work-stack-constants";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 
 type WorkStackSlideProps = {
   itemSlug: string;
@@ -37,6 +38,7 @@ export function WorkStackSlide({
 }: WorkStackSlideProps) {
   const ref = useRef<HTMLLIElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const narrowViewport = useNarrowViewport();
   const isLast = index === total - 1;
 
   const { scrollYProgress } = useScroll({
@@ -47,18 +49,33 @@ export function WorkStackSlide({
   const dropRange = DROP_END - DROP_START;
 
   const y = useTransform(scrollYProgress, (p) => {
-    if (reduceMotion || isLast) return 0;
+    if (narrowViewport || reduceMotion || isLast) return 0;
     const t = Math.min(1, Math.max(0, (p - DROP_START) / dropRange));
     const eased = Math.pow(t, DROP_EASE_EXPONENT);
     return eased * DROP_Y_MAX_PX;
   });
 
   const scale = useTransform(scrollYProgress, (p) => {
-    if (reduceMotion || isLast) return 1;
+    if (narrowViewport || reduceMotion || isLast) return 1;
     const t = Math.min(1, Math.max(0, (p - DROP_START) / dropRange));
     const eased = Math.pow(t, DROP_EASE_EXPONENT);
     return 1 - eased * (1 - SCALE_END);
   });
+
+  if (narrowViewport) {
+    return (
+      <li
+        ref={ref}
+        className="work-showcase work-showcase--simple text-foreground pb-7 last:pb-0 md:pb-0"
+        style={{ height: "auto", zIndex: index + 1 }}
+        data-work={itemSlug}
+      >
+        <div className="work-showcase__panel relative w-full overflow-hidden rounded-2xl shadow-sm md:rounded-3xl">
+          <div className="relative min-h-0">{children}</div>
+        </div>
+      </li>
+    );
+  }
 
   return (
     <li

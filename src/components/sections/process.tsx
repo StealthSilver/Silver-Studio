@@ -19,6 +19,7 @@ import {
   workSection,
 } from "@/data/site";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 import {
@@ -38,7 +39,7 @@ const PROCESS_BLOCK_HEIGHT_CLASS = "h-[min(92vh,760px)] min-h-[min(92vh,760px)]"
 
 
 const glassPanelClass =
-  "flex aspect-square h-[min(24vh,210px)] w-[min(24vh,210px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-5 shadow-sm backdrop-blur-xl sm:h-[min(26vh,240px)] sm:w-[min(26vh,240px)] sm:p-7 dark:border-border/55 dark:bg-card/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]";
+  "flex aspect-square h-[min(24vh,210px)] w-[min(24vh,210px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-5 shadow-sm backdrop-blur-xl max-md:h-[min(20vh,170px)] max-md:w-[min(20vh,170px)] max-md:p-4 sm:h-[min(26vh,240px)] sm:w-[min(26vh,240px)] sm:p-7 dark:border-border/55 dark:bg-card/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]";
 
 const STEP_ANIMATIONS = {
   Discovery: DiscoveryAnimation,
@@ -53,7 +54,7 @@ const FULL_BLEED_ROW =
   "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
 
 const PROCESS_HEADING_CLASS =
-  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground max-sm:text-xl max-sm:leading-[1.1] sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
 const PROCESS_HEADING_COPY = "PROCESS WE FOLLOW";
 
@@ -73,7 +74,7 @@ function ProcessHeading({
   reduced: boolean;
 }) {
   return (
-    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 max-md:px-3 max-md:pt-14 max-md:pb-5 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={PROCESS_HEADING_CLASS}>
@@ -95,12 +96,15 @@ function ProcessCopyColumn({
   reduced,
   headingEndMs,
   descRef,
+  allowFullDescription = false,
 }: {
   step: (typeof processSection.steps)[number];
   index: number;
   reduced: boolean;
   headingEndMs: number;
   descRef?: (el: HTMLParagraphElement | null) => void;
+  /** Stacked-flow layout (mobile): show full description; pinned desktop may truncate at md+. */
+  allowFullDescription?: boolean;
 }) {
   const staggerMs = HERO_REVEAL_STAGGER_MS;
   const num = String(index + 1).padStart(2, "0");
@@ -136,7 +140,10 @@ function ProcessCopyColumn({
       </h3>
       <p
         ref={descRef}
-        className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
+        className={cn(
+          "mt-4 w-full text-pretty text-sm leading-relaxed text-muted-foreground max-md:break-words sm:text-[15px] md:leading-normal",
+          !allowFullDescription && "md:truncate",
+        )}
         title={step.description}
       >
         <BlurRevealWordsInline
@@ -184,6 +191,8 @@ export function Process() {
   const descRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const narrowViewport = useNarrowViewport();
+  const useStaticProcess = prefersReducedMotion || narrowViewport;
 
   useLayoutEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -194,7 +203,7 @@ export function Process() {
   }, []);
 
   useLayoutEffect(() => {
-    if (prefersReducedMotion) return;
+    if (useStaticProcess) return;
 
     const pinEl = pinRef.current;
     const stackEl = stackRef.current;
@@ -354,7 +363,7 @@ export function Process() {
       fontsDone?.catch(() => {});
       ctx.revert();
     };
-  }, [prefersReducedMotion, steps.length]);
+  }, [useStaticProcess, steps.length]);
 
   const staggerMs = HERO_REVEAL_STAGGER_MS;
   const processHeadingEndMs =
@@ -366,19 +375,23 @@ export function Process() {
       aria-labelledby={headingId}
       className="w-full scroll-mt-28 bg-background text-foreground sm:scroll-mt-32"
     >
-      {prefersReducedMotion ? (
+      {useStaticProcess ? (
         <>
           <ProcessTopRule />
-          <ProcessHeading headingId={headingId} reduced />
+          <ProcessHeading
+            headingId={headingId}
+            reduced={prefersReducedMotion}
+          />
           <ProcessHeadingToBlocksSpacer />
-          <ul className="m-0 flex list-none flex-col p-0">
+          <ul className="m-0 flex list-none flex-col gap-0 p-0">
             {steps.map((step, index) => (
               <ProcessStepRow
                 key={step.title}
                 step={step}
                 index={index}
                 headingEndMs={processHeadingEndMs}
-                reduced
+                reduced={prefersReducedMotion}
+                flowLayout
               />
             ))}
           </ul>
@@ -386,10 +399,7 @@ export function Process() {
       ) : (
         <div ref={pinRef} className="relative flex w-full flex-col">
           <ProcessTopRule />
-          <ProcessHeading
-            headingId={headingId}
-            reduced={prefersReducedMotion}
-          />
+          <ProcessHeading headingId={headingId} reduced={prefersReducedMotion} />
           <ProcessHeadingToBlocksSpacer />
           <div
             ref={stackRef}
@@ -449,11 +459,14 @@ function ProcessStepRow({
   index,
   headingEndMs,
   reduced,
+  flowLayout = false,
 }: {
   step: (typeof processSection.steps)[number];
   index: number;
   headingEndMs: number;
   reduced: boolean;
+  /** Narrow / stacked list — natural row height instead of pinned-stage viewport blocks. */
+  flowLayout?: boolean;
 }) {
   const Animation = STEP_ANIMATIONS[step.title];
 
@@ -462,7 +475,9 @@ function ProcessStepRow({
       <article
         className={cn(
           "box-border flex min-h-0 flex-col gap-6 overflow-hidden px-5 py-6 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",
-          PROCESS_BLOCK_HEIGHT_CLASS,
+          flowLayout
+            ? "h-auto min-h-0 py-7 sm:py-9"
+            : PROCESS_BLOCK_HEIGHT_CLASS,
         )}
       >
         <ProcessCopyColumn
@@ -470,6 +485,7 @@ function ProcessStepRow({
           index={index}
           reduced={reduced}
           headingEndMs={headingEndMs}
+          allowFullDescription={flowLayout}
         />
         <div className={glassPanelClass}>
           <Animation />
