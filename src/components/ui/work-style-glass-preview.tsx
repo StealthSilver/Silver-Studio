@@ -157,6 +157,7 @@ export function WorkBottomPlaceholder() {
     <WorkBottomFrame
       naturalWidth={PLACEHOLDER_FULL_WIDTH}
       naturalHeight={PLACEHOLDER_FULL_HEIGHT}
+      fullRoundedChrome
     >
       <div className="absolute inset-0 bg-zinc-200/80 dark:bg-muted/92">
         <div
@@ -329,6 +330,7 @@ export function WorkBottomPreview({ item }: { item: WorkCard }) {
         image={image}
         externalHref={siteUrl}
         externalAriaLabel={previewLabel}
+        fullRoundedChrome
       />
     );
   }
@@ -337,6 +339,7 @@ export function WorkBottomPreview({ item }: { item: WorkCard }) {
       image={image}
       externalHref={siteUrl}
       externalAriaLabel={previewLabel}
+      fullRoundedChrome
     />
   );
 }

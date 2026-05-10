@@ -15,9 +15,9 @@ const ibmPlexSans = IBM_Plex_Sans({
 
 /**
  * Runs synchronously in <head> before body/CSS paint — avoids light-theme flash.
- * Logic must stay aligned with `applyTheme` in theme-provider.tsx.
+ * Logic must stay aligned with `normalizeStoredTheme` / `applyTheme` in theme-provider.tsx.
  */
-const themeInitScript = `!function(){try{var t=localStorage.getItem("theme")||"system",d=document.documentElement,r="dark"===t||"system"===t&&window.matchMedia("(prefers-color-scheme: dark)").matches;d.classList.toggle("dark",r),d.style.colorScheme=r?"dark":"light"}catch(e){}}();`;
+const themeInitScript = `!function(){try{var k="theme",v=localStorage.getItem(k),t=v==="light"||v==="dark"||v==="system"?v:"system",d=document.documentElement,m=window.matchMedia("(prefers-color-scheme: dark)").matches,u="dark"===t||"system"===t&&m;d.classList.toggle("dark",u),d.style.colorScheme=u?"dark":"light"}catch(e){}}();`;
 
 /** Origin only (no path). Override locally with NEXT_PUBLIC_SITE_URL if needed. */
 const siteOrigin = (

@@ -4,6 +4,11 @@ import type { HTMLAttributeAnchorTarget, MouseEventHandler } from "react";
 import Link from "next/link";
 import { useMemo } from "react";
 
+import {
+  shouldUseBookingModal,
+  useBookingModalOptional,
+} from "@/context/booking-modal-context";
+import { isBookingHref } from "@/lib/booking";
 import { cn } from "@/lib/utils";
 
 /** Outline CTA: hero "SEE WORK" and matching links (LetterWaveLink). */
@@ -51,6 +56,8 @@ export function LetterWaveLink({
   rel?: string;
 }) {
   const chars = useMemo(() => [...label], [label]);
+  const bookingModal = useBookingModalOptional();
+  const opensBookingModal = isBookingHref(href);
 
   const staggerMs =
     variant === "nav" ? LETTER_WAVE_NAV_STAGGER_MS : LETTER_WAVE_STAGGER_MS;
@@ -72,9 +79,22 @@ export function LetterWaveLink({
     </span>
   );
 
+  const handleClick: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    if (
+      bookingModal &&
+      opensBookingModal &&
+      shouldUseBookingModal(e)
+    ) {
+      e.preventDefault();
+      bookingModal.openBooking();
+    }
+    onClick?.(e);
+  };
+
   return (
     <Link
       href={href}
+      prefetch={opensBookingModal ? false : undefined}
       target={target}
       rel={rel}
       className={cn(
@@ -83,7 +103,7 @@ export function LetterWaveLink({
         variant === "nav" && "letter-wave--nav",
       )}
       aria-label={ariaLabel ?? label}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <span
         aria-hidden

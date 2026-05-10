@@ -15,6 +15,14 @@ const STORAGE_KEY = "theme";
 
 type ThemeName = "light" | "dark" | "system";
 
+/** First visit and invalid stored values follow the OS / `prefers-color-scheme`. */
+export const DEFAULT_THEME: ThemeName = "system";
+
+function normalizeStoredTheme(raw: string | null): ThemeName {
+  if (raw === "light" || raw === "dark" || raw === "system") return raw;
+  return DEFAULT_THEME;
+}
+
 type ThemeContextValue = {
   theme: ThemeName | undefined;
   setTheme: (theme: ThemeName) => void;
@@ -45,8 +53,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   useLayoutEffect(() => {
-    const stored =
-      (localStorage.getItem(STORAGE_KEY) as ThemeName | null) ?? "system";
+    let stored = DEFAULT_THEME;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      stored = normalizeStoredTheme(raw);
+      if (raw !== stored) {
+        try {
+          localStorage.setItem(STORAGE_KEY, stored);
+        } catch {
+          /* quota / private mode */
+        }
+      }
+    } catch {
+      stored = DEFAULT_THEME;
+    }
     setSystemTheme(getSystemTheme());
     setThemeState(stored);
     applyTheme(stored);

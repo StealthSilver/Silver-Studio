@@ -72,7 +72,7 @@ export function WorkStackSlide({
     >
       <div className="sticky top-0 h-screen min-h-screen w-full overflow-hidden">
         <motion.div
-          className="work-showcase__panel relative h-full min-h-screen w-full origin-top overflow-hidden rounded-[8px] will-change-transform"
+          className="work-showcase__panel relative h-full min-h-screen w-full origin-top overflow-hidden rounded-3xl will-change-transform"
           style={{ y, scale }}
         >
           {children}

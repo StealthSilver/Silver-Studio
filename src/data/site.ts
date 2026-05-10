@@ -2,6 +2,8 @@
  * Site copy, navigation, and media metadata. Edit this file to update the UI.
  */
 
+import { booking } from "@/lib/booking";
+
 export const site = {
   name: "Silver Studios",
   homeHref: "/",
@@ -20,19 +22,19 @@ export const hero = {
   headline: "Built to stand out.",
   description:
     "We create modern websites and landing pages for startups and established brands that care about design, performance, and perception.",
-  primaryCta: { href: "/#contact", label: "BOOK A CALL" },
-  secondaryCta: { href: "/#work", label: "SEE WORK", scrollPercent: 8 },
+  primaryCta: { href: booking.url, label: "BOOK A CALL" },
+  secondaryCta: { href: "/#work", label: "SEE WORK", scrollPercent: 11 },
 } as const;
 
 export const navbar = {
   links: [
-    { href: "/#work", label: "Work", scrollPercent: 8 },
-    { href: "/#services", label: "Services", scrollPercent: 63 },
-    { href: "/#silver-ui", label: "Silver UI", scrollPercent: 68 },
-    { href: "/#process", label: "Process", scrollPercent: 89 },
-    { href: "/#faq", label: "FAQ", scrollPercent: 93 },
+    { href: "/#work", label: "Work", scrollPercent: 11 },
+    { href: "/#services", label: "Services", scrollPercent: 64 },
+    { href: "/#silver-ui", label: "Silver UI", scrollPercent: 70 },
+    { href: "/#process", label: "Process", scrollPercent: 90 },
+    { href: "/#faq", label: "FAQ", scrollPercent: 94 },
   ],
-  cta: { href: "/#contact", label: "BOOK A CALL" },
+  cta: { href: booking.url, label: "BOOK A CALL" },
 } as const;
 
 export const footer = {
@@ -402,7 +404,7 @@ export const pricingSection = {
         "Responsive layouts + interaction polish",
         "Analytics + SEO basics wired for launch",
       ],
-      cta: { label: "Book a discovery call", href: "/#contact" },
+      cta: { label: "Book a discovery call", href: booking.url },
     },
     {
       name: "Product Web",
@@ -414,7 +416,7 @@ export const pricingSection = {
         "Performance + accessibility QA before handoff",
       ],
       highlighted: true,
-      cta: { label: "Discuss scope", href: "/#contact" },
+      cta: { label: "Discuss scope", href: booking.url },
     },
     {
       name: "Embedded Studio",
@@ -425,7 +427,7 @@ export const pricingSection = {
         "Shared Slack + async Loom reviews",
         "Fractional design + engineering leadership",
       ],
-      cta: { label: "Talk retainers", href: "/#contact" },
+      cta: { label: "Talk retainers", href: booking.url },
     },
   ] satisfies readonly PricingTier[],
 } as const;
@@ -469,7 +471,7 @@ export const faqSection = {
 export const finalCtaSection = {
   id: "contact" as const,
   heading: "Ready when you are",
-  primaryCta: { href: "/#contact", label: hero.primaryCta.label },
+  primaryCta: { href: booking.url, label: hero.primaryCta.label },
   secondaryCta: hero.secondaryCta,
 } as const;
 

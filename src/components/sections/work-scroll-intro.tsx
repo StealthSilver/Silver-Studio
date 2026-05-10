@@ -49,7 +49,7 @@ const WORK_GRID_PASS: string[] = Array.from(
 
 /** Tile frame — matches section card borders (light) vs glassy rim (dark). */
 const WORK_GRID_TILE_FRAME =
-  "relative overflow-hidden rounded-xl border border-border/80 shadow-[0_10px_28px_rgb(15_23_42_/_0.08)] ring-1 ring-border/55 " +
+  "relative overflow-hidden rounded-2xl border border-border/80 shadow-[0_10px_28px_rgb(15_23_42_/_0.08)] ring-1 ring-border/55 " +
   "aspect-[16/10] min-h-[132px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px] xl:min-h-[220px] " +
   "dark:border-white/14 dark:shadow-[0_10px_32px_rgb(0_0_0_/_0.48)] dark:ring-black/45";
 
