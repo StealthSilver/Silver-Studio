@@ -17,7 +17,7 @@ export function Work() {
       {showHeading ? <WorkScrollIntro heading={heading} /> : null}
 
       <ul
-        className="relative m-0 list-none overflow-x-visible overflow-y-visible p-0 max-md:flex max-md:flex-col max-md:gap-4 max-md:px-3 max-md:pb-12"
+        className="relative m-0 list-none overflow-x-visible overflow-y-visible p-0 max-md:flex max-md:flex-col max-md:gap-0 max-md:px-3 max-md:pb-8"
       >
         {items.map((item, index) => (
           <WorkItemRow

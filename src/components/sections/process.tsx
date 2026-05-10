@@ -19,7 +19,11 @@ import {
   workSection,
 } from "@/data/site";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
-import { useNarrowViewport } from "@/lib/use-narrow-viewport";
+import {
+  isNarrowViewportSync,
+  prefersReducedMotionSync,
+  useNarrowViewport,
+} from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 import {
@@ -38,8 +42,12 @@ gsap.registerPlugin(ScrollTrigger);
 const PROCESS_BLOCK_HEIGHT_CLASS = "h-[min(92vh,760px)] min-h-[min(92vh,760px)]";
 
 
+/** Diagram tile: smallest on `max-md` only; ≥`md` matches prior desktop/tablet sizing (`sm`-bump folded into `lg`). */
 const glassPanelClass =
-  "flex aspect-square h-[min(24vh,210px)] w-[min(24vh,210px)] shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 p-5 shadow-sm backdrop-blur-xl max-md:h-[min(20vh,170px)] max-md:w-[min(20vh,170px)] max-md:p-4 sm:h-[min(26vh,240px)] sm:w-[min(26vh,240px)] sm:p-7 dark:border-border/55 dark:bg-card/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]";
+  "flex aspect-square shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-muted/35 shadow-sm backdrop-blur-xl dark:border-border/55 dark:bg-card/40 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)] " +
+  "max-md:h-[min(15.75vh,132px)] max-md:w-[min(15.75vh,132px)] max-md:p-2.5 " +
+  "md:h-[min(24vh,210px)] md:w-[min(24vh,210px)] md:p-5 " +
+  "lg:h-[min(26vh,240px)] lg:w-[min(26vh,240px)] lg:p-7";
 
 const STEP_ANIMATIONS = {
   Discovery: DiscoveryAnimation,
@@ -204,6 +212,7 @@ export function Process() {
 
   useLayoutEffect(() => {
     if (useStaticProcess) return;
+    if (isNarrowViewportSync() || prefersReducedMotionSync()) return;
 
     const pinEl = pinRef.current;
     const stackEl = stackRef.current;

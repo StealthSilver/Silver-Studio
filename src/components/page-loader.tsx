@@ -51,7 +51,14 @@ export function PageLoader({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[240] flex flex-col items-center justify-center overflow-hidden bg-background"
+      className={cn(
+        "fixed inset-0 z-[240] flex w-full max-w-none flex-col overflow-hidden bg-background",
+        /** Full dynamic viewport — avoids resting too high/low when mobile chrome shows/hides. */
+        "min-h-screen min-h-[100dvh]",
+        /** Safe-area aware padding then center bundle (horizontal balance keeps true screen center). */
+        "justify-center pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))] pt-[calc(env(safe-area-inset-top,0px)+0.5rem)]",
+        "items-center",
+      )}
       role="progressbar"
       aria-label="Loading Silver Studios"
       aria-valuemin={0}
@@ -95,9 +102,11 @@ export function PageLoader({
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_90%_at_50%_100%,var(--muted)_0%,transparent_55%)] opacity-40 dark:opacity-25"
       />
 
-      <div className="relative flex flex-col items-center gap-10 px-8 sm:gap-12">
+      <div className="relative flex w-full max-w-[min(20rem,calc(100vw-2rem))] flex-col items-center gap-9 max-[380px]:gap-8 sm:w-auto sm:max-w-none sm:gap-12">
         <motion.div
-          className="relative size-[5.75rem] sm:size-[6.75rem] md:size-[7.5rem]"
+          className={cn(
+            "relative size-[clamp(5rem,38vw,5.75rem)] sm:size-[6.75rem] md:size-[7.5rem]",
+          )}
           initial={false}
           animate={
             phase === "running" && reduceMotion !== true
@@ -128,10 +137,10 @@ export function PageLoader({
           />
         </motion.div>
 
-        <div className="flex w-[min(18.5rem,82vw)] flex-col gap-4">
+        <div className="flex w-full max-w-[min(18.5rem,calc(100vw-2.75rem))] flex-col gap-3.5 max-[380px]:max-w-[min(17rem,calc(100vw-2.25rem))] sm:w-[min(18.5rem,82vw)] sm:gap-4">
           <div
             className={cn(
-              "relative h-[5px] w-full overflow-hidden rounded-full",
+              "relative h-[4px] w-full overflow-hidden rounded-full sm:h-[5px]",
               "bg-muted/55 shadow-inner ring-1 ring-border/55",
               "dark:bg-muted/35 dark:ring-border/40",
             )}
@@ -148,7 +157,7 @@ export function PageLoader({
               style={{ transform: `scaleX(${fillUnit})` }}
             />
           </div>
-          <p className="text-center text-[0.7rem] font-semibold tabular-nums tracking-[0.32em] text-muted-foreground uppercase sm:text-xs">
+          <p className="text-center text-[0.6875rem] font-semibold tabular-nums tracking-[0.28em] text-muted-foreground uppercase max-[380px]:text-[0.625rem] max-[380px]:tracking-[0.24em] sm:text-xs sm:tracking-[0.32em]">
             <span className="text-foreground">{pctRounded}</span>
             <span className="opacity-70">%</span>
           </p>

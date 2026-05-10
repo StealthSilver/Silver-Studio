@@ -163,5 +163,18 @@ html.dark .work-showcase__bg::before {
 
   .work-showcase--simple .work-showcase__panel {
     border-radius: 1rem;
+    border-color: color-mix(in srgb, var(--border) 48%, transparent);
+    box-shadow:
+      0 0 0 0.65px color-mix(in srgb, var(--card) 45%, transparent) inset,
+      0 14px 36px -20px rgb(15 23 42 / 0.07),
+      0 1px 6px -2px rgb(15 23 42 / 0.045);
+  }
+
+  html.dark .work-showcase--simple .work-showcase__panel {
+    border-color: rgb(113 113 122 / 0.45);
+    box-shadow:
+      0 0 0 0.65px rgb(255 255 255 / 0.08) inset,
+      0 20px 48px -22px rgb(0 0 0 / 0.55),
+      0 1px 8px -2px rgb(0 0 0 / 0.38);
   }
 }

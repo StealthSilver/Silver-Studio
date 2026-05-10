@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import Image from "next/image";
 
@@ -6,10 +8,17 @@ import {
   type WorkImageDual,
   type WorkImageSingle,
 } from "@/data/site";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 /** Fraction of the image height visible in the frame (top half / shifted up). */
 const IMAGE_VISIBLE_FRACTION = 0.5;
+
+/**
+ * Narrow layouts: taller frame + cover crop (`object-cover`) so shots read larger; bottom of
+ * the asset stays clipped — desktop unchanged (`IMAGE_VISIBLE_FRACTION`).
+ */
+const IMAGE_VISIBLE_FRACTION_NARROW = 0.88;
 
 /** Outer glass uses `rounded-t-[1.35rem]` + `px-3 pt-3` (sm:`px-4 pt-4`); crop matches inset curve. */
 const IMAGE_CLIP_ALIGNED_TOP =
@@ -50,6 +59,7 @@ function WorkBottomGlassInner({
   visibleHeightFraction = IMAGE_VISIBLE_FRACTION,
   snugChrome,
   fullRoundedChrome,
+  narrowMobilePreview,
   children,
 }: {
   naturalWidth: number;
@@ -59,6 +69,8 @@ function WorkBottomGlassInner({
   snugChrome?: boolean;
   /** Optional full `2rem` card (all sides rounded). Work + Silver UI use top-only docking (`false`). */
   fullRoundedChrome?: boolean;
+  /** Work cards on phones: tighter chrome + taller crop — no effect ≥ md. */
+  narrowMobilePreview?: boolean;
   children: ReactNode;
 }) {
   const visibleHeight = naturalHeight * visibleHeightFraction;
@@ -77,12 +89,22 @@ function WorkBottomGlassInner({
       ? IMAGE_CLIP_ALIGNED_TOP_SNUG
       : IMAGE_CLIP_ALIGNED_TOP;
   return (
-    <div className={frameClass}>
+    <div
+      className={cn(
+        frameClass,
+        narrowMobilePreview &&
+          fullRoundedChrome &&
+          "max-md:rounded-xl max-md:border-white/38 max-md:px-1 max-md:pb-0 max-md:pt-1 max-md:!shadow-[0_-1px_22px_rgb(24_24_27_/_0.05)] dark:max-md:border-white/26 dark:max-md:!shadow-[0_-4px_30px_rgb(0_0_0_/_0.22)]",
+      )}
+    >
       <div
         className={cn(
           "relative w-full overflow-hidden border-0 shadow-none outline-none ring-0",
           !fullRoundedChrome && "rounded-b-none",
           clipClass,
+          narrowMobilePreview &&
+            fullRoundedChrome &&
+            "max-md:!rounded-[calc(0.75rem-6px)]",
         )}
         style={{
           aspectRatio: `${naturalWidth} / ${visibleHeight}`,
@@ -103,6 +125,7 @@ function WorkBottomFrame({
   visibleHeightFraction,
   snugChrome,
   fullRoundedChrome,
+  narrowMobilePreview,
   frameLinkClassName,
 }: {
   children: ReactNode;
@@ -113,6 +136,7 @@ function WorkBottomFrame({
   visibleHeightFraction?: number;
   snugChrome?: boolean;
   fullRoundedChrome?: boolean;
+  narrowMobilePreview?: boolean;
   /** Merged onto the outer `<a>` / wrapper (break out width, hover, etc.) */
   frameLinkClassName?: string;
 }) {
@@ -123,6 +147,7 @@ function WorkBottomFrame({
       visibleHeightFraction={visibleHeightFraction}
       snugChrome={snugChrome}
       fullRoundedChrome={fullRoundedChrome}
+      narrowMobilePreview={narrowMobilePreview}
     >
       {children}
     </WorkBottomGlassInner>
@@ -172,7 +197,7 @@ export function WorkBottomPlaceholder() {
   );
 }
 
-/** Full image width in frame; top `IMAGE_VISIBLE_FRACTION` of image height visible (aligned to top). */
+/** Full-width image; desktop uses top-aligned contain crop; narrow work stack uses cover (vertical clip). */
 function WorkImageFullWidthTopCrop({
   src,
   width,
@@ -181,6 +206,7 @@ function WorkImageFullWidthTopCrop({
   className,
   sizes,
   ariaHidden,
+  narrowCoverCrop,
 }: {
   src: string;
   width: number;
@@ -189,6 +215,7 @@ function WorkImageFullWidthTopCrop({
   className?: string;
   sizes: string;
   ariaHidden?: boolean;
+  narrowCoverCrop?: boolean;
 }) {
   return (
     <Image
@@ -196,10 +223,13 @@ function WorkImageFullWidthTopCrop({
       alt={alt}
       width={width}
       height={height}
-      className={[
-        "absolute left-0 top-0 h-auto w-full max-w-full select-none",
-        className ?? "",
-      ].join(" ")}
+      className={cn(
+        "absolute select-none",
+        narrowCoverCrop ?
+          "inset-0 h-full w-full max-h-none max-w-none object-cover object-top"
+        : "left-0 top-0 h-auto w-full max-w-full object-contain object-[center_top]",
+        className,
+      )}
       sizes={sizes}
       {...(ariaHidden ? { "aria-hidden": true as const } : {})}
     />
@@ -213,6 +243,7 @@ export function WorkBottomSingle({
   visibleHeightFraction,
   snugChrome,
   fullRoundedChrome = false,
+  narrowMobilePreview,
   frameLinkClassName,
   imageSizes,
 }: {
@@ -224,6 +255,7 @@ export function WorkBottomSingle({
   snugChrome?: boolean;
   /** When true, all corners use the standalone `2rem` frame (not used on work / Silver UI). */
   fullRoundedChrome?: boolean;
+  narrowMobilePreview?: boolean;
   frameLinkClassName?: string;
   /** Passed to `<Image sizes="…"/>` — larger widths decode sharper when the preview is scaled up. */
   imageSizes?: string;
@@ -244,6 +276,7 @@ export function WorkBottomSingle({
       visibleHeightFraction={visibleHeightFraction}
       snugChrome={snugChrome}
       fullRoundedChrome={fullRoundedChrome}
+      narrowMobilePreview={narrowMobilePreview}
       frameLinkClassName={frameLinkClassName}
     >
       <WorkImageFullWidthTopCrop
@@ -251,9 +284,12 @@ export function WorkBottomSingle({
         width={image.width}
         height={image.height}
         alt={image.alt}
+        narrowCoverCrop={narrowMobilePreview && !!fullRoundedChrome}
         className={cn(
-          "object-contain object-[center_top]",
           imageClipRounding,
+          narrowMobilePreview &&
+            fullRoundedChrome &&
+            "max-md:!rounded-[calc(0.75rem-6px)]",
         )}
         sizes={
           imageSizes ??
@@ -269,17 +305,28 @@ function WorkBottomDual({
   externalHref,
   externalAriaLabel,
   fullRoundedChrome = false,
+  narrowMobilePreview,
+  visibleHeightFraction,
+  imageSizes,
 }: {
   image: WorkImageDual;
   externalHref?: string;
   externalAriaLabel?: string;
   fullRoundedChrome?: boolean;
+  narrowMobilePreview?: boolean;
+  visibleHeightFraction?: number;
+  imageSizes?: string;
 }) {
   const w = image.light.width;
   const h = image.light.height;
-  const imageClipRounding = fullRoundedChrome
-    ? "rounded-[calc(2rem-12px)] sm:rounded-[calc(2rem-16px)]"
-    : "";
+  const imageClipRounding = cn(
+    fullRoundedChrome && "rounded-[calc(2rem-12px)] sm:rounded-[calc(2rem-16px)]",
+    narrowMobilePreview &&
+      fullRoundedChrome &&
+      "max-md:!rounded-[calc(0.75rem-6px)]",
+  );
+  const sizes =
+    imageSizes ?? "(max-width: 1280px) 100vw, 80rem";
 
   return (
     <WorkBottomFrame
@@ -288,28 +335,26 @@ function WorkBottomDual({
       externalHref={externalHref}
       externalAriaLabel={externalAriaLabel}
       fullRoundedChrome={fullRoundedChrome}
+      narrowMobilePreview={narrowMobilePreview}
+      visibleHeightFraction={visibleHeightFraction}
     >
       <WorkImageFullWidthTopCrop
         src={image.light.src}
         width={image.light.width}
         height={image.light.height}
         alt={image.ariaLabel}
-        className={cn(
-          "object-contain object-[center_top] opacity-95 dark:hidden",
-          imageClipRounding,
-        )}
-        sizes="(max-width: 1280px) 100vw, 80rem"
+        narrowCoverCrop={narrowMobilePreview && !!fullRoundedChrome}
+        className={cn("opacity-95 dark:hidden", imageClipRounding)}
+        sizes={sizes}
       />
       <WorkImageFullWidthTopCrop
         src={image.dark.src}
         width={image.dark.width}
         height={image.dark.height}
         alt=""
-        className={cn(
-          "hidden object-contain object-[center_top] opacity-95 dark:block",
-          imageClipRounding,
-        )}
-        sizes="(max-width: 1280px) 100vw, 80rem"
+        narrowCoverCrop={narrowMobilePreview && !!fullRoundedChrome}
+        className={cn("hidden opacity-95 dark:block", imageClipRounding)}
+        sizes={sizes}
         ariaHidden
       />
     </WorkBottomFrame>
@@ -317,9 +362,16 @@ function WorkBottomDual({
 }
 
 export function WorkBottomPreview({ item }: { item: WorkCard }) {
+  const narrow = useNarrowViewport();
   const { image, siteUrl } = item;
   const previewLabel = siteUrl
     ? `Visit ${item.title} website (opens in new tab)`
+    : undefined;
+  const mobileStack = narrow;
+  const fraction = mobileStack ? IMAGE_VISIBLE_FRACTION_NARROW : undefined;
+  const sizesSharperMobile =
+    mobileStack ?
+      "(max-width: 767px) 100vw, (max-width: 1280px) 100vw, 80rem"
     : undefined;
   if (!image) {
     return <WorkBottomPlaceholder />;
@@ -331,6 +383,9 @@ export function WorkBottomPreview({ item }: { item: WorkCard }) {
         externalHref={siteUrl}
         externalAriaLabel={previewLabel}
         fullRoundedChrome
+        narrowMobilePreview={mobileStack}
+        {...(fraction !== undefined ? { visibleHeightFraction: fraction } : {})}
+        {...(sizesSharperMobile ? { imageSizes: sizesSharperMobile } : {})}
       />
     );
   }
@@ -340,6 +395,11 @@ export function WorkBottomPreview({ item }: { item: WorkCard }) {
       externalHref={siteUrl}
       externalAriaLabel={previewLabel}
       fullRoundedChrome
+      narrowMobilePreview={mobileStack}
+      {...(fraction !== undefined ?
+        { visibleHeightFraction: fraction }
+      : {})}
+      {...(sizesSharperMobile ? { imageSizes: sizesSharperMobile } : {})}
     />
   );
 }

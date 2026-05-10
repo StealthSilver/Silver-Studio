@@ -20,7 +20,7 @@ function SvgFrame({
     <svg
       viewBox="0 0 200 200"
       className={cn(
-        "h-full w-full max-h-[min(26vh,240px)] text-foreground",
+        "h-full w-full shrink-0 text-foreground md:max-h-[min(26vh,240px)] max-md:!h-auto max-md:max-h-[min(13.75vh,120px)] max-md:max-w-[min(13.75vh,120px)]",
         className,
       )}
       role="img"

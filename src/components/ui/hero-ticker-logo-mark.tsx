@@ -56,7 +56,7 @@ export function HeroTickerLogoMark({
           />
         </span>
       ) : (
-        <span className="inline-flex items-center justify-center">
+        <span className="inline-flex items-center justify-center max-md:justify-start md:justify-center">
           <Image
             src={item.light.src}
             alt=""

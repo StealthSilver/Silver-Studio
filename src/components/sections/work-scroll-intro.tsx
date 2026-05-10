@@ -5,7 +5,11 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { useNarrowViewport } from "@/lib/use-narrow-viewport";
+import {
+  isNarrowViewportSync,
+  prefersReducedMotionSync,
+  useNarrowViewport,
+} from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -158,6 +162,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
 
   useLayoutEffect(() => {
     if (useStaticIntro || words.length === 0) return;
+    if (isNarrowViewportSync() || prefersReducedMotionSync()) return;
 
     const pinEl = pinRef.current;
     const trailEl = trailRef.current;
@@ -251,7 +256,25 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
     return null;
   }
 
-  if (useStaticIntro) {
+  /** Phones / narrow viewports: no thumbnail grid runway — heading only, then work cards below. */
+  if (narrowViewport) {
+    return (
+      <div className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] pb-8 pt-10 text-foreground max-md:pb-6 max-md:pt-8 sm:pb-12 sm:pt-14">
+        <div className="mx-auto max-w-7xl px-4 max-md:px-3">
+          <h2 className="flex max-w-5xl flex-row flex-wrap items-baseline gap-x-4 gap-y-2 text-balance text-2xl font-medium uppercase tracking-[0.18em] sm:gap-x-10 sm:text-4xl">
+            {words.map((word, i) => (
+              <span key={`${word}-${i}`} className="inline-block">
+                {word}
+              </span>
+            ))}
+          </h2>
+        </div>
+      </div>
+    );
+  }
+
+  /** Desktop/tablet reduced motion: static grid previews (same as before for non-narrow only). */
+  if (prefersReducedMotion) {
     return (
       <div className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] py-12 text-foreground sm:py-20">
         <div className="mx-auto max-w-7xl px-4 max-md:px-3">

@@ -139,7 +139,7 @@ export function Testimonials() {
       <TestimonialsHeading headingId={headingId} reduced={reduce} />
       <TestimonialsHeadingToContentSpacer />
       <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 max-md:px-4 max-md:pb-20 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
-        <div className="relative grid grid-cols-1 gap-14 max-md:gap-10 md:grid-cols-2 md:gap-20 lg:gap-24">
+        <div className="relative grid grid-cols-1 gap-14 max-md:gap-9 md:grid-cols-2 md:gap-20 lg:gap-24">
           <div className="flex flex-col justify-between gap-10 py-4 max-md:gap-7 md:py-6">
             <AnimatePresence mode="wait">
               <motion.div
@@ -217,7 +217,7 @@ export function Testimonials() {
           </div>
 
           <div className="min-w-0 py-2 md:py-6">
-            <div className="relative h-80 w-full max-md:h-64 md:ml-auto md:max-w-[min(100%,26rem)]">
+            <div className="relative h-80 w-full max-md:mx-auto max-md:h-56 max-md:max-w-[min(100%,17.25rem)] md:ml-auto md:h-80 md:max-w-[min(100%,26rem)]">
               <AnimatePresence mode="sync">
                 {items.map((testimonial, index) => {
                   const gradientClass =
@@ -276,7 +276,7 @@ export function Testimonials() {
                     >
                       <div
                         className={cn(
-                          "relative h-full w-full overflow-hidden rounded-2xl border dark:rounded-3xl",
+                          "relative h-full w-full overflow-hidden rounded-2xl border dark:rounded-3xl max-md:rounded-xl max-md:dark:rounded-2xl",
                           TILE_FRAME,
                         )}
                       >
@@ -285,10 +285,10 @@ export function Testimonials() {
                         <div className={TILE_GLASS} aria-hidden />
                         <div className={TILE_INNER_GLOW} aria-hidden />
                         <div
-                          className="relative flex h-full flex-col items-center justify-center px-6 py-8 max-md:px-4 max-md:py-6 sm:px-10"
+                          className="relative flex h-full flex-col items-center justify-center px-6 py-8 max-md:px-3 max-md:py-5 sm:px-10"
                           aria-hidden
                         >
-                          <div className="flex min-h-[4.5rem] w-full max-w-[min(100%,15rem)] flex-col items-center justify-center max-md:min-h-[3.75rem] max-md:max-w-[min(100%,12.5rem)] sm:min-h-[5.25rem] sm:max-w-[17rem]">
+                          <div className="flex min-h-[4.5rem] w-full max-w-[min(100%,15rem)] flex-col items-center justify-center max-md:min-h-[3.125rem] max-md:max-w-[min(100%,10.75rem)] sm:min-h-[5.25rem] sm:max-w-[17rem]">
                             <div className="flex w-full items-center justify-center dark:hidden">
                               <HeroTickerLogoMark
                                 item={logoItem}

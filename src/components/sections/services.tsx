@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/hero-reveal";
 import { servicesSection, workSection } from "@/data/site";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
-import { useNarrowViewport } from "@/lib/use-narrow-viewport";
+import {
+  isNarrowViewportSync,
+  prefersReducedMotionSync,
+  useNarrowViewport,
+} from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 const SERVICES_HEADING_COPY = "SERVICES WE PROVIDE";
@@ -200,6 +204,7 @@ export function Services() {
 
   useLayoutEffect(() => {
     if (useStaticServices) return;
+    if (isNarrowViewportSync() || prefersReducedMotionSync()) return;
 
     const pinEl = pinRef.current;
     const darkEl = darkRef.current;
@@ -347,12 +352,19 @@ export function Services() {
         className={cn(
           "flex flex-col justify-end",
           useStaticServices
-            ? "relative left-auto top-auto mx-auto mb-6 aspect-[3/4] w-full max-w-[min(100%,17rem)] opacity-100 last:mb-0 max-md:mb-5 max-md:max-w-[min(100%,15rem)] sm:mb-8 sm:max-w-[18rem]"
+            ? "relative left-auto top-auto mx-auto mb-6 aspect-[3/4] w-full max-w-[min(100%,17rem)] opacity-100 last:mb-0 max-md:mb-[1.125rem] max-md:max-w-[min(100%,13.25rem)] sm:mb-8 sm:max-w-[18rem]"
             : ["absolute aspect-[3/4] w-[var(--tile-w)] max-w-none", TILE_TOP[index]].join(
                 " ",
               ),
           GLASS_TILE_BASE,
           isHover ? TILE_BORDER_HOVER : TILE_BORDER_REST,
+          useStaticServices && "max-md:border-2",
+          useStaticServices &&
+            !isHover &&
+            "dark:max-md:border-border/80",
+          useStaticServices &&
+            isHover &&
+            "dark:max-md:border-ring/65",
         )}
         style={
           useStaticServices
@@ -375,11 +387,21 @@ export function Services() {
           }
           disableRevealCanvas
         >
-          <div className="flex flex-col gap-1 px-5 pb-5 pt-6 max-md:px-4 max-md:pb-4 max-md:pt-5 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8">
+          <div
+            className={cn(
+              "flex flex-col gap-1 px-5 pb-5 pt-6 sm:gap-1.5 sm:px-7 sm:pb-6 sm:pt-8",
+              useStaticServices
+                ? "max-md:gap-1 max-md:px-3.5 max-md:pb-3.5 max-md:pt-4"
+                : "max-md:gap-1 max-md:px-4 max-md:pb-4 max-md:pt-5",
+            )}
+          >
             <p
               className={cn(
                 "font-normal leading-none tracking-tight text-foreground",
-                "text-[clamp(2.75rem,10vw,4.5rem)] max-md:text-[clamp(2rem,11vw,3.25rem)]",
+                "text-[clamp(2.75rem,10vw,4.5rem)]",
+                useStaticServices ?
+                  "max-md:text-[clamp(1.6875rem,9vw,2.6875rem)]"
+                : "max-md:text-[clamp(2rem,11vw,3.25rem)]",
               )}
             >
               <BlurRevealBlock

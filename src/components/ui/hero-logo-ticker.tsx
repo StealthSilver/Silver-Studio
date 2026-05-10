@@ -24,7 +24,7 @@ type HeroLogoTickerProps = {
 };
 
 const tickerItemClass =
-  "flex min-h-[2rem] items-center justify-center px-4 max-md:min-h-[1.75rem] max-md:px-3";
+  "flex min-h-[2rem] items-center justify-center px-4 max-md:min-h-[1.375rem] max-md:justify-start max-md:px-0 md:justify-center md:px-4";
 
 const linkClass =
   "inline-flex items-center justify-center rounded-sm outline-offset-4 transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring";
@@ -77,18 +77,18 @@ export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
   return (
     <div
       className={cn(
-        "mt-36 w-full max-md:mt-24 sm:mt-36 lg:mt-44",
+        "mt-36 w-full max-md:mt-24 max-md:px-3 sm:mt-36 lg:mt-44",
         className,
       )}
     >
       <p
         id={labelId}
-        className="mb-8 px-4 text-center text-sm font-medium leading-snug tracking-wide text-muted-foreground max-md:mb-6 max-md:text-xs sm:mb-9 sm:text-base"
+        className="mb-8 px-4 text-center text-sm font-medium leading-snug tracking-wide text-muted-foreground max-md:mb-5 max-md:px-0 max-md:text-left max-md:text-xs sm:mb-9 sm:text-base md:text-center md:px-4"
       >
         {headingContent}
       </p>
       <ul
-        className="m-0 flex list-none flex-wrap items-center justify-center gap-x-16 gap-y-12 px-2 max-md:gap-x-8 max-md:gap-y-8 sm:gap-x-24 sm:gap-y-14"
+        className="m-0 flex list-none flex-wrap items-center justify-center gap-x-16 gap-y-12 px-2 max-md:justify-start max-md:gap-x-6 max-md:gap-y-6 max-md:px-0 sm:gap-x-24 sm:gap-y-14 md:justify-center md:px-2"
         aria-labelledby={labelId}
       >
         {items.map((item, index) => {

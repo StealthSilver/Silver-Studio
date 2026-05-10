@@ -68,7 +68,7 @@ export function WorkItemRow({
         <article
           className={
             narrowViewport
-              ? "relative flex w-full flex-col gap-5 px-4 pb-8 pt-8 text-left"
+              ? "relative flex w-full flex-col gap-5 px-4 pb-0 pt-8 text-left max-md:gap-4"
               : "relative min-h-screen w-full"
           }
           aria-labelledby={titleId}
@@ -129,7 +129,7 @@ export function WorkItemRow({
                 </BlurRevealBlockInView>
               </div>
 
-              <div className="mt-1 w-full">
+              <div className="mt-2 w-full max-md:mt-3 max-md:mb-0">
                 <WorkBottomPreview item={item} />
               </div>
             </>

@@ -489,7 +489,7 @@ export const heroLogoTicker = {
         height: 41,
         sizes: "(max-width:640px) 40vw, 12rem",
         className:
-          "h-7 w-auto max-h-8 max-w-[min(100%,10rem)] object-contain object-left sm:h-8 sm:max-w-[11rem] dark:hidden",
+          "w-auto object-contain object-left max-md:h-5 max-md:max-h-6 max-md:max-w-[min(100%,7.25rem)] md:h-8 md:max-h-8 md:max-w-[11rem] dark:hidden",
       },
       dark: {
         src: "/Logos/sgrids-dark.svg",
@@ -497,7 +497,7 @@ export const heroLogoTicker = {
         height: 41,
         sizes: "(max-width:640px) 40vw, 12rem",
         className:
-          "hidden h-7 w-auto max-h-8 max-w-[min(100%,10rem)] object-contain object-left sm:h-8 sm:max-w-[11rem] dark:block",
+          "hidden w-auto object-contain object-left max-md:h-5 max-md:max-h-6 max-md:max-w-[min(100%,7.25rem)] md:h-8 md:max-h-8 md:max-w-[11rem] dark:block",
         ariaHidden: true,
       },
     },
@@ -506,7 +506,7 @@ export const heroLogoTicker = {
       href: "https://brilliant.org/home/",
       ariaLabel: "Brilliant",
       logoClassName:
-        "h-5 w-auto max-w-[min(100%,6.5rem)] sm:h-5 sm:max-w-[min(100%,7rem)] text-foreground",
+        "w-auto max-md:h-[0.9375rem] max-md:max-w-[min(100%,5.25rem)] md:h-5 md:max-w-[min(100%,7rem)] text-foreground",
     },
     {
       type: "singleImage",
@@ -515,20 +515,22 @@ export const heroLogoTicker = {
       src: "/Logos/serentia.png",
       width: 215,
       height: 37,
-      className: "h-[1.125rem] w-auto max-h-8 object-contain sm:h-5",
+      className:
+        "w-auto max-h-8 object-contain max-md:h-[0.8125rem] md:h-5",
     },
     {
       type: "eighthLight",
       href: "https://8thlight.com/",
       ariaLabel: "8th Light",
       logoClassName:
-        "h-5 w-auto max-w-[min(100%,8rem)] sm:h-5 sm:max-w-[min(100%,8.5rem)] text-foreground",
+        "w-auto max-md:h-4 max-md:max-w-[min(100%,6.25rem)] md:h-5 md:max-w-[min(100%,8.5rem)] text-foreground",
     },
     {
       type: "meshspire",
       href: "https://dev.dg4uqajhampr9.amplifyapp.com/",
       ariaLabel: "Meshspire",
-      logoClassName: "h-7 max-w-[min(100%,10rem)] sm:h-8 sm:max-w-[11rem]",
+      logoClassName:
+        "w-auto max-md:h-[1.25rem] max-md:max-w-[min(100%,8rem)] md:h-8 md:max-w-[11rem]",
     },
   ] as const satisfies readonly HeroTickerItem[],
 } as const;

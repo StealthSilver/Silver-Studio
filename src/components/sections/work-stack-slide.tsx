@@ -66,7 +66,7 @@ export function WorkStackSlide({
     return (
       <li
         ref={ref}
-        className="work-showcase work-showcase--simple text-foreground pb-7 last:pb-0 md:pb-0"
+        className="work-showcase work-showcase--simple text-foreground pb-0"
         style={{ height: "auto", zIndex: index + 1 }}
         data-work={itemSlug}
       >

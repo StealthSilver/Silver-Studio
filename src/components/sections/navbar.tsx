@@ -28,6 +28,7 @@ import {
   scrollToDocumentPercent,
   setPendingNavScrollPercent,
 } from "@/lib/scroll-document-percent";
+import { useNarrowViewport } from "@/lib/use-narrow-viewport";
 import { cn } from "@/lib/utils";
 
 const { links, cta } = navbarData;
@@ -304,6 +305,10 @@ export function Navbar() {
     };
   }, [scrollSnap]);
 
+  const narrowViewport = useNarrowViewport();
+  /** Desktop-only: narrow viewports keep the initial bar (no scroll morph). */
+  const layoutScrolled = scrolled && !narrowViewport;
+
   useEffect(() => {
     if (!scrolled) setOpen(false);
   }, [scrolled]);
@@ -507,7 +512,7 @@ export function Navbar() {
             "fixed left-1/2 z-[60] w-[min(288px,calc(100vw-1.25rem))] max-w-none -translate-x-1/2 overflow-hidden border border-border bg-background shadow-md",
             "rounded-[4px]",
             "top-[calc(var(--site-header-height)+0.5rem+0.375rem)]",
-            !scrolled && "md:hidden",
+            !layoutScrolled && "md:hidden",
           )}
           {...(prefersReducedMotion
             ? {
@@ -561,6 +566,31 @@ export function Navbar() {
                 />
               </motion.li>
             ))}
+            <motion.li
+              variants={menuItemVariants}
+              className={cn(
+                "border-t border-border/60 px-2.5 pb-2 pt-2.5 md:hidden",
+              )}
+            >
+              <span
+                className={cn(HERO_PRIMARY_CTA_WRAP_CLASSNAME, "flex w-full justify-center")}
+              >
+                <BlurRevealBlock
+                  delaySec={mobileMenuDelaySec + 0.06}
+                  instant={revealInstant}
+                  holdUntilSplashDismissed
+                  className="w-full"
+                >
+                  <LetterWaveLink
+                    href={cta.href}
+                    className={`${talkNowButtonClass} flex h-10 w-full max-w-none items-center justify-center px-4 text-[0.8125rem] font-semibold tracking-wide`}
+                    label={cta.label}
+                    onClick={() => setOpen(false)}
+                    centerInContainer
+                  />
+                </BlurRevealBlock>
+              </span>
+            </motion.li>
           </motion.ul>
         </motion.div>
       )}
@@ -572,7 +602,7 @@ export function Navbar() {
       <div
         className={cn(
           "mx-auto rounded-[4px] bg-transparent text-foreground transition-[max-width,box-shadow] duration-300 ease-out motion-reduce:transition-none",
-          scrolled
+          layoutScrolled
             ? "max-w-full overflow-visible shadow-none ring-0 dark:shadow-none"
             : "max-w-7xl max-md:overflow-visible md:overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,1),0_1px_2px_rgba(15,23,42,0.04),0_2px_8px_rgba(15,23,42,0.05),0_6px_16px_rgba(15,23,42,0.05),0_12px_24px_rgba(15,23,42,0.04)] ring-1 ring-border/70 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_1px_2px_rgba(0,0,0,0.35),0_2px_8px_rgba(0,0,0,0.25),0_6px_16px_rgba(0,0,0,0.2),0_12px_24px_rgba(0,0,0,0.15)] dark:ring-border/85",
         )}
@@ -580,7 +610,7 @@ export function Navbar() {
         <nav
           className={cn(
             "relative flex min-h-[3.25rem] items-center gap-3 px-2 py-2 max-md:min-h-12 max-md:gap-2 max-md:px-1.5 sm:min-h-14",
-            scrolled
+            layoutScrolled
               ? "justify-between md:grid md:w-full md:grid-cols-[1fr_auto_1fr] md:items-center"
               : "justify-between",
           )}
@@ -589,7 +619,7 @@ export function Navbar() {
             href={site.homeHref}
             className={cn(
               "flex shrink-0 cursor-pointer items-center gap-1 text-inherit no-underline",
-              scrolled && "md:justify-self-start",
+              layoutScrolled && "md:justify-self-start",
             )}
             onClick={() => setOpen(false)}
           >
@@ -626,17 +656,12 @@ export function Navbar() {
             />
           </Link>
 
-          {scrolled ? (
+          {layoutScrolled ? (
             <>
               <div className="flex flex-1 justify-center md:flex-none md:justify-self-center">
                 {menuToolbarScrolled}
               </div>
-              <div
-                className={cn(
-                  "flex shrink-0 items-center md:justify-self-end",
-                  scrolled && "min-w-0 md:min-w-[1px]",
-                )}
-              >
+              <div className="flex min-w-0 shrink-0 items-center md:min-w-[1px] md:justify-self-end">
                 <span
                   className={cn(HERO_PRIMARY_CTA_WRAP_CLASSNAME, "shrink-0")}
                 >

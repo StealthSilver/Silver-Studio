@@ -11,6 +11,19 @@ export const NARROW_VIEWPORT_MAX_PX = 767;
 
 const QUERY = `(max-width: ${NARROW_VIEWPORT_MAX_PX}px)`;
 
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)" as const;
+
+/** Read breakpoint synchronously — `useNarrowViewport` state lags one commit; ScrollTrigger pins must not run meanwhile. */
+export function isNarrowViewportSync(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(QUERY).matches;
+}
+
+export function prefersReducedMotionSync(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+}
+
 /**
  * Narrow layout must NOT flip on the first client render (`useSyncExternalStore` snapshots
  * can disagree with SSR), or hydration tears down DOM that never matched.
