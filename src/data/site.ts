@@ -323,6 +323,14 @@ export const poweredBySilverUiSection = {
   ctaLabel: "EXPLORE SILVER UI" as const,
   ctaAriaLabel:
     "Explore Silver UI — opens the component library site in a new tab" as const,
+  /** Bottom preview — same glass frame treatment as work section (`WorkBottomSingle`). */
+  previewImage: {
+    type: "single" as const,
+    src: "/silverui.png",
+    width: 3380,
+    height: 1926,
+    alt: "Silver UI component library documentation preview",
+  },
 } as const;
 
 export type TestimonialItem = {
@@ -333,10 +341,6 @@ export type TestimonialItem = {
 
 export const testimonialsSection = {
   id: "testimonials" as const,
-  sectionAriaLabel: "Client testimonials",
-  heading: "What teams notice first",
-  intro:
-    "Anonymous until we publish named case studies—but the recurring themes sound like this.",
   items: [
     {
       quote:
@@ -431,9 +435,6 @@ export type FaqItem = {
 
 export const faqSection = {
   id: "faq" as const,
-  sectionAriaLabel: "Frequently asked questions",
-  heading: "FAQ",
-  intro: "Straight answers to the questions teams ask before kicking off.",
   items: [
     {
       question: "How do engagements usually start?",
@@ -465,10 +466,7 @@ export const faqSection = {
 
 export const finalCtaSection = {
   id: "contact" as const,
-  sectionAriaLabel: "Get in touch",
   heading: "Ready when you are",
-  description:
-    "Share what you're launching, who's it for, and what success looks like—we'll propose a pragmatic path inside a couple of days.",
   primaryCta: { href: "/#contact", label: hero.primaryCta.label },
   secondaryCta: hero.secondaryCta,
 } as const;

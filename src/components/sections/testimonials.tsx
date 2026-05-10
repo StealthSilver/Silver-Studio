@@ -7,6 +7,44 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { testimonialsSection } from "@/data/site";
 import { cn } from "@/lib/utils";
 
+/** Same full-bleed rule + heading scale as `Services` / `Process` / `Faq`. */
+const FULL_BLEED_ROW =
+  "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
+
+const TESTIMONIALS_HEADING_CLASS =
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+
+function TestimonialsPreRuleSpacer() {
+  return <div className="h-10 shrink-0 sm:h-14 lg:h-16" aria-hidden />;
+}
+
+function TestimonialsTopRule() {
+  return (
+    <div className={FULL_BLEED_ROW}>
+      <div className="border-t border-border/70 dark:border-border/50" aria-hidden />
+    </div>
+  );
+}
+
+function TestimonialsHeading({ headingId }: { headingId: string }) {
+  return (
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+      <div className="flex w-full max-w-7xl items-start justify-between gap-6">
+        <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
+          <h2 id={headingId} className={TESTIMONIALS_HEADING_CLASS}>
+            WHAT TEAMS NOTICE
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** A bit more air than FAQ heading spacer so the carousel doesn’t feel tight. */
+function TestimonialsHeadingToContentSpacer() {
+  return <div className="h-8 shrink-0 sm:h-10 lg:h-12" aria-hidden />;
+}
+
 /** Gradient “avatars” — one style per testimonial index (no photos yet). */
 const PLACEHOLDER_GRADIENTS = [
   "bg-[radial-gradient(85%_75%_at_20%_15%,#dbeafe_0%,transparent_52%),radial-gradient(70%_85%_at_80%_25%,#c4b5fd_0%,transparent_58%),radial-gradient(85%_90%_at_50%_100%,#99f6e4_0%,transparent_60%),linear-gradient(140deg,#ffffff_0%,#ecfeff_38%,#eef2ff_100%)] dark:bg-[radial-gradient(85%_75%_at_20%_15%,#1d4ed8_0%,transparent_55%),radial-gradient(70%_85%_at_80%_25%,#6d28d9_0%,transparent_60%),radial-gradient(85%_90%_at_50%_100%,#0f766e_0%,transparent_62%),linear-gradient(140deg,#0b1215_0%,#11191d_42%,#151f24_100%)]",
@@ -20,7 +58,8 @@ const GLASS_OVERLAY =
   "pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.45),rgba(255,255,255,0.1))] dark:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.14),rgba(255,255,255,0.03))]";
 
 export function Testimonials() {
-  const { id, sectionAriaLabel, heading, intro, items } = testimonialsSection;
+  const { id, items } = testimonialsSection;
+  const headingId = `${id}-heading`;
   const [active, setActive] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   const reduce = Boolean(prefersReducedMotion);
@@ -46,86 +85,16 @@ export function Testimonials() {
   return (
     <section
       id={id}
-      aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-border/70 pb-24 pt-16 sm:scroll-mt-32 sm:pb-32 sm:pt-20"
+      aria-labelledby={headingId}
+      className="w-full scroll-mt-28 bg-background text-foreground sm:scroll-mt-32"
     >
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 sm:gap-12">
-        <div className="max-w-2xl">
-          <h2 className="text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            {heading}
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-            {intro}
-          </p>
-        </div>
-
-        <div className="relative grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16 lg:gap-20">
-          <div>
-            <div className="relative h-80 w-full">
-              <AnimatePresence mode="sync">
-                {items.map((testimonial, index) => {
-                  const gradientClass =
-                    PLACEHOLDER_GRADIENTS[index % PLACEHOLDER_GRADIENTS.length];
-                  const activeSlide = index === active;
-                  /** Back cards sit slightly lower so edges read as a straight deck (no tilt). */
-                  const backOffsetY = 14 + index * 12;
-
-                  return (
-                    <motion.div
-                      key={`${testimonial.name}-${testimonial.role}-${index}`}
-                      initial={
-                        reduce
-                          ? { opacity: 0 }
-                          : {
-                              opacity: 0,
-                              scale: 0.92,
-                              z: -100,
-                            }
-                      }
-                      animate={{
-                        opacity: activeSlide ? 1 : reduce ? 0.5 : 0.72,
-                        scale: activeSlide ? 1 : reduce ? 0.97 : 0.94,
-                        z: activeSlide ? 0 : -100,
-                        rotate: 0,
-                        zIndex: activeSlide
-                          ? 40
-                          : count + 2 - index,
-                        y: reduce
-                          ? activeSlide
-                            ? 0
-                            : backOffsetY
-                          : activeSlide
-                            ? [0, -48, 0]
-                            : backOffsetY,
-                      }}
-                      exit={
-                        reduce
-                          ? { opacity: 0 }
-                          : {
-                              opacity: 0,
-                              scale: 0.92,
-                              z: 100,
-                              rotate: 0,
-                            }
-                      }
-                      transition={{
-                        duration: reduce ? 0.2 : 0.4,
-                        ease: "easeInOut",
-                      }}
-                      className="absolute inset-0 origin-center"
-                    >
-                      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/90 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] dark:border-border/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]">
-                        <div className={cn("absolute inset-0", gradientClass)} />
-                        <div className={GLASS_OVERLAY} aria-hidden />
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between gap-10 py-2 md:py-4">
+      <TestimonialsPreRuleSpacer />
+      <TestimonialsTopRule />
+      <TestimonialsHeading headingId={headingId} />
+      <TestimonialsHeadingToContentSpacer />
+      <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
+        <div className="relative grid grid-cols-1 gap-14 md:grid-cols-2 md:gap-20 lg:gap-24">
+          <div className="flex flex-col justify-between gap-10 py-4 md:py-6">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
@@ -214,6 +183,71 @@ export function Testimonials() {
                 </button>
               </div>
             )}
+          </div>
+
+          <div className="min-w-0 py-2 md:py-6">
+            <div className="relative h-80 w-full md:ml-auto md:max-w-[min(100%,26rem)]">
+              <AnimatePresence mode="sync">
+                {items.map((testimonial, index) => {
+                  const gradientClass =
+                    PLACEHOLDER_GRADIENTS[index % PLACEHOLDER_GRADIENTS.length];
+                  const activeSlide = index === active;
+                  /** Back cards sit slightly lower so edges read as a straight deck (no tilt). */
+                  const backOffsetY = 14 + index * 12;
+
+                  return (
+                    <motion.div
+                      key={`${testimonial.name}-${testimonial.role}-${index}`}
+                      initial={
+                        reduce
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              scale: 0.92,
+                              z: -100,
+                            }
+                      }
+                      animate={{
+                        opacity: activeSlide ? 1 : reduce ? 0.5 : 0.72,
+                        scale: activeSlide ? 1 : reduce ? 0.97 : 0.94,
+                        z: activeSlide ? 0 : -100,
+                        rotate: 0,
+                        zIndex: activeSlide
+                          ? 40
+                          : count + 2 - index,
+                        y: reduce
+                          ? activeSlide
+                            ? 0
+                            : backOffsetY
+                          : activeSlide
+                            ? [0, -48, 0]
+                            : backOffsetY,
+                      }}
+                      exit={
+                        reduce
+                          ? { opacity: 0 }
+                          : {
+                              opacity: 0,
+                              scale: 0.92,
+                              z: 100,
+                              rotate: 0,
+                            }
+                      }
+                      transition={{
+                        duration: reduce ? 0.2 : 0.4,
+                        ease: "easeInOut",
+                      }}
+                      className="absolute inset-0 origin-center"
+                    >
+                      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/90 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] dark:border-border/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]">
+                        <div className={cn("absolute inset-0", gradientClass)} />
+                        <div className={GLASS_OVERLAY} aria-hidden />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>

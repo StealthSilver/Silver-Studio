@@ -1,69 +1,65 @@
 import {
   LetterWaveLink,
-  OUTLINE_CTA_BUTTON_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { finalCtaSection } from "@/data/site";
 
+/** Same full-bleed rule + heading scale as `Services` / `Process` / `Faq`. */
+const FULL_BLEED_ROW =
+  "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
+
+const FINAL_CTA_HEADING_CLASS =
+  "text-center text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+
+function FinalCtaPreRuleSpacer() {
+  return <div className="h-10 shrink-0 sm:h-14 lg:h-16" aria-hidden />;
+}
+
+function FinalCtaTopRule() {
+  return (
+    <div className={FULL_BLEED_ROW}>
+      <div className="border-t border-border/70 dark:border-border/50" aria-hidden />
+    </div>
+  );
+}
+
+function FinalCtaHeading({ headingId, title }: { headingId: string; title: string }) {
+  return (
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+      <div className="flex w-full max-w-7xl flex-col items-center justify-center gap-6">
+        <div className="min-w-0 max-w-[min(100%,44rem)] px-2 text-center">
+          <h2 id={headingId} className={FINAL_CTA_HEADING_CLASS}>
+            {title}
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FinalCtaHeadingToContentSpacer() {
+  return <div className="h-6 shrink-0 sm:h-8 lg:h-10" aria-hidden />;
+}
+
 export function FinalCta() {
-  const { id, sectionAriaLabel, heading, description, primaryCta } = finalCtaSection;
+  const { id, heading, primaryCta } = finalCtaSection;
+  const headingId = `${id}-heading`;
 
   return (
     <section
       id={id}
-      aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 pb-16 pt-20 sm:scroll-mt-32 sm:pb-24 sm:pt-28"
+      aria-labelledby={headingId}
+      className="w-full scroll-mt-28 bg-background text-foreground sm:scroll-mt-32"
     >
-      <div className="mx-auto w-full max-w-6xl">
-        <div
-          className={[
-            "relative isolate overflow-hidden rounded-2xl border border-border/90 px-6 py-12 text-center sm:rounded-3xl sm:px-12 sm:py-16",
-            "bg-gradient-to-br from-secondary/95 via-card/90 to-secondary/80 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.92),0_32px_90px_-46px_rgb(15_23_42_/_0.12)] backdrop-blur-xl dark:border-border/55 dark:from-background/96 dark:via-secondary/94 dark:to-card/90 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06),0_38px_100px_-40px_rgb(0_0_0_/_0.65)]",
-          ].join(" ")}
-        >
-          <div
-            className="pointer-events-none absolute -left-24 -top-24 size-[26rem] rounded-full bg-[radial-gradient(circle,rgb(247_249_251_/_0.95),transparent_66%)] dark:bg-[radial-gradient(circle,rgb(37_48_56_/_0.45),transparent_66%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute -bottom-24 -right-24 size-[24rem] rounded-full bg-[radial-gradient(circle,rgb(238_242_245_/_0.75),transparent_65%)] dark:bg-[radial-gradient(circle,rgb(21_38_45_/_0.38),transparent_68%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,transparent_0%,rgb(255_255_255_/_0.48)_50%,transparent_100%)] opacity-50 dark:bg-[linear-gradient(to_right,transparent_0%,rgb(255_255_255_/_0.04)_50%,transparent_100%)]"
-            aria-hidden
-          />
-
-          <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-8">
-            <div className="space-y-4">
-              <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-                {heading}
-              </h2>
-              <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-                {description}
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-3.5">
-              <LetterWaveLink
-                href={primaryCta.href}
-                className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide shadow-[0_14px_32px_-20px_rgb(24_24_27_/_0.55)]"
-                label={primaryCta.label}
-              />
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-1 text-[11px] font-medium tracking-[0.24em] text-muted-foreground sm:text-xs">
-              <span>FAST TIMELINES</span>
-              <span
-                className="hidden h-1 w-1 rounded-full bg-muted-foreground/50 sm:inline-block"
-                aria-hidden
-              />
-              <span>SENIOR EXECUTION</span>
-              <span
-                className="hidden h-1 w-1 rounded-full bg-muted-foreground/50 sm:inline-block"
-                aria-hidden
-              />
-              <span>NO AGENCY BLOAT</span>
-            </div>
-          </div>
-        </div>
+      <FinalCtaPreRuleSpacer />
+      <FinalCtaTopRule />
+      <FinalCtaHeading headingId={headingId} title={heading} />
+      <FinalCtaHeadingToContentSpacer />
+      <div className="mx-auto box-border flex w-full max-w-7xl justify-center px-5 pb-16 sm:px-8 sm:pb-24 lg:px-12">
+        <LetterWaveLink
+          href={primaryCta.href}
+          className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide shadow-[0_14px_32px_-20px_rgb(24_24_27_/_0.55)]"
+          label={primaryCta.label}
+        />
       </div>
     </section>
   );

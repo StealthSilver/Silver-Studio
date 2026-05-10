@@ -7,13 +7,51 @@ import type { FaqItem } from "@/data/site";
 import { faqSection } from "@/data/site";
 import { cn } from "@/lib/utils";
 
+/** Same full-bleed rule + heading scale as `Services` / `Process`. */
+const FULL_BLEED_ROW =
+  "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
+
+const FAQ_HEADING_CLASS =
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+
+function FaqPreRuleSpacer() {
+  return <div className="h-10 shrink-0 sm:h-14 lg:h-16" aria-hidden />;
+}
+
+function FaqTopRule() {
+  return (
+    <div className={FULL_BLEED_ROW}>
+      <div className="border-t border-border/70 dark:border-border/50" aria-hidden />
+    </div>
+  );
+}
+
+function FaqHeading({ headingId }: { headingId: string }) {
+  return (
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+      <div className="flex w-full max-w-7xl items-start justify-between gap-6">
+        <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
+          <h2 id={headingId} className={FAQ_HEADING_CLASS}>
+            COMMON QUESTIONS
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Same spacing as `ProcessHeadingToBlocksSpacer`. */
+function FaqHeadingToAccordionSpacer() {
+  return <div className="h-6 shrink-0 sm:h-8 lg:h-10" aria-hidden />;
+}
+
 const faqAccordionItemClass = (isOpen: boolean) =>
   cn(
     "rounded-2xl border border-border/80 bg-muted/35 shadow-sm backdrop-blur-xl transition-[border-color,box-shadow]",
-    "dark:border-border/55 dark:bg-card/38 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)]",
+    "dark:border-border/55 dark:bg-card/38",
     isOpen
-      ? "border-border shadow-md shadow-foreground/[0.04] dark:border-border/80"
-      : "hover:border-border dark:hover:border-border/65",
+      ? "border-border dark:border-border/80 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08)]"
+      : "dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)] hover:border-border dark:hover:border-border/65",
   );
 
 function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly FaqItem[] }) {
@@ -96,31 +134,21 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
 }
 
 export function Faq() {
-  const { id, sectionAriaLabel, heading, intro, items } = faqSection;
-  const phaseLabel = heading.toUpperCase();
+  const { id, items } = faqSection;
+  const headingId = `${id}-heading`;
 
   return (
     <section
       id={id}
-      aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-border/60 bg-background text-foreground"
+      aria-labelledby={headingId}
+      className="w-full scroll-mt-28 bg-background text-foreground sm:scroll-mt-32"
     >
-      <div className="mx-auto box-border flex w-full max-w-7xl flex-col gap-10 px-5 py-14 sm:gap-12 sm:px-8 sm:py-16 md:gap-14 lg:flex-row lg:items-start lg:justify-between lg:gap-12 lg:px-12 lg:py-20 xl:gap-16">
-        <header className="flex max-w-xl shrink-0 flex-col lg:sticky lg:top-28 lg:max-w-[min(52%,560px)]">
-          <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
-            COMMON QUESTIONS
-          </span>
-          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
-            {phaseLabel}
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {intro}
-          </p>
-        </header>
-
-        <div className="min-w-0 flex-1 lg:max-w-[min(100%,640px)] lg:pt-1 xl:max-w-none">
-          <FaqAccordion idPrefix={id} items={items} />
-        </div>
+      <FaqPreRuleSpacer />
+      <FaqTopRule />
+      <FaqHeading headingId={headingId} />
+      <FaqHeadingToAccordionSpacer />
+      <div className="mx-auto box-border w-full max-w-7xl px-5 pb-14 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
+        <FaqAccordion idPrefix={id} items={items} />
       </div>
     </section>
   );

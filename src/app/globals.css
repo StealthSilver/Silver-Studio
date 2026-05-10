@@ -19,11 +19,12 @@ html {
   scrollbar-gutter: stable;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
+/*
+ * Avoid `scroll-behavior: smooth` on the scrolling root: it fights GSAP ScrollTrigger
+ * (pin + scrub in Services, Work intro, Process, etc.) and causes janky or “broken” scroll.
+ * In-page jumps still respect `scroll-mt-*`; use JS `scrollIntoView({ behavior: 'smooth' })`
+ * for targeted smooth navigation if needed.
+ */
 
 :root {
   /* Collapsed navbar: header mt-1 + nav min-h (border-box incl. py-2). Sync with navbar.tsx */

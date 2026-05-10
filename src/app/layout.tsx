@@ -111,7 +111,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={cn("font-sans", ibmPlexSans.variable)}
-      data-scroll-behavior="smooth"
+      data-scroll-behavior="auto"
     >
       <head>
         <script

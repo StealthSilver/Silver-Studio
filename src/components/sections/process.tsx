@@ -35,8 +35,50 @@ const STEP_ANIMATIONS = {
   Deployment: DeploymentAnimation,
 } as const satisfies Record<(typeof processSection.steps)[number]["title"], FC>;
 
+/** Same full-bleed rule + heading scale as `Services` / `PoweredBySilverUi`. */
+const FULL_BLEED_ROW =
+  "relative w-screen max-w-[100vw] shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
+
+const PROCESS_HEADING_CLASS =
+  "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
+
+function ProcessTopRule() {
+  return (
+    <div className={FULL_BLEED_ROW}>
+      <div className="border-t border-border/70 dark:border-border/50" aria-hidden />
+    </div>
+  );
+}
+
+function ProcessHeading({ headingId }: { headingId: string }) {
+  return (
+    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+      <div className="flex w-full max-w-7xl items-start justify-between gap-6">
+        <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
+          <h2 id={headingId} className={PROCESS_HEADING_CLASS}>
+            PROCESS WE FOLLOW
+          </h2>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Breathing room between the section title and the pinned steps. */
+function ProcessHeadingToBlocksSpacer() {
+  return (
+    <div className="h-6 shrink-0 sm:h-8 lg:h-10" aria-hidden />
+  );
+}
+
 /** Vertical scroll distance per overlap — slightly above 1× so scrub reaches full progress for the last block. */
 const SCROLL_PER_OVERLAP_VH = 1.02;
+
+/**
+ * Extra scroll (in viewport heights) while pinned at the rule + heading before the
+ * stack animation begins — mirrors `INTRO_SCROLL_HOLD` in `services.tsx`.
+ */
+const INTRO_SCROLL_VH = 0.65;
 
 /**
  * Incoming step’s top border sits flush under the previous step’s description
@@ -48,8 +90,11 @@ const DESC_TO_LINE_GAP_PX = 1;
 const STOP_Y_CEILING_MARGIN_PX = 6;
 
 export function Process() {
-  const { id, sectionAriaLabel, steps } = processSection;
+  const { id, steps } = processSection;
+  const headingId = `${id}-heading`;
   const pinRef = useRef<HTMLDivElement>(null);
+  /** Layers are `translateY`’d relative to this box — measurements must use its top, not `pinRef`. */
+  const stackRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const descRefs = useRef<(HTMLParagraphElement | null)[]>([]);
 
@@ -67,11 +112,12 @@ export function Process() {
     if (prefersReducedMotion) return;
 
     const pinEl = pinRef.current;
+    const stackEl = stackRef.current;
     const cards = steps.map((_, i) => cardRefs.current[i]);
     const missingCard = cards.some((c) => !c);
 
     const descElsOk = steps.every((_, i) => !!descRefs.current[i]);
-    if (!pinEl || missingCard || !descElsOk) return;
+    if (!pinEl || !stackEl || missingCard || !descElsOk) return;
 
     const layers = cards as HTMLDivElement[];
 
@@ -79,6 +125,19 @@ export function Process() {
 
     const layerHeightPx = (): number =>
       layers[0]?.offsetHeight ?? pinEl.offsetHeight;
+
+    const scrollEndPx = (): number =>
+      window.innerHeight *
+      (INTRO_SCROLL_VH + overlapCount * SCROLL_PER_OVERLAP_VH);
+
+    const introProgressCap =
+      INTRO_SCROLL_VH /
+      (INTRO_SCROLL_VH + overlapCount * SCROLL_PER_OVERLAP_VH);
+
+    const stackProgress = (p: number): number =>
+      p <= introProgressCap
+        ? 0
+        : (p - introProgressCap) / (1 - introProgressCap);
 
     /**
      * For each incoming layer k (index 1..n-1), y so this layer’s top edge
@@ -93,15 +152,15 @@ export function Process() {
           if (k < i) gsap.set(layers[k], { y: ys[k], yPercent: 0 });
           else gsap.set(layers[k], { y: H, yPercent: 0 });
         }
-        void pinEl.offsetHeight;
+        void stackEl.offsetHeight;
         const desc = descRefs.current[i - 1];
         if (!desc) {
           ys[i] = H;
           continue;
         }
-        const pinTop = pinEl.getBoundingClientRect().top;
+        const stackTop = stackEl.getBoundingClientRect().top;
         const descBottom = desc.getBoundingClientRect().bottom;
-        const raw = descBottom - pinTop + DESC_TO_LINE_GAP_PX;
+        const raw = descBottom - stackTop + DESC_TO_LINE_GAP_PX;
         const maxY = Math.max(0, H - STOP_Y_CEILING_MARGIN_PX);
         ys[i] = Math.min(raw, maxY);
       }
@@ -109,15 +168,16 @@ export function Process() {
     };
 
     const applyProgress = (p: number, stopYs: number[], H: number) => {
+      const animP = stackProgress(p);
       gsap.set(layers[0], { y: 0, yPercent: 0 });
       for (let i = 1; i < layers.length; i++) {
         const start = (i - 1) / overlapCount;
         const end = i / overlapCount;
         let y: number;
-        if (p <= start) y = H;
-        else if (p >= end) y = stopYs[i] ?? H;
+        if (animP <= start) y = H;
+        else if (animP >= end) y = stopYs[i] ?? H;
         else {
-          const t = (p - start) / (end - start);
+          const t = (animP - start) / (end - start);
           const target = stopYs[i] ?? H;
           y = H + (target - H) * t;
         }
@@ -131,9 +191,10 @@ export function Process() {
       const st = ScrollTrigger.create({
         trigger: pinEl,
         start: "top top",
-        end: () => `+=${overlapCount * window.innerHeight * SCROLL_PER_OVERLAP_VH}`,
+        end: () => `+=${scrollEndPx()}`,
         pin: true,
         scrub: 1,
+        anticipatePin: 1,
         invalidateOnRefresh: true,
         onRefresh: (self) => {
           stopYs = measureStopYs();
@@ -169,72 +230,82 @@ export function Process() {
   return (
     <section
       id={id}
-      aria-label={sectionAriaLabel}
-      className="w-full scroll-mt-28 border-t border-border/60 bg-background text-foreground"
+      aria-labelledby={headingId}
+      className="w-full scroll-mt-28 bg-background text-foreground sm:scroll-mt-32"
     >
       {prefersReducedMotion ? (
-        <ul className="m-0 flex list-none flex-col p-0">
-          {steps.map((step, index) => (
-            <ProcessStepRow key={step.title} step={step} index={index} />
-          ))}
-        </ul>
+        <>
+          <ProcessTopRule />
+          <ProcessHeading headingId={headingId} />
+          <ProcessHeadingToBlocksSpacer />
+          <ul className="m-0 flex list-none flex-col p-0">
+            {steps.map((step, index) => (
+              <ProcessStepRow key={step.title} step={step} index={index} />
+            ))}
+          </ul>
+        </>
       ) : (
-        <div
-          ref={pinRef}
-          className={cn(
-            "relative isolate w-full overflow-hidden border-border/50",
-            PROCESS_BLOCK_HEIGHT_CLASS,
-          )}
-        >
-          {steps.map((step, index) => {
-            const num = String(index + 1).padStart(2, "0");
-            const Animation = STEP_ANIMATIONS[step.title];
-            const phase = step.title.toUpperCase();
+        <div ref={pinRef} className="relative flex w-full flex-col">
+          <ProcessTopRule />
+          <ProcessHeading headingId={headingId} />
+          <ProcessHeadingToBlocksSpacer />
+          <div
+            ref={stackRef}
+            className={cn(
+              "relative isolate w-full overflow-hidden border-border/50",
+              PROCESS_BLOCK_HEIGHT_CLASS,
+            )}
+          >
+            {steps.map((step, index) => {
+              const num = String(index + 1).padStart(2, "0");
+              const Animation = STEP_ANIMATIONS[step.title];
+              const phase = step.title.toUpperCase();
 
-            return (
-              <div
-                key={step.title}
-                ref={(el) => {
-                  cardRefs.current[index] = el;
-                }}
-                className={cn(
-                  "absolute inset-x-0 top-0 box-border will-change-transform",
-                  PROCESS_BLOCK_HEIGHT_CLASS,
-                )}
-                style={{ zIndex: index + 1 }}
-              >
-                <article
+              return (
+                <div
+                  key={step.title}
+                  ref={(el) => {
+                    cardRefs.current[index] = el;
+                  }}
                   className={cn(
-                    "box-border flex min-h-0 h-full flex-col gap-6 overflow-hidden border-t px-5 py-6 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",
-                    index === 0
-                      ? "border-transparent bg-background"
-                      : "border-border/55 bg-background",
+                    "absolute inset-x-0 top-0 box-border will-change-transform",
+                    PROCESS_BLOCK_HEIGHT_CLASS,
                   )}
+                  style={{ zIndex: index + 1 }}
                 >
-                  <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
-                    <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
-                      {num}
-                    </span>
-                    <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
-                      {phase}
-                    </h2>
-                    <p
-                      ref={(el) => {
-                        descRefs.current[index] = el;
-                      }}
-                      className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
-                      title={step.description}
-                    >
-                      {step.description}
-                    </p>
-                  </div>
-                  <div className={glassPanelClass}>
-                    <Animation />
-                  </div>
-                </article>
-              </div>
-            );
-          })}
+                  <article
+                    className={cn(
+                      "box-border flex min-h-0 h-full flex-col gap-6 overflow-hidden border-t px-5 py-6 sm:px-8 md:flex-row md:items-start md:justify-between md:gap-8 lg:px-12 xl:mx-auto xl:max-w-7xl",
+                      index === 0
+                        ? "border-transparent bg-background"
+                        : "border-border/55 bg-background",
+                    )}
+                  >
+                    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
+                      <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
+                        {num}
+                      </span>
+                      <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
+                        {phase}
+                      </h2>
+                      <p
+                        ref={(el) => {
+                          descRefs.current[index] = el;
+                        }}
+                        className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
+                        title={step.description}
+                      >
+                        {step.description}
+                      </p>
+                    </div>
+                    <div className={glassPanelClass}>
+                      <Animation />
+                    </div>
+                  </article>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </section>
