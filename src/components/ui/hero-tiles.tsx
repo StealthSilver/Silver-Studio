@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 
+import { useHeroRevealHeld } from "@/context/hero-reveal-held-context";
 import { cn } from "@/lib/utils";
 
 export const HERO_TILE_COUNT = 5;
@@ -70,10 +71,18 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
             ),
       )}
     >
+      {/* Light-only: faint sky tint (pairs with Final CTA / work-section blues). */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 z-0 rounded-[inherit] dark:hidden",
+          "bg-[linear-gradient(185deg,rgb(236_243_251_/_0.42)_0%,transparent_38%,rgb(228_238_251_/_0.32)_100%),radial-gradient(ellipse_72%_58%_at_50%_52%,rgb(154_182_212_/_0.09)_0%,transparent_62%)]",
+        )}
+      />
       {/* Browser chrome */}
       <div
         className={cn(
-          "flex shrink-0 items-center gap-2 border-b border-border/65 px-2.5 py-2 sm:px-3 sm:py-2.5 dark:border-border/48",
+          "relative z-[1] flex shrink-0 items-center gap-2 border-b border-border/65 px-2.5 py-2 sm:px-3 sm:py-2.5 dark:border-border/48",
           "bg-card/50 dark:bg-muted/58",
         )}
       >
@@ -90,13 +99,13 @@ function GlassWebTile({ index, accent }: { index: number; accent?: boolean }) {
       </div>
 
       {/* Mini landing hero — neutral glass only */}
-      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="relative z-[1] flex min-h-0 flex-1 flex-col overflow-hidden">
         <div
           className={cn(
             "pointer-events-none absolute inset-0 backdrop-blur-[2px]",
             accent
-              ? "bg-gradient-to-br from-zinc-400/[0.09] via-transparent to-slate-400/[0.06] dark:from-border/35 dark:to-border/22"
-              : "bg-gradient-to-br from-zinc-500/[0.07] via-transparent to-zinc-400/[0.05] dark:from-border/25 dark:to-border/14",
+              ? "bg-gradient-to-br from-slate-400/[0.07] via-transparent to-sky-200/[0.06] dark:from-border/35 dark:to-border/22"
+              : "bg-gradient-to-br from-slate-500/[0.055] via-transparent to-sky-100/[0.05] dark:from-border/25 dark:to-border/14",
           )}
           aria-hidden
         />
@@ -227,9 +236,12 @@ function HeroTileDraggable({
   reveal?: HeroTilesReveal;
 }) {
   const reduceMotion = useReducedMotion();
+  const revealHeld = useHeroRevealHeld();
   const [hovered, setHovered] = useState(false);
   const stackZ = tileStackZ(index);
   const accent = index === 3 || hovered;
+  const freezeReveal =
+    reveal && !reveal.instant && revealHeld;
 
   return (
     <motion.div
@@ -241,19 +253,29 @@ function HeroTileDraggable({
         zIndex: stackZ,
       }}
       initial={
-        reveal ? (reveal.instant ? false : { opacity: 0 }) : false
+        reveal
+          ? reveal.instant
+            ? false
+            : { opacity: 0, filter: "blur(12px)", y: 22 }
+          : false
       }
-      animate={reveal ? { opacity: 1 } : undefined}
+      animate={
+        reveal
+          ? freezeReveal
+            ? { opacity: 0, filter: "blur(12px)", y: 22 }
+            : { opacity: 1, filter: "blur(0px)", y: 0 }
+          : undefined
+      }
       transition={
         reveal
           ? {
-              opacity: {
-                delay: reveal.instant
+              delay:
+                reveal.instant || freezeReveal
                   ? 0
                   : ((reveal.baseStep + index) * reveal.staggerMs) / 1000,
-                duration: reveal.instant ? 0 : reveal.duration,
-                ease: [0.25, 0.46, 0.45, 0.94],
-              },
+              duration:
+                reveal.instant || freezeReveal ? 0 : reveal.duration,
+              ease: "easeInOut",
             }
           : undefined
       }

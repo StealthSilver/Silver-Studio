@@ -11,6 +11,9 @@ import {
   type ReactNode,
 } from "react";
 
+import { useSplashGateActive } from "@/context/splash-interactive-context";
+import { SITE_AMBIENT_MUSIC_SRC } from "@/lib/home-load-readiness";
+
 type AmbientMusicContextValue = {
   musicOn: boolean;
   /** True while `<audio>` is actively playing (`play`/`pause` events — wave UI follows this). */
@@ -21,8 +24,6 @@ type AmbientMusicContextValue = {
 const AmbientMusicContext = createContext<AmbientMusicContextValue | null>(
   null,
 );
-
-const MUSIC_SRC = "/music.mp3";
 
 /** Audible envelope when playback is allowed (start, loop wrap, returning to tab, unmute). */
 const FADE_IN_MS = 3000;
@@ -38,6 +39,10 @@ function cancelRaf(id: number | null) {
 }
 
 export function AmbientMusicProvider({ children }: { children: ReactNode }) {
+  const splashGateActive = useSplashGateActive();
+  const splashGateActiveRef = useRef(splashGateActive);
+  splashGateActiveRef.current = splashGateActive;
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const volumeRafRef = useRef<number | null>(null);
   const segmentStartRef = useRef<number | null>(null);
@@ -201,7 +206,7 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const audio = new Audio(MUSIC_SRC);
+    const audio = new Audio(SITE_AMBIENT_MUSIC_SRC);
     audio.loop = false;
     audio.preload = "auto";
     audioRef.current = audio;
@@ -226,6 +231,7 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
      * first input — those paths retry without adding other pause triggers.
      */
     const resumeIfEligible = () => {
+      if (splashGateActiveRef.current) return;
       if (!musicOnRef.current || document.visibilityState !== "visible") return;
       if (!audioRef.current || !audio.paused) return;
       void beginPlayRef.current(false);
@@ -263,9 +269,11 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const syncPlaybackIntent = () => {
-      /** Only two stop conditions: user chose pause (`musicOff`) or tab is not visible. */
+      /** Pause while home splash is up; otherwise respect mute + tab visibility. */
       const wantsSound =
-        musicOnRef.current && document.visibilityState === "visible";
+        musicOnRef.current &&
+        document.visibilityState === "visible" &&
+        !splashGateActive;
 
       if (wantsSound) {
         void beginPlayRef.current(false);
@@ -284,7 +292,7 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
       document.removeEventListener("visibilitychange", syncPlaybackIntent);
       window.removeEventListener("pageshow", syncPlaybackIntent);
     };
-  }, [musicOn]);
+  }, [musicOn, splashGateActive]);
 
   const toggleMusic = useCallback(() => {
     setMusicOn((v) => !v);

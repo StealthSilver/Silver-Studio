@@ -2,7 +2,12 @@
 
 import { ChevronDown } from "lucide-react";
 import { useCallback, useId, useMemo, useState } from "react";
+import { useReducedMotion } from "motion/react";
 
+import {
+  BlurRevealWordsInView,
+  BlurRevealWordsWhen,
+} from "@/components/ui/hero-reveal";
 import type { FaqItem } from "@/data/site";
 import { faqSection } from "@/data/site";
 import { cn } from "@/lib/utils";
@@ -26,13 +31,22 @@ function FaqTopRule() {
   );
 }
 
-function FaqHeading({ headingId }: { headingId: string }) {
+function FaqHeading({
+  headingId,
+  reduced,
+}: {
+  headingId: string;
+  reduced: boolean;
+}) {
   return (
     <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={FAQ_HEADING_CLASS}>
-            COMMON QUESTIONS
+            <BlurRevealWordsInView
+              text="COMMON QUESTIONS"
+              reduced={reduced}
+            />
           </h2>
         </div>
       </div>
@@ -54,7 +68,15 @@ const faqAccordionItemClass = (isOpen: boolean) =>
       : "dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.08),0_12px_40px_rgb(0_0_0_/_0.35)] hover:border-border dark:hover:border-border/65",
   );
 
-function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly FaqItem[] }) {
+function FaqAccordion({
+  idPrefix,
+  items,
+  reduced,
+}: {
+  idPrefix: string;
+  items: readonly FaqItem[];
+  reduced: boolean;
+}) {
   const reactId = useId();
   const base = useMemo(
     () => idPrefix.replace(/[^a-z0-9-]/gi, "-") || "faq",
@@ -97,7 +119,11 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
                     {itemNum}
                   </span>
                   <span className="min-w-0 text-sm font-semibold leading-snug text-foreground sm:text-[15px]">
-                    {item.question}
+                    <BlurRevealWordsInView
+                      text={item.question}
+                      reduced={reduced}
+                      viewport={{ once: true, amount: "some", margin: "0px 0px -8% 0px" }}
+                    />
                   </span>
                 </span>
                 <ChevronDown
@@ -122,7 +148,17 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
             >
               <div className="min-h-0">
                 <div className="border-t border-border/60 px-4 pb-5 pt-3 text-sm leading-relaxed text-muted-foreground sm:px-5 sm:text-[15px] sm:leading-relaxed">
-                  {item.answer}
+                  {reduced ? (
+                    isOpen ? (
+                      item.answer
+                    ) : null
+                  ) : isOpen ? (
+                    <BlurRevealWordsWhen
+                      text={item.answer}
+                      reduced={reduced}
+                      active
+                    />
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -136,6 +172,8 @@ function FaqAccordion({ idPrefix, items }: { idPrefix: string; items: readonly F
 export function Faq() {
   const { id, items } = faqSection;
   const headingId = `${id}-heading`;
+  const prefersReducedMotion = useReducedMotion();
+  const reduced = prefersReducedMotion === true;
 
   return (
     <section
@@ -145,10 +183,10 @@ export function Faq() {
     >
       <FaqPreRuleSpacer />
       <FaqTopRule />
-      <FaqHeading headingId={headingId} />
+      <FaqHeading headingId={headingId} reduced={reduced} />
       <FaqHeadingToAccordionSpacer />
       <div className="mx-auto box-border w-full max-w-7xl px-5 pb-14 sm:px-8 sm:pb-16 lg:px-12 lg:pb-20">
-        <FaqAccordion idPrefix={id} items={items} />
+        <FaqAccordion idPrefix={id} items={items} reduced={reduced} />
       </div>
     </section>
   );

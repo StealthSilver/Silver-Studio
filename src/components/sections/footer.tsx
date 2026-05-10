@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useReducedMotion } from "motion/react";
 import { FaDiscord, FaEnvelope } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
+import { BlurRevealWordsInView } from "@/components/ui/hero-reveal";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { footer as footerData, navbar, site } from "@/data/site";
 import { STANDARD_ICON_BUTTON_CLASS } from "@/lib/standard-icon-button";
@@ -26,7 +28,10 @@ function SocialIcon({ network }: { network: "x" | "discord" }) {
 }
 
 export function Footer() {
+  const prefersReducedMotion = useReducedMotion();
+  const reduced = prefersReducedMotion === true;
   const mailto = `mailto:${footerData.contactEmail}`;
+  const copyrightCopy = `© ${copyrightYear} ${footerData.copyrightOrg}. ${footerData.copyrightSuffix}`;
 
   return (
     <footer
@@ -69,7 +74,7 @@ export function Footer() {
                 />
               </span>
               <span className="text-[1.0625rem] font-semibold tracking-tight text-foreground">
-                {site.name}
+                <BlurRevealWordsInView text={site.name} reduced={reduced} />
               </span>
             </Link>
 
@@ -107,13 +112,22 @@ export function Footer() {
             className="flex w-full shrink-0 flex-col gap-1 lg:w-auto lg:items-end lg:pt-0.5"
           >
             <ul className="flex flex-col items-start gap-1.5 sm:gap-2 lg:items-end">
-              {navbar.links.map((link) => (
+              {navbar.links.map((link, linkIndex) => (
                 <li key={link.href} className="w-full lg:w-auto lg:text-right">
                   <Link
                     href={link.href}
                     className={cn(linkBase, "inline-block px-0.5 py-0.5")}
                   >
-                    {link.label}
+                    <BlurRevealWordsInView
+                      text={link.label}
+                      reduced={reduced}
+                      startDelayMs={linkIndex * 60}
+                      viewport={{
+                        once: true,
+                        amount: "some",
+                        margin: "0px 0px -12% 0px",
+                      }}
+                    />
                   </Link>
                 </li>
               ))}
@@ -127,7 +141,7 @@ export function Footer() {
         <div className="mx-auto w-full max-w-7xl px-4 pb-3 pt-5 sm:px-6 sm:pb-4 lg:px-8 lg:pb-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
             <p className="text-[0.8125rem] leading-snug text-muted-foreground">
-              © {copyrightYear} {footerData.copyrightOrg}. {footerData.copyrightSuffix}
+              <BlurRevealWordsInView text={copyrightCopy} reduced={reduced} />
             </p>
             <div className="flex shrink-0 items-center sm:ml-auto">
               <ThemeSwitcher />

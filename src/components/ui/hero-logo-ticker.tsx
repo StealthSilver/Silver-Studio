@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
-import { useMemo } from "react";
 
-import {
-  FadeRevealSpan,
-  splitHeroWords,
-} from "@/components/ui/hero-reveal";
+import { BlurRevealWordsInline } from "@/components/ui/hero-reveal";
 import { HeroTickerLogoMark } from "@/components/ui/hero-ticker-logo-mark";
+import { useHeroRevealHeld } from "@/context/hero-reveal-held-context";
 import { heroLogoTicker } from "@/data/site";
 import { cn } from "@/lib/utils";
 
@@ -62,25 +59,17 @@ function TickerExternalLink({
  */
 export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
   const { heading, labelId, items } = heroLogoTicker;
-
-  const headingWords = useMemo(() => splitHeroWords(heading), [heading]);
+  const revealHeld = useHeroRevealHeld();
+  const freezeLogoReveal = reveal !== undefined && !reveal.instant && revealHeld;
 
   const headingContent =
     reveal !== undefined ? (
-      <>
-        {headingWords.map((word, i) => (
-          <FadeRevealSpan
-            key={`hero-ticker-head-${i}`}
-            stepIndex={reveal.headingWordStart + i}
-            staggerMs={reveal.staggerMs}
-            duration={reveal.duration}
-            instant={reveal.instant}
-          >
-            {word}
-            {i < headingWords.length - 1 ? "\u00A0" : ""}
-          </FadeRevealSpan>
-        ))}
-      </>
+      <BlurRevealWordsInline
+        text={heading}
+        reduced={reveal.instant}
+        staggerMs={reveal.staggerMs}
+        startDelayMs={reveal.headingWordStart * reveal.staggerMs}
+      />
     ) : (
       heading
     );
@@ -116,14 +105,23 @@ export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
             <motion.li
               key={`${item.type}-${item.href}`}
               className={tickerItemClass}
-              initial={reveal.instant ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={
+                reveal.instant
+                  ? false
+                  : { opacity: 0, filter: "blur(12px)", y: 14 }
+              }
+              animate={
+                freezeLogoReveal
+                  ? { opacity: 0, filter: "blur(12px)", y: 14 }
+                  : { opacity: 1, filter: "blur(0px)", y: 0 }
+              }
               transition={{
-                duration: reveal.instant ? 0 : reveal.duration,
-                delay: reveal.instant
-                  ? 0
-                  : ((reveal.logoStart + index) * reveal.staggerMs) / 1000,
-                ease: [0.25, 0.46, 0.45, 0.94],
+                duration: reveal.instant || freezeLogoReveal ? 0 : reveal.duration,
+                delay:
+                  reveal.instant || freezeLogoReveal
+                    ? 0
+                    : ((reveal.logoStart + index) * reveal.staggerMs) / 1000,
+                ease: "easeInOut",
               }}
             >
               {inner}

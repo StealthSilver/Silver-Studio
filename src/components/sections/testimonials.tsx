@@ -4,6 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
+import {
+  BlurRevealWordsInView,
+  BlurRevealWordsWhen,
+  HERO_REVEAL_STAGGER_MS,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
 import { HeroTickerLogoMark } from "@/components/ui/hero-ticker-logo-mark";
 import { heroLogoTicker, testimonialsSection } from "@/data/site";
 import { STANDARD_ICON_BUTTON_CLASS } from "@/lib/standard-icon-button";
@@ -28,13 +34,22 @@ function TestimonialsTopRule() {
   );
 }
 
-function TestimonialsHeading({ headingId }: { headingId: string }) {
+function TestimonialsHeading({
+  headingId,
+  reduced,
+}: {
+  headingId: string;
+  reduced: boolean;
+}) {
   return (
     <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={TESTIMONIALS_HEADING_CLASS}>
-            WHAT TEAMS NOTICE
+            <BlurRevealWordsInView
+              text="WHAT TEAMS NOTICE"
+              reduced={reduced}
+            />
           </h2>
         </div>
       </div>
@@ -102,6 +117,12 @@ export function Testimonials() {
   if (!count) return null;
 
   const activeItem = items[active];
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const gap = staggerMs * 2;
+  const nameWords = splitHeroWords(activeItem.name).length;
+  const roleWords = splitHeroWords(activeItem.role).length;
+  const roleStartMs = nameWords * staggerMs + gap;
+  const quoteStartMs = roleStartMs + roleWords * staggerMs + gap;
 
   return (
     <section
@@ -111,7 +132,7 @@ export function Testimonials() {
     >
       <TestimonialsPreRuleSpacer />
       <TestimonialsTopRule />
-      <TestimonialsHeading headingId={headingId} />
+      <TestimonialsHeading headingId={headingId} reduced={reduce} />
       <TestimonialsHeadingToContentSpacer />
       <div className="mx-auto flex w-full max-w-7xl flex-col px-5 pb-28 sm:px-8 sm:pb-36 lg:px-12 lg:pb-40">
         <div className="relative grid grid-cols-1 gap-14 md:grid-cols-2 md:gap-20 lg:gap-24">
@@ -130,41 +151,32 @@ export function Testimonials() {
                 }}
               >
                 <h3 className="text-2xl font-semibold tracking-tight text-foreground">
-                  {activeItem.name}
+                  <BlurRevealWordsWhen
+                    key={`t-name-${active}`}
+                    text={activeItem.name}
+                    reduced={reduce}
+                    active
+                  />
                 </h3>
-                <p className="mt-1 text-sm text-muted-foreground">{activeItem.role}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  <BlurRevealWordsWhen
+                    key={`t-role-${active}`}
+                    text={activeItem.role}
+                    reduced={reduce}
+                    active
+                    startDelayMs={roleStartMs}
+                  />
+                </p>
 
-                {reduce ? (
-                  <p className="mt-8 text-lg leading-relaxed text-muted-foreground">
-                    {activeItem.quote}
-                  </p>
-                ) : (
-                  <motion.p className="mt-8 text-lg leading-relaxed text-muted-foreground">
-                    {activeItem.quote.split(" ").map((word, wordIndex) => (
-                      <motion.span
-                        key={`${active}-${wordIndex}-${word}`}
-                        initial={{
-                          filter: "blur(10px)",
-                          opacity: 0,
-                          y: 5,
-                        }}
-                        animate={{
-                          filter: "blur(0px)",
-                          opacity: 1,
-                          y: 0,
-                        }}
-                        transition={{
-                          duration: 0.2,
-                          ease: "easeInOut",
-                          delay: 0.02 * wordIndex,
-                        }}
-                        className="inline-block"
-                      >
-                        {word}&nbsp;
-                      </motion.span>
-                    ))}
-                  </motion.p>
-                )}
+                <p className="mt-8 text-lg leading-relaxed text-muted-foreground">
+                  <BlurRevealWordsWhen
+                    key={`t-quote-${active}`}
+                    text={activeItem.quote}
+                    reduced={reduce}
+                    active
+                    startDelayMs={quoteStartMs}
+                  />
+                </p>
               </motion.div>
             </AnimatePresence>
 

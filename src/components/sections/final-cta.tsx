@@ -1,4 +1,14 @@
+"use client";
+
+import { useReducedMotion } from "motion/react";
+
 import { CtaBeamsLazy } from "@/components/ui/cta-beams-dynamic";
+import {
+  BlurRevealBlockInView,
+  BlurRevealWordsInView,
+  HERO_REVEAL_STAGGER_MS,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
 import {
   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
@@ -25,12 +35,20 @@ function FinalCtaTopRule() {
   );
 }
 
-function FinalCtaHeading({ headingId, title }: { headingId: string; title: string }) {
+function FinalCtaHeading({
+  headingId,
+  title,
+  reduced,
+}: {
+  headingId: string;
+  title: string;
+  reduced: boolean;
+}) {
   return (
     <div className="flex w-full justify-center">
       <div className="min-w-0 max-w-[min(100%,44rem)] px-2 text-center">
         <h2 id={headingId} className={FINAL_CTA_HEADING_CLASS}>
-          {title}
+          <BlurRevealWordsInView text={title} reduced={reduced} />
         </h2>
       </div>
     </div>
@@ -44,6 +62,12 @@ const CTA_BEAMS_BAND =
 export function FinalCta() {
   const { id, heading, primaryCta } = finalCtaSection;
   const headingId = `${id}-heading`;
+  const prefersReducedMotion = useReducedMotion();
+  const reduced = prefersReducedMotion === true;
+  const headingWordCount = splitHeroWords(heading).length;
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const ctaDelaySec =
+    (headingWordCount * staggerMs + staggerMs * 2) / 1000;
 
   return (
     <section
@@ -83,15 +107,21 @@ export function FinalCta() {
           className={`relative z-10 flex w-full ${CTA_BEAMS_BAND} flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8`}
         >
           <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-8 sm:gap-10">
-            <FinalCtaHeading headingId={headingId} title={heading} />
+            <FinalCtaHeading headingId={headingId} title={heading} reduced={reduced} />
             <div className="flex justify-center">
-              <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
+              <BlurRevealBlockInView
+                reduced={reduced}
+                delaySec={ctaDelaySec}
+                y={8}
+                blurPx={10}
+                className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}
+              >
                 <LetterWaveLink
                   href={primaryCta.href}
                   className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
                   label={primaryCta.label}
                 />
-              </span>
+              </BlurRevealBlockInView>
             </div>
           </div>
         </div>

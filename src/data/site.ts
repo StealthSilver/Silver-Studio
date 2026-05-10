@@ -246,27 +246,27 @@ export const processSection = {
     {
       title: "Discovery",
       description:
-        'We align on goals, audience, constraints, and what "done" looks like—gathering context so later choices stay grounded in outcomes, not assumptions.',
+        "We clarify goals, audience, constraints, and what success means together.",
     },
     {
       title: "Direction",
       description:
-        "We shape positioning, narrative, and structure—defining the journey, key messaging, and milestones so design and build share one clear north star.",
+        "We shape positioning, milestones, and the story your product needs to tell.",
     },
     {
       title: "Design",
       description:
-        "We translate strategy into layouts, type, motion, and UI patterns—iterating with you until the experience feels intentional, legible, and on-brand.",
+        "Translate strategy into layouts, type, motion, and UI you can stress-test.",
     },
     {
       title: "Development",
       description:
-        "We implement performant, accessible front ends with tidy architecture—hooked up to your content and tooling so the site is stable as it scales.",
+        "Build performant, accessible interfaces with clean architecture that scales.",
     },
     {
       title: "Deployment",
       description:
-        "We launch carefully—checks for speed, SEO basics, and analytics—then hand off what's needed so your team can own releases with confidence.",
+        "Launch with performance and SEO basics covered; handoff for calm releases.",
     },
   ],
 } as const;

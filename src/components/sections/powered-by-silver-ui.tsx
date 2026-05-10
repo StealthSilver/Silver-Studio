@@ -1,3 +1,14 @@
+"use client";
+
+import { useMemo } from "react";
+import { useReducedMotion } from "motion/react";
+
+import {
+  BlurRevealBlockInView,
+  BlurRevealWordsInView,
+  HERO_REVEAL_STAGGER_MS,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
 import {
   LetterWaveLink,
   OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
@@ -13,6 +24,8 @@ const FULL_BLEED_ROW =
 const HEADING_CLASS =
   "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
+const SECTION_HEADING_COPY = "POWERED BY SILVER UI";
+
 /** Crop height — taller so artwork reaches nearer the section rule below (Process top line). */
 const POWERED_PREVIEW_VISIBLE_FRACTION = 0.9;
 
@@ -25,11 +38,21 @@ function TopRule() {
 }
 
 export function PoweredBySilverUi() {
+  const reduceMotion = useReducedMotion() === true;
   const { id, intro, externalHref, ctaLabel, ctaAriaLabel, previewImage } =
     poweredBySilverUiSection;
   const headingId = `${id}-heading`;
   const previewLinkLabel =
     "Silver UI preview — opens the component library site in a new tab";
+
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const headingWordCount = splitHeroWords(SECTION_HEADING_COPY).length;
+  const introDelayMs = headingWordCount * staggerMs;
+  const introWordCount = useMemo(
+    () => splitHeroWords(intro).length,
+    [intro],
+  );
+  const ctaDelaySec = (introDelayMs + introWordCount * staggerMs + staggerMs * 2) / 1000;
 
   return (
     <section
@@ -47,24 +70,39 @@ export function PoweredBySilverUi() {
                 <div className="pb-6 sm:pb-8 lg:pb-10">
                   <div className="pt-[4.25rem] sm:pt-20 lg:pt-24">
                     <h2 id={headingId} className={HEADING_CLASS}>
-                      POWERED BY SILVER UI
+                      <BlurRevealWordsInView
+                        text={SECTION_HEADING_COPY}
+                        reduced={reduceMotion}
+                      />
                     </h2>
                   </div>
                 </div>
 
                 <p className="text-base leading-relaxed text-muted-foreground sm:text-[17px] sm:leading-[1.65]">
-                  {intro}
+                  <BlurRevealWordsInView
+                    text={intro}
+                    reduced={reduceMotion}
+                    startDelayMs={introDelayMs}
+                  />
                 </p>
 
                 <div className="mt-8 flex justify-start sm:mt-10">
-                  <LetterWaveLink
-                    href={externalHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
-                    label={ctaLabel}
-                    ariaLabel={ctaAriaLabel}
-                  />
+                  <BlurRevealBlockInView
+                    reduced={reduceMotion}
+                    delaySec={ctaDelaySec}
+                    className="inline-flex"
+                    y={8}
+                    blurPx={10}
+                  >
+                    <LetterWaveLink
+                      href={externalHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
+                      label={ctaLabel}
+                      ariaLabel={ctaAriaLabel}
+                    />
+                  </BlurRevealBlockInView>
                 </div>
               </div>
             </div>

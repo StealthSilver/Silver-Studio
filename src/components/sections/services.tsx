@@ -4,10 +4,19 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { servicesSection, workSection } from "@/data/site";
 import { CardSpotlight } from "@/components/ui/card-spotlight";
+import {
+  BlurRevealBlock,
+  BlurRevealWordsInline,
+  BlurRevealWordsInView,
+  HERO_REVEAL_STAGGER_MS,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
+import { servicesSection, workSection } from "@/data/site";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
 import { cn } from "@/lib/utils";
+
+const SERVICES_HEADING_COPY = "SERVICES WE PROVIDE";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -122,13 +131,22 @@ function ServicesBottomRule() {
   );
 }
 
-function ServicesHeading({ headingId }: { headingId: string }) {
+function ServicesHeading({
+  headingId,
+  reduced,
+}: {
+  headingId: string;
+  reduced: boolean;
+}) {
   return (
     <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={SERVICES_HEADING_CLASS}>
-            SERVICES WE PROVIDE
+            <BlurRevealWordsInView
+              text={SERVICES_HEADING_COPY}
+              reduced={reduced}
+            />
           </h2>
         </div>
       </div>
@@ -145,11 +163,17 @@ function ServicesPrePinSpacer() {
   );
 }
 
-function ServicesSectionIntro({ headingId }: { headingId: string }) {
+function ServicesSectionIntro({
+  headingId,
+  reduced,
+}: {
+  headingId: string;
+  reduced: boolean;
+}) {
   return (
     <>
       <ServicesTopRule />
-      <ServicesHeading headingId={headingId} />
+      <ServicesHeading headingId={headingId} reduced={reduced} />
     </>
   );
 }
@@ -293,10 +317,23 @@ export function Services() {
     };
   }, [prefersReducedMotion]);
 
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const servicesHeadingEndMs =
+    splitHeroWords(SERVICES_HEADING_COPY).length * staggerMs;
+  const tileRevealGapMs = 14 * staggerMs;
+
   const tilesMarkup = TILES.map((tile, index) => {
     const isHover = hoveredTile === index;
     const stackZ = 10 + index;
     const z = isHover ? HOVER_Z : stackZ;
+
+    const tileBaseMs =
+      servicesHeadingEndMs + 80 + index * tileRevealGapMs;
+    const numDelaySec = tileBaseMs / 1000;
+    const labelStartMs = tileBaseMs + Math.round(staggerMs * 2);
+    const labelWordCount = splitHeroWords(tile.label).length;
+    const oneLinerStartMs =
+      labelStartMs + labelWordCount * staggerMs + Math.round(staggerMs * 1.25);
 
     return (
       <article
@@ -342,11 +379,29 @@ export function Services() {
                 "text-[clamp(2.75rem,10vw,4.5rem)]",
               )}
             >
-              {tile.num}
+              <BlurRevealBlock
+                instant={prefersReducedMotion}
+                delaySec={numDelaySec}
+                blurPx={8}
+                y={4}
+                className="inline-block"
+              >
+                {tile.num}
+              </BlurRevealBlock>
             </p>
-            <p className={SERVICE_CARD_SUBLINE_CLASS}>{tile.label}</p>
+            <p className={SERVICE_CARD_SUBLINE_CLASS}>
+              <BlurRevealWordsInline
+                text={tile.label}
+                reduced={prefersReducedMotion}
+                startDelayMs={labelStartMs}
+              />
+            </p>
             <p className={cn(SERVICE_CARD_ONE_LINER_CLASS, "mt-4 sm:mt-5")}>
-              {tile.oneLiner}
+              <BlurRevealWordsInline
+                text={tile.oneLiner}
+                reduced={prefersReducedMotion}
+                startDelayMs={oneLinerStartMs}
+              />
             </p>
           </div>
         </CardSpotlight>
@@ -364,7 +419,7 @@ export function Services() {
         className="mx-auto w-full max-w-7xl shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 sm:scroll-mt-32"
       >
         <ServicesPrePinSpacer />
-        <ServicesSectionIntro headingId={headingId} />
+        <ServicesSectionIntro headingId={headingId} reduced />
         <div
           className={cn(
             "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 pb-16 pt-0 sm:px-6 lg:px-8",
@@ -389,7 +444,7 @@ export function Services() {
         className="relative flex w-full max-w-7xl flex-col"
       >
         <ServicesTopRule />
-        <ServicesHeading headingId={headingId} />
+        <ServicesHeading headingId={headingId} reduced={prefersReducedMotion} />
         <div className="relative flex min-h-[100vh] w-full flex-col px-4 sm:px-6 lg:px-8">
           <div ref={darkRef} className={SECTION_WASH} aria-hidden />
           <div className="relative z-[2] flex h-full min-h-0 w-full flex-1 py-2">

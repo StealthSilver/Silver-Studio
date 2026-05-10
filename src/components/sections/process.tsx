@@ -6,6 +6,13 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import {
+  BlurRevealBlock,
+  BlurRevealWordsInline,
+  BlurRevealWordsInView,
+  HERO_REVEAL_STAGGER_MS,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
+import {
   poweredBySilverUiSection,
   processSection,
   servicesSection,
@@ -48,6 +55,8 @@ const FULL_BLEED_ROW =
 const PROCESS_HEADING_CLASS =
   "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
+const PROCESS_HEADING_COPY = "PROCESS WE FOLLOW";
+
 function ProcessTopRule() {
   return (
     <div className={FULL_BLEED_ROW}>
@@ -56,16 +65,86 @@ function ProcessTopRule() {
   );
 }
 
-function ProcessHeading({ headingId }: { headingId: string }) {
+function ProcessHeading({
+  headingId,
+  reduced,
+}: {
+  headingId: string;
+  reduced: boolean;
+}) {
   return (
     <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
       <div className="flex w-full max-w-7xl items-start justify-between gap-6">
         <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
           <h2 id={headingId} className={PROCESS_HEADING_CLASS}>
-            PROCESS WE FOLLOW
+            <BlurRevealWordsInView
+              text={PROCESS_HEADING_COPY}
+              reduced={reduced}
+            />
           </h2>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Step copy blur timing shares hero stagger; `headingEndMs` is when the section title finishes its word resolves. */
+function ProcessCopyColumn({
+  step,
+  index,
+  reduced,
+  headingEndMs,
+  descRef,
+}: {
+  step: (typeof processSection.steps)[number];
+  index: number;
+  reduced: boolean;
+  headingEndMs: number;
+  descRef?: (el: HTMLParagraphElement | null) => void;
+}) {
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const num = String(index + 1).padStart(2, "0");
+  const phase = step.title.toUpperCase();
+  const stepGapMs = 13 * staggerMs;
+  const baseMs = headingEndMs + 90 + index * stepGapMs;
+
+  const numDelaySec = baseMs / 1000;
+  const phaseStartMs = baseMs + staggerMs * 3;
+  const phaseWordCount = splitHeroWords(phase).length;
+  const descStartMs =
+    phaseStartMs + phaseWordCount * staggerMs + staggerMs;
+
+  return (
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
+      <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
+        <BlurRevealBlock
+          instant={reduced}
+          delaySec={numDelaySec}
+          y={4}
+          blurPx={8}
+          className="inline-block"
+        >
+          {num}
+        </BlurRevealBlock>
+      </span>
+      <h3 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
+        <BlurRevealWordsInline
+          text={phase}
+          reduced={reduced}
+          startDelayMs={phaseStartMs}
+        />
+      </h3>
+      <p
+        ref={descRef}
+        className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
+        title={step.description}
+      >
+        <BlurRevealWordsInline
+          text={step.description}
+          reduced={reduced}
+          startDelayMs={descStartMs}
+        />
+      </p>
     </div>
   );
 }
@@ -277,6 +356,10 @@ export function Process() {
     };
   }, [prefersReducedMotion, steps.length]);
 
+  const staggerMs = HERO_REVEAL_STAGGER_MS;
+  const processHeadingEndMs =
+    splitHeroWords(PROCESS_HEADING_COPY).length * staggerMs;
+
   return (
     <section
       id={id}
@@ -286,18 +369,27 @@ export function Process() {
       {prefersReducedMotion ? (
         <>
           <ProcessTopRule />
-          <ProcessHeading headingId={headingId} />
+          <ProcessHeading headingId={headingId} reduced />
           <ProcessHeadingToBlocksSpacer />
           <ul className="m-0 flex list-none flex-col p-0">
             {steps.map((step, index) => (
-              <ProcessStepRow key={step.title} step={step} index={index} />
+              <ProcessStepRow
+                key={step.title}
+                step={step}
+                index={index}
+                headingEndMs={processHeadingEndMs}
+                reduced
+              />
             ))}
           </ul>
         </>
       ) : (
         <div ref={pinRef} className="relative flex w-full flex-col">
           <ProcessTopRule />
-          <ProcessHeading headingId={headingId} />
+          <ProcessHeading
+            headingId={headingId}
+            reduced={prefersReducedMotion}
+          />
           <ProcessHeadingToBlocksSpacer />
           <div
             ref={stackRef}
@@ -307,9 +399,7 @@ export function Process() {
             )}
           >
             {steps.map((step, index) => {
-              const num = String(index + 1).padStart(2, "0");
               const Animation = STEP_ANIMATIONS[step.title];
-              const phase = step.title.toUpperCase();
 
               return (
                 <div
@@ -331,23 +421,15 @@ export function Process() {
                         : "border-border/55 bg-background",
                     )}
                   >
-                    <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
-                      <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
-                        {num}
-                      </span>
-                      <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
-                        {phase}
-                      </h2>
-                      <p
-                        ref={(el) => {
-                          descRefs.current[index] = el;
-                        }}
-                        className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
-                        title={step.description}
-                      >
-                        {step.description}
-                      </p>
-                    </div>
+                    <ProcessCopyColumn
+                      step={step}
+                      index={index}
+                      reduced={prefersReducedMotion}
+                      headingEndMs={processHeadingEndMs}
+                      descRef={(el) => {
+                        descRefs.current[index] = el;
+                      }}
+                    />
                     <div className={glassPanelClass}>
                       <Animation />
                     </div>
@@ -365,13 +447,15 @@ export function Process() {
 function ProcessStepRow({
   step,
   index,
+  headingEndMs,
+  reduced,
 }: {
   step: (typeof processSection.steps)[number];
   index: number;
+  headingEndMs: number;
+  reduced: boolean;
 }) {
-  const num = String(index + 1).padStart(2, "0");
   const Animation = STEP_ANIMATIONS[step.title];
-  const phase = step.title.toUpperCase();
 
   return (
     <li className="m-0 border-t border-border/55 p-0 first:border-t-0">
@@ -381,20 +465,12 @@ function ProcessStepRow({
           PROCESS_BLOCK_HEIGHT_CLASS,
         )}
       >
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col items-start justify-start md:max-w-[min(52%,560px)]">
-          <span className="font-mono text-xs font-medium tracking-[0.35em] text-muted-foreground sm:text-sm">
-            {num}
-          </span>
-          <h2 className="mt-2 text-xl font-semibold tracking-[0.14em] sm:text-2xl">
-            {phase}
-          </h2>
-          <p
-            className="mt-4 w-full truncate text-sm text-muted-foreground sm:text-[15px]"
-            title={step.description}
-          >
-            {step.description}
-          </p>
-        </div>
+        <ProcessCopyColumn
+          step={step}
+          index={index}
+          reduced={reduced}
+          headingEndMs={headingEndMs}
+        />
         <div className={glassPanelClass}>
           <Animation />
         </div>

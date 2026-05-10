@@ -9,7 +9,7 @@ import {
 
 import { HeroLogoTicker } from "@/components/ui/hero-logo-ticker";
 import {
-  FadeRevealSpan,
+  BlurRevealWordsInline,
   HERO_REVEAL_DURATION_S,
   HERO_REVEAL_STAGGER_MS,
   splitHeroWords,
@@ -21,6 +21,7 @@ import {
   OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { heroLogoTicker } from "@/data/site";
+import { useHeroRevealHeld } from "@/context/hero-reveal-held-context";
 import {
   scrollToDocumentPercent,
   setPendingNavScrollPercent,
@@ -46,7 +47,9 @@ export function HeroEntry({
   const pathname = usePathname();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
+  const revealHeld = useHeroRevealHeld();
   const instant = !!reduceMotion || splashRevealBypass;
+  const freezeMotion = revealHeld && !instant;
 
   const scrollBehavior: ScrollBehavior =
     reduceMotion === true ? "auto" : "smooth";
@@ -70,11 +73,7 @@ export function HeroEntry({
     [],
   );
 
-  let step = 0;
-  const headlineStart = step;
-  step += headlineWords.length;
-  const descStart = step;
-  step += descWords.length;
+  let step = headlineWords.length + descWords.length;
   const primaryCtaStep = step++;
   const secondaryCtaStep = step++;
   const tilesRevealBase = step;
@@ -94,42 +93,30 @@ export function HeroEntry({
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-2 text-left lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-12 lg:gap-x-10">
         <div className="flex min-w-0 flex-col items-start gap-8 sm:gap-10">
           <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl sm:leading-[1.1] lg:text-6xl">
-            {headlineWords.map((word, i) => (
-              <FadeRevealSpan
-                key={`hero-headline-${i}`}
-                stepIndex={headlineStart + i}
-                staggerMs={staggerMs}
-                duration={duration}
-                instant={instant}
-              >
-                {word}
-                {i < headlineWords.length - 1 ? "\u00A0" : ""}
-              </FadeRevealSpan>
-            ))}
+            <BlurRevealWordsInline text={headline} reduced={instant} />
           </h1>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {descWords.map((word, i) => (
-              <FadeRevealSpan
-                key={`hero-desc-${i}`}
-                stepIndex={descStart + i}
-                staggerMs={staggerMs}
-                duration={duration}
-                instant={instant}
-              >
-                {word}
-                {i < descWords.length - 1 ? "\u00A0" : ""}
-              </FadeRevealSpan>
-            ))}
+            <BlurRevealWordsInline
+              text={description}
+              reduced={instant}
+              startDelayMs={headlineWords.length * staggerMs}
+            />
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <motion.span
               className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}
-              initial={instant ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={
+                instant ? false : { opacity: 0, filter: "blur(10px)", y: 8 }
+              }
+              animate={
+                freezeMotion
+                  ? { opacity: 0, filter: "blur(10px)", y: 8 }
+                  : { opacity: 1, filter: "blur(0px)", y: 0 }
+              }
               transition={{
-                duration: instant ? 0 : duration,
-                delay: instant ? 0 : (primaryCtaStep * staggerMs) / 1000,
-                ease: [0.25, 0.46, 0.45, 0.94],
+                duration: instant || freezeMotion ? 0 : duration,
+                delay: instant || freezeMotion ? 0 : (primaryCtaStep * staggerMs) / 1000,
+                ease: "easeInOut",
               }}
             >
               <LetterWaveLink
@@ -140,12 +127,18 @@ export function HeroEntry({
             </motion.span>
             <motion.span
               className="inline-block"
-              initial={instant ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={
+                instant ? false : { opacity: 0, filter: "blur(10px)", y: 8 }
+              }
+              animate={
+                freezeMotion
+                  ? { opacity: 0, filter: "blur(10px)", y: 8 }
+                  : { opacity: 1, filter: "blur(0px)", y: 0 }
+              }
               transition={{
-                duration: instant ? 0 : duration,
-                delay: instant ? 0 : (secondaryCtaStep * staggerMs) / 1000,
-                ease: [0.25, 0.46, 0.45, 0.94],
+                duration: instant || freezeMotion ? 0 : duration,
+                delay: instant || freezeMotion ? 0 : (secondaryCtaStep * staggerMs) / 1000,
+                ease: "easeInOut",
               }}
             >
               <LetterWaveLink

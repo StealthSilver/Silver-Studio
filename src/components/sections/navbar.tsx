@@ -14,6 +14,11 @@ import {
 
 import { useAmbientMusic } from "@/components/ambient-music";
 import {
+  BlurRevealBlock,
+  BlurRevealWordsInline,
+  splitHeroWords,
+} from "@/components/ui/hero-reveal";
+import {
   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
 } from "@/components/ui/letter-wave-link";
@@ -331,17 +336,43 @@ export function Navbar() {
     router.push("/");
   };
 
+  const revealInstant = prefersReducedMotion;
+  /** Time (s) after which primary nav chrome can begin (logo + brand word blur resolves). */
+  const brandRevealTailSec = useMemo(() => {
+    const nWords = splitHeroWords(site.name).length;
+    return (52 + Math.max(0, nWords - 1) * 22 + 42) / 1000;
+  }, []);
+
+  const linkDelay = (idx: number) => brandRevealTailSec + idx * 0.054;
+  const desktopMusicDelaySec = brandRevealTailSec + links.length * 0.054 + 0.04;
+  const desktopNavCtaDelaySec =
+    brandRevealTailSec + links.length * 0.054 + 0.098;
+  const mobileMenuDelaySec = brandRevealTailSec + 0.02;
+  const mobileMusicDelaySec = brandRevealTailSec + 0.068;
+
+  const scrolledMenuDelaySec = brandRevealTailSec;
+  const scrolledGaugeDelaySec = brandRevealTailSec + 0.052;
+  const scrolledMusicDelaySec = brandRevealTailSec + 0.104;
+  const scrolledToolbarCtaDelaySec = brandRevealTailSec + 0.164;
+
   const desktopLinks = (
     <ul className="hidden h-9 items-center gap-1 md:flex">
-      {links.map(({ href, label, scrollPercent }) => (
+      {links.map(({ href, label, scrollPercent }, idx) => (
         <li key={href}>
-          <LetterWaveLink
-            href={href}
-            className={navLinkClass}
-            label={label}
-            variant="nav"
-            onClick={(e) => handleSectionNavClick(e, scrollPercent)}
-          />
+          <BlurRevealBlock
+            delaySec={linkDelay(idx)}
+            instant={revealInstant}
+            holdUntilSplashDismissed
+            className="inline-flex"
+          >
+            <LetterWaveLink
+              href={href}
+              className={navLinkClass}
+              label={label}
+              variant="nav"
+              onClick={(e) => handleSectionNavClick(e, scrollPercent)}
+            />
+          </BlurRevealBlock>
         </li>
       ))}
     </ul>
@@ -377,16 +408,51 @@ export function Navbar() {
   /** Scroll % only after the header has switched to the “scrolled” layout */
   const menuToolbarScrolled = (
     <div className="flex items-center gap-2">
-      {menuButton}
-      {scrollPercentButton}
-      <NavMusicButton reducedMotion={prefersReducedMotion} />
+      <BlurRevealBlock
+        delaySec={scrolledMenuDelaySec}
+        instant={revealInstant}
+        holdUntilSplashDismissed
+        className="inline-flex"
+      >
+        {menuButton}
+      </BlurRevealBlock>
+      <BlurRevealBlock
+        delaySec={scrolledGaugeDelaySec}
+        instant={revealInstant}
+        holdUntilSplashDismissed
+        className="inline-flex"
+      >
+        {scrollPercentButton}
+      </BlurRevealBlock>
+      <BlurRevealBlock
+        delaySec={scrolledMusicDelaySec}
+        instant={revealInstant}
+        holdUntilSplashDismissed
+        className="inline-flex"
+      >
+        <NavMusicButton reducedMotion={prefersReducedMotion} />
+      </BlurRevealBlock>
     </div>
   );
 
   const menuToolbarUnscrolledMobile = (
     <div className="flex items-center gap-2">
-      {menuButton}
-      <NavMusicButton reducedMotion={prefersReducedMotion} />
+      <BlurRevealBlock
+        delaySec={mobileMenuDelaySec}
+        instant={revealInstant}
+        holdUntilSplashDismissed
+        className="inline-flex"
+      >
+        {menuButton}
+      </BlurRevealBlock>
+      <BlurRevealBlock
+        delaySec={mobileMusicDelaySec}
+        instant={revealInstant}
+        holdUntilSplashDismissed
+        className="inline-flex"
+      >
+        <NavMusicButton reducedMotion={prefersReducedMotion} />
+      </BlurRevealBlock>
     </div>
   );
 
@@ -528,24 +594,36 @@ export function Navbar() {
             onClick={() => setOpen(false)}
           >
             <span className="sr-only">{site.homeSrLabel}</span>
-            <Image
-              src={site.logo.lightSrc}
-              alt=""
-              width={site.logo.width}
-              height={site.logo.height}
-              className="size-8 dark:hidden"
-              priority
+            <BlurRevealBlock
+              delaySec={0}
+              instant={revealInstant}
+              holdUntilSplashDismissed
+              className="inline-flex shrink-0"
+            >
+              <Image
+                src={site.logo.lightSrc}
+                alt=""
+                width={site.logo.width}
+                height={site.logo.height}
+                className="size-8 dark:hidden"
+                priority
+              />
+              <Image
+                src={site.logo.darkSrc}
+                alt=""
+                width={site.logo.width}
+                height={site.logo.height}
+                className="hidden size-8 dark:block"
+              />
+            </BlurRevealBlock>
+            <BlurRevealWordsInline
+              text={site.name}
+              startDelayMs={52}
+              staggerMs={22}
+              holdUntilSplashDismissed
+              reduced={revealInstant}
+              className="text-lg font-semibold tracking-tight text-foreground sm:text-xl"
             />
-            <Image
-              src={site.logo.darkSrc}
-              alt=""
-              width={site.logo.width}
-              height={site.logo.height}
-              className="hidden size-8 dark:block"
-            />
-            <span className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
-              {site.name}
-            </span>
           </Link>
 
           {scrolled ? (
@@ -562,15 +640,22 @@ export function Navbar() {
                 <span
                   className={cn(HERO_PRIMARY_CTA_WRAP_CLASSNAME, "shrink-0")}
                 >
-                  <LetterWaveLink
-                    href={cta.href}
-                    className={cn(
-                      `${talkNowButtonClass} inline-flex h-9 !leading-none shrink-0 items-center justify-center px-4`,
-                      "max-md:max-w-[min(108px,calc((100vw-10rem)-1rem))] max-md:truncate max-md:!px-2.5 max-md:text-[clamp(10px,2.85vw,0.75rem)]",
-                    )}
-                    label={cta.label}
-                    onClick={() => setOpen(false)}
-                  />
+                  <BlurRevealBlock
+                    delaySec={scrolledToolbarCtaDelaySec}
+                    instant={revealInstant}
+                    holdUntilSplashDismissed
+                    className="inline-flex max-w-full justify-center"
+                  >
+                    <LetterWaveLink
+                      href={cta.href}
+                      className={cn(
+                        `${talkNowButtonClass} inline-flex h-9 !leading-none shrink-0 items-center justify-center px-4`,
+                        "max-md:max-w-[min(108px,calc((100vw-10rem)-1rem))] max-md:truncate max-md:!px-2.5 max-md:text-[clamp(10px,2.85vw,0.75rem)]",
+                      )}
+                      label={cta.label}
+                      onClick={() => setOpen(false)}
+                    />
+                  </BlurRevealBlock>
                 </span>
               </div>
             </>
@@ -578,7 +663,14 @@ export function Navbar() {
             <div className="flex h-9 shrink-0 items-center gap-2 md:gap-3">
               {desktopLinks}
               <div className="hidden h-9 items-center gap-2 md:flex">
-                <NavMusicButton reducedMotion={prefersReducedMotion} />
+                <BlurRevealBlock
+                  delaySec={desktopMusicDelaySec}
+                  instant={revealInstant}
+                  holdUntilSplashDismissed
+                  className="inline-flex"
+                >
+                  <NavMusicButton reducedMotion={prefersReducedMotion} />
+                </BlurRevealBlock>
               </div>
               <span
                 className={cn(
@@ -586,11 +678,18 @@ export function Navbar() {
                   "hidden shrink-0 md:inline-block",
                 )}
               >
-                <LetterWaveLink
-                  href={cta.href}
-                  className={`${talkNowButtonClass} h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
-                  label={cta.label}
-                />
+                <BlurRevealBlock
+                  delaySec={desktopNavCtaDelaySec}
+                  instant={revealInstant}
+                  holdUntilSplashDismissed
+                  className="inline-flex"
+                >
+                  <LetterWaveLink
+                    href={cta.href}
+                    className={`${talkNowButtonClass} h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
+                    label={cta.label}
+                  />
+                </BlurRevealBlock>
               </span>
               <div className="md:hidden">{menuToolbarUnscrolledMobile}</div>
             </div>

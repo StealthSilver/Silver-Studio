@@ -6,6 +6,7 @@ import { AmbientMusicProvider } from "@/components/ambient-music";
 import { PageClickSound } from "@/components/page-click-sound";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ZoomNeutralizer } from "@/components/zoom-neutralizer";
+import { SplashInteractiveProvider } from "@/context/splash-interactive-context";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -16,7 +17,9 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <ZoomNeutralizer />
       <PageClickSound />
-      <AmbientMusicProvider>{children}</AmbientMusicProvider>
+      <SplashInteractiveProvider>
+        <AmbientMusicProvider>{children}</AmbientMusicProvider>
+      </SplashInteractiveProvider>
     </ThemeProvider>
   );
 }
