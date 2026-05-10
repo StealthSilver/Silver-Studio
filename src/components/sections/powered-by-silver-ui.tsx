@@ -13,6 +13,9 @@ const FULL_BLEED_ROW =
 const HEADING_CLASS =
   "text-left text-2xl font-normal uppercase leading-[1.08] tracking-[0.06em] text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]";
 
+/** Crop height — taller so artwork reaches nearer the section rule below (Process top line). */
+const POWERED_PREVIEW_VISIBLE_FRACTION = 0.9;
+
 function TopRule() {
   return (
     <div className={FULL_BLEED_ROW}>
@@ -32,31 +35,28 @@ export function PoweredBySilverUi() {
     <section
       id={id}
       aria-labelledby={headingId}
-      className="relative mx-auto flex min-h-[100vh] w-full max-w-7xl flex-col scroll-mt-28 sm:scroll-mt-32"
+      className="relative mx-auto w-full max-w-7xl shrink-0 scroll-mt-28 sm:scroll-mt-32"
     >
       <TopRule />
 
-      {/* Top half: copy + CTA; bottom half: work-style glass preview */}
-      <div className="grid min-h-0 flex-1 grid-rows-2">
-        <div className="flex min-h-0 flex-col">
-          <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
+      <div className="flex flex-col px-4 pb-0 pt-0 sm:px-6 lg:px-8">
+        <div className="w-full max-w-7xl pb-6 sm:pb-8 lg:pb-10">
+          <div className="flex w-full justify-center">
             <div className="flex w-full max-w-7xl items-start justify-between gap-6">
               <div className="min-w-0 max-w-[min(100%,44rem)] pr-2">
-                <h2 id={headingId} className={HEADING_CLASS}>
-                  POWERED BY SILVER UI
-                </h2>
-              </div>
-            </div>
-          </div>
+                <div className="pb-6 sm:pb-8 lg:pb-10">
+                  <div className="pt-[4.25rem] sm:pt-20 lg:pt-24">
+                    <h2 id={headingId} className={HEADING_CLASS}>
+                      POWERED BY SILVER UI
+                    </h2>
+                  </div>
+                </div>
 
-          <div className="flex min-h-0 flex-1 justify-center px-4 pb-8 sm:px-6 lg:px-8 lg:pb-10">
-            <div className="flex w-full max-w-7xl flex-col justify-start">
-              <div className="min-w-0 max-w-[min(100%,44rem)] pr-2 text-left">
                 <p className="text-base leading-relaxed text-muted-foreground sm:text-[17px] sm:leading-[1.65]">
                   {intro}
                 </p>
 
-                <div className="mt-9 flex justify-start sm:mt-10">
+                <div className="mt-8 flex justify-start sm:mt-10">
                   <LetterWaveLink
                     href={externalHref}
                     target="_blank"
@@ -71,11 +71,16 @@ export function PoweredBySilverUi() {
           </div>
         </div>
 
-        <div className="flex min-h-0 flex-col justify-end px-4 pb-0 pt-4 sm:px-6 lg:px-8">
+        {/* Edge-bleed preview: starts just under the CTA, wider + taller than work-stack defaults */}
+        <div className="-mx-4 mt-5 w-[calc(100%+2rem)] max-w-none sm:-mx-6 sm:mt-6 sm:w-[calc(100%+3rem)] lg:-mx-8 lg:mt-7 lg:w-[calc(100%+4rem)]">
           <WorkBottomSingle
             image={previewImage}
             externalHref={externalHref}
             externalAriaLabel={previewLinkLabel}
+            visibleHeightFraction={POWERED_PREVIEW_VISIBLE_FRACTION}
+            minimalChrome
+            frameLinkClassName="max-w-none w-full"
+            imageSizes="(max-width:640px) 100vw, (max-width:1024px) 96vw, (max-width:1536px) 92vw, 1400px"
           />
         </div>
       </div>

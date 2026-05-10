@@ -6,31 +6,66 @@ import {
   type WorkImageDual,
   type WorkImageSingle,
 } from "@/data/site";
+import { cn } from "@/lib/utils";
 
 /** Fraction of the image height visible in the frame (top half / shifted up). */
 const IMAGE_VISIBLE_FRACTION = 0.5;
+
+/** Outer glass uses `rounded-t-[1.35rem]` + `px-3 pt-3` (sm:`px-4 pt-4`); crop matches inset curve. */
+const IMAGE_CLIP_ALIGNED_TOP =
+  "rounded-t-[calc(1.35rem-12px)] sm:rounded-t-[calc(1.35rem-16px)]";
+
+const workGlassFrameClassNormal =
+  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-4 sm:pt-4";
+
+/** Tighter inset / compact chrome for spotlight-style previews. */
+const workGlassFrameClassSnug =
+  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-2 pt-2 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-3 sm:pt-3";
+
+/** Snug chrome uses 8px / 12px inset — parallel top radius to outer 1.35rem. */
+const IMAGE_CLIP_ALIGNED_TOP_SNUG =
+  "rounded-t-[calc(1.35rem-8px)] sm:rounded-t-[calc(1.35rem-12px)]";
+
+/** Powered-by Silver UI — no stroked frame or drop shadow (avoids a bottom “rule” under the raster). */
+const workGlassFrameClassPowered =
+  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-0 bg-white/18 px-2 pt-2 pb-0 shadow-none backdrop-blur-2xl outline-none ring-0 dark:bg-card/30 sm:px-3 sm:pt-3";
 
 /** Placeholder aspect when there is no image. */
 const PLACEHOLDER_FULL_WIDTH = 1600;
 const PLACEHOLDER_FULL_HEIGHT = 1000;
 
-const workGlassFrameClass =
-  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-4 sm:pt-4";
-
 function WorkBottomGlassInner({
   naturalWidth,
   naturalHeight,
+  visibleHeightFraction = IMAGE_VISIBLE_FRACTION,
+  snugChrome,
+  minimalChrome,
   children,
 }: {
   naturalWidth: number;
   naturalHeight: number;
+  visibleHeightFraction?: number;
+  /** Thinner rim / padding so the raster reads larger in the same width. */
+  snugChrome?: boolean;
+  /** Spotlight preview: borderless chrome (Silver UI section). */
+  minimalChrome?: boolean;
   children: ReactNode;
 }) {
-  const visibleHeight = naturalHeight * IMAGE_VISIBLE_FRACTION;
+  const visibleHeight = naturalHeight * visibleHeightFraction;
+  const useSnugClip = snugChrome || minimalChrome;
+  const frameClass = minimalChrome
+    ? workGlassFrameClassPowered
+    : snugChrome
+      ? workGlassFrameClassSnug
+      : workGlassFrameClassNormal;
+  const clipClass = useSnugClip ? IMAGE_CLIP_ALIGNED_TOP_SNUG : IMAGE_CLIP_ALIGNED_TOP;
   return (
-    <div className={workGlassFrameClass}>
+    <div className={frameClass}>
       <div
-        className="relative w-full overflow-hidden rounded-t-2xl rounded-b-none sm:rounded-t-3xl"
+        className={cn(
+          "relative w-full overflow-hidden rounded-b-none border-0 shadow-none outline-none ring-0",
+          clipClass,
+        )}
         style={{
           aspectRatio: `${naturalWidth} / ${visibleHeight}`,
         }}
@@ -47,18 +82,36 @@ function WorkBottomFrame({
   naturalHeight,
   externalHref,
   externalAriaLabel,
+  visibleHeightFraction,
+  snugChrome,
+  minimalChrome,
+  frameLinkClassName,
 }: {
   children: ReactNode;
   naturalWidth: number;
   naturalHeight: number;
   externalHref?: string;
   externalAriaLabel?: string;
+  visibleHeightFraction?: number;
+  snugChrome?: boolean;
+  minimalChrome?: boolean;
+  /** Merged onto the outer `<a>` / wrapper (break out width, hover, etc.) */
+  frameLinkClassName?: string;
 }) {
   const inner = (
-    <WorkBottomGlassInner naturalWidth={naturalWidth} naturalHeight={naturalHeight}>
+    <WorkBottomGlassInner
+      naturalWidth={naturalWidth}
+      naturalHeight={naturalHeight}
+      visibleHeightFraction={visibleHeightFraction}
+      snugChrome={minimalChrome ? false : snugChrome}
+      minimalChrome={minimalChrome}
+    >
       {children}
     </WorkBottomGlassInner>
   );
+
+  const linkMotion =
+    "mx-auto block w-full max-w-7xl transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   if (externalHref) {
     return (
@@ -67,11 +120,15 @@ function WorkBottomFrame({
         target="_blank"
         rel="noopener noreferrer"
         aria-label={externalAriaLabel}
-        className="mx-auto block w-full max-w-7xl transition-opacity hover:opacity-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className={cn(linkMotion, frameLinkClassName)}
       >
         {inner}
       </a>
     );
+  }
+
+  if (frameLinkClassName) {
+    return <div className={cn("w-full", frameLinkClassName)}>{inner}</div>;
   }
 
   return inner;
@@ -134,10 +191,23 @@ export function WorkBottomSingle({
   image,
   externalHref,
   externalAriaLabel,
+  visibleHeightFraction,
+  snugChrome,
+  minimalChrome,
+  frameLinkClassName,
+  imageSizes,
 }: {
   image: WorkImageSingle;
   externalHref?: string;
   externalAriaLabel?: string;
+  /** Slightly taller crop for spotlight previews (`0..1`, default matches work stack). */
+  visibleHeightFraction?: number;
+  snugChrome?: boolean;
+  /** Borderless spotlight frame (Powered by Silver UI). */
+  minimalChrome?: boolean;
+  frameLinkClassName?: string;
+  /** Passed to `<Image sizes="…"/>` — larger widths decode sharper when the preview is scaled up. */
+  imageSizes?: string;
 }) {
   const frameHeight = image.frameHeight ?? image.height;
   return (
@@ -146,6 +216,10 @@ export function WorkBottomSingle({
       naturalHeight={frameHeight}
       externalHref={externalHref}
       externalAriaLabel={externalAriaLabel}
+      visibleHeightFraction={visibleHeightFraction}
+      snugChrome={snugChrome}
+      minimalChrome={minimalChrome}
+      frameLinkClassName={frameLinkClassName}
     >
       <WorkImageFullWidthTopCrop
         src={image.src}
@@ -153,7 +227,10 @@ export function WorkBottomSingle({
         height={image.height}
         alt={image.alt}
         className="object-contain object-[center_top]"
-        sizes="(max-width: 1280px) 100vw, 80rem"
+        sizes={
+          imageSizes ??
+          "(max-width: 1280px) 100vw, 80rem"
+        }
       />
     </WorkBottomFrame>
   );

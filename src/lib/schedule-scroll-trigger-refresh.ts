@@ -5,10 +5,10 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * pinned ScrollTrigger sections or after sibling layout height changes (Work stack, images).
  */
 export function scheduleScrollTriggerRefresh(): void {
-  queueMicrotask(() => {
-    ScrollTrigger.refresh();
-  });
+  /** Double rAF: run after the browser’s layout pass (avoids double `refresh()` in one frame). */
   requestAnimationFrame(() => {
-    ScrollTrigger.refresh();
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
   });
 }

@@ -4,7 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { servicesSection } from "@/data/site";
+import { servicesSection, workSection } from "@/data/site";
 import { CardSpotlight } from "@/components/ui/card-spotlight";
 import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
 import { cn } from "@/lib/utils";
@@ -211,7 +211,8 @@ export function Services() {
           start: "top top",
           end: PIN_SCROLL_END,
           pin: true,
-          scrub: 1,
+          /** Snap timeline to scroll position (no inertia). Smoothed scrub fights pin corrections at section boundaries. */
+          scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -254,8 +255,15 @@ export function Services() {
 
     scheduleScrollTriggerRefresh();
 
-    /** After Work intros / images settle (`work-scroll-intro` debounces refresh at ~380ms). */
-    const afterWorkLayoutsId = window.setTimeout(refresh, 450);
+    const workRoot =
+      typeof document !== "undefined"
+        ? document.getElementById(workSection.id)
+        : null;
+    let workResizeObserver: ResizeObserver | undefined;
+    if (workRoot && typeof ResizeObserver !== "undefined") {
+      workResizeObserver = new ResizeObserver(debouncedRefresh);
+      workResizeObserver.observe(workRoot);
+    }
 
     window.addEventListener("resize", debouncedRefresh);
     vv?.addEventListener("resize", debouncedRefresh);
@@ -276,7 +284,7 @@ export function Services() {
     return () => {
       cancelled = true;
       if (resizeScheduleId !== undefined) window.clearTimeout(resizeScheduleId);
-      window.clearTimeout(afterWorkLayoutsId);
+      workResizeObserver?.disconnect();
       window.removeEventListener("resize", debouncedRefresh);
       vv?.removeEventListener("resize", debouncedRefresh);
       window.removeEventListener("orientationchange", debouncedRefresh);

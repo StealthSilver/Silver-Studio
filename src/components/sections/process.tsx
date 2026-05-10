@@ -5,7 +5,13 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { processSection } from "@/data/site";
+import {
+  poweredBySilverUiSection,
+  processSection,
+  servicesSection,
+  workSection,
+} from "@/data/site";
+import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
 import { cn } from "@/lib/utils";
 
 import {
@@ -185,6 +191,28 @@ export function Process() {
       }
     };
 
+    let cancelled = false;
+
+    /** Avoid `Timeout`/`number` clashes from Node timer typings vs DOM. */
+    let resizeScheduleId: number | undefined;
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+
+    const refresh = () => {
+      if (cancelled) return;
+      ScrollTrigger.refresh();
+    };
+
+    const debouncedRefresh = () => {
+      if (resizeScheduleId !== undefined) window.clearTimeout(resizeScheduleId);
+      resizeScheduleId = window.setTimeout(refresh, 120);
+    };
+
+    const upstreamSectionIds = [
+      workSection.id,
+      servicesSection.id,
+      poweredBySilverUiSection.id,
+    ] as const;
+
     const ctx = gsap.context(() => {
       let stopYs = measureStopYs();
 
@@ -193,7 +221,8 @@ export function Process() {
         start: "top top",
         end: () => `+=${scrollEndPx()}`,
         pin: true,
-        scrub: 1,
+        /** Match Services: smoothed scrub fights pin at section entry. */
+        scrub: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onRefresh: (self) => {
@@ -212,16 +241,37 @@ export function Process() {
       applyProgress(st.progress, stopYs, layerHeightPx());
     }, pinEl);
 
-    let cancelled = false;
+    scheduleScrollTriggerRefresh();
+
+    const layoutObservers: ResizeObserver[] = [];
+    if (typeof ResizeObserver !== "undefined") {
+      for (const sid of upstreamSectionIds) {
+        const root = document.getElementById(sid);
+        if (!root) continue;
+        const ro = new ResizeObserver(debouncedRefresh);
+        ro.observe(root);
+        layoutObservers.push(ro);
+      }
+    }
+
+    window.addEventListener("resize", debouncedRefresh);
+    vv?.addEventListener("resize", debouncedRefresh);
+    window.addEventListener("orientationchange", debouncedRefresh);
+
     const fontsDone = document.fonts?.ready?.then(() => {
-      if (!cancelled) ScrollTrigger.refresh();
+      if (!cancelled) debouncedRefresh();
     });
     fontsDone?.catch(() => {
-      if (!cancelled) ScrollTrigger.refresh();
+      if (!cancelled) debouncedRefresh();
     });
 
     return () => {
       cancelled = true;
+      if (resizeScheduleId !== undefined) window.clearTimeout(resizeScheduleId);
+      layoutObservers.forEach((ro) => ro.disconnect());
+      window.removeEventListener("resize", debouncedRefresh);
+      vv?.removeEventListener("resize", debouncedRefresh);
+      window.removeEventListener("orientationchange", debouncedRefresh);
       fontsDone?.catch(() => {});
       ctx.revert();
     };
