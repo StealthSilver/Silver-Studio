@@ -1,5 +1,6 @@
 "use client";
 
+import type { HTMLAttributeAnchorTarget } from "react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -22,6 +23,8 @@ export function LetterWaveLink({
   onClick,
   centerInContainer,
   variant = "default",
+  target,
+  rel,
 }: {
   href: string;
   className?: string;
@@ -33,6 +36,9 @@ export function LetterWaveLink({
   centerInContainer?: boolean;
   /** Navbar section links: slower easing + stagger than hero / CTA buttons */
   variant?: "default" | "nav";
+  /** e.g. `_blank` for external links */
+  target?: HTMLAttributeAnchorTarget;
+  rel?: string;
 }) {
   const chars = useMemo(() => [...label], [label]);
 
@@ -59,6 +65,8 @@ export function LetterWaveLink({
   return (
     <Link
       href={href}
+      target={target}
+      rel={rel}
       className={cn(
         className,
         "letter-wave",

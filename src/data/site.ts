@@ -317,22 +317,12 @@ export const whySection = {
 
 export const poweredBySilverUiSection = {
   id: "silver-ui" as const,
-  sectionAriaLabel: "Powered by Silver UI",
-  eyebrow: "Design system backbone",
-  heading: "Powered by Silver UI",
   intro:
-    "Silver UI is our in-house component language—tokens, patterns, and production-ready primitives tuned for luminous, restrained interfaces.",
-  /** Short labels for the footer row (same rhythm as the final CTA section). */
-  footerTags: [
-    "TOKENS & PATTERNS",
-    "ACCESSIBLE BY DEFAULT",
-    "COMPOSABLE PRIMITIVES",
-  ] as const,
-  /** Product site — opened in a new browser tab */
+    "Silver UI is our in-house library for luminous, restrained interfaces—production-ready primitives, tokens, and patterns you can ship with confidence.",
   externalHref: "https://silver-ui.vercel.app/" as const,
-  externalCtaLabel: "Explore Silver UI" as const,
-  externalCtaAriaLabel:
-    "Explore Silver UI on silver-ui.vercel.app (opens in a new tab)" as const,
+  ctaLabel: "EXPLORE SILVER UI" as const,
+  ctaAriaLabel:
+    "Explore Silver UI — opens the component library site in a new tab" as const,
 } as const;
 
 export type TestimonialItem = {
