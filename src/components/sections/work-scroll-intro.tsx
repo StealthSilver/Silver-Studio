@@ -69,27 +69,43 @@ function chunkIntoRows<T>(items: readonly T[], perRow: number): T[][] {
 
 const WORK_GRID_ROWS = chunkIntoRows(WORK_GRID_PASS, 3);
 
-function WorkGridStrip({ stripIndex }: { stripIndex: number }) {
-  const ariaHidden = stripIndex > 0;
+/** How many identical row cycles are stacked (≥3 avoids gaps during long translateY). */
+const GRID_VERTICAL_STACK = 5;
+
+/**
+ * Fraction of full stack span traveled while pinned — lower = much slower drift for the same scroll.
+ */
+const GRID_SCROLL_DISTANCE_RATIO = 0.16;
+
+/** One vertical tiling unit of `WORK_GRID_ROWS` (same pattern repeated underneath). */
+function WorkGridStrip({
+  stripIndex,
+  duplicateIndex,
+}: {
+  stripIndex: number;
+  duplicateIndex?: number;
+}) {
+  const dup = duplicateIndex ?? 0;
+  const ariaHidden = stripIndex > 0 || dup > 0;
 
   return (
     <div
       className={cn(
-        "flex w-full shrink-0 flex-col",
+        "work-grid-cycle flex w-full shrink-0 flex-col",
         ROW_GAP,
       )}
       aria-hidden={ariaHidden || undefined}
     >
       {WORK_GRID_ROWS.map((row, rowIndex) => (
         <div
-          key={`${stripIndex}-row-${rowIndex}`}
+          key={`${stripIndex}-d${dup}-row-${rowIndex}`}
           className={cn("flex w-full min-w-0", ROW_GAP)}
         >
           {row.map((src, colIndex) => {
             const flatIndex = rowIndex * 3 + colIndex;
             return (
               <div
-                key={`${stripIndex}-r${rowIndex}-c${colIndex}-${src}`}
+                key={`${stripIndex}-d${dup}-r${rowIndex}-c${colIndex}-${src}`}
                 className={cn(
                   WORK_GRID_TILE_FRAME,
                   "min-w-0 flex-1 basis-0",
@@ -99,7 +115,7 @@ function WorkGridStrip({ stripIndex }: { stripIndex: number }) {
                   src={src}
                   alt=""
                   fill
-                  priority={stripIndex === 0 && flatIndex < 6}
+                  priority={stripIndex === 0 && dup === 0 && flatIndex < 6}
                   className={WORK_GRID_IMAGE_CLASS}
                   sizes="(max-width: 640px) 31vw, 28vw"
                 />
@@ -120,6 +136,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
   const pinRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<HTMLDivElement>(null);
   const washRef = useRef<HTMLDivElement>(null);
+  const gridMoverRef = useRef<HTMLDivElement>(null);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -142,8 +159,9 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
     const pinEl = pinRef.current;
     const trailEl = trailRef.current;
     const washEl = washRef.current;
+    const gridMoverEl = gridMoverRef.current;
 
-    if (!pinEl || !trailEl || !washEl) {
+    if (!pinEl || !trailEl || !washEl || !gridMoverEl) {
       return;
     }
 
@@ -186,6 +204,39 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
         },
         0.5,
       );
+
+      /**
+       * Vertical stride between two stacked cycles (one pattern repeat, incl. flex gap).
+       * Scrub y from negative → 0 so the clip always shows tiles above the first row
+       * (positive y → empty band at top). Identical cycles make the motion read as infinite.
+       */
+      const cycleStridePx = (): number => {
+        const cycles = pinEl.querySelectorAll(".work-grid-cycle");
+        if (cycles.length < 2) {
+          const one = cycles[0] as HTMLElement | undefined;
+          return one?.offsetHeight ?? 0;
+        }
+        const a = cycles[0] as HTMLElement;
+        const b = cycles[1] as HTMLElement;
+        return b.offsetTop - a.offsetTop;
+      };
+
+      const gridScrollSpan = (): number => {
+        const stride = cycleStridePx();
+        const full = stride > 0 ? stride * (GRID_VERTICAL_STACK - 1) : 0;
+        return full * GRID_SCROLL_DISTANCE_RATIO;
+      };
+
+      gsap.set(gridMoverEl, {
+        y: () => -gridScrollSpan(),
+      });
+
+      tl.fromTo(
+        gridMoverEl,
+        { y: () => -gridScrollSpan() },
+        { y: 0, duration: 1, ease: "none" },
+        0,
+      );
     }, pinEl);
 
     return () => {
@@ -210,7 +261,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
           </p>
           <div className="mt-12 flex w-full flex-col gap-0">
             <WorkGridStrip stripIndex={0} />
-            <WorkGridStrip stripIndex={1} />
+            <WorkGridStrip stripIndex={0} duplicateIndex={1} />
           </div>
         </div>
       </div>
@@ -227,8 +278,19 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
       >
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
           <div className="mx-auto flex h-full w-full max-w-[min(100%,96rem)] items-start justify-center px-4 pt-[6vh] pb-[10vh] sm:px-6 sm:pt-[7vh] lg:px-10">
-            <div className="relative flex w-full flex-col gap-0 [contain:layout]">
-              <WorkGridStrip stripIndex={0} />
+            <div className="relative flex w-full min-h-0 flex-col overflow-hidden [contain:layout]">
+              <div
+                ref={gridMoverRef}
+                className={cn("flex w-full flex-col", ROW_GAP, "[contain:layout]")}
+              >
+                {Array.from({ length: GRID_VERTICAL_STACK }, (_, dup) => (
+                  <WorkGridStrip
+                    key={`grid-stack-${dup}`}
+                    stripIndex={0}
+                    duplicateIndex={dup}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
