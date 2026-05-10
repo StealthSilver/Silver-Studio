@@ -13,6 +13,8 @@ import {
 
 type AmbientMusicContextValue = {
   musicOn: boolean;
+  /** True while `<audio>` is actively playing (`play`/`pause` events — wave UI follows this). */
+  audioPlaying: boolean;
   toggleMusic: () => void;
 };
 
@@ -48,6 +50,8 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
   const musicOnRef = useRef(true);
   const [musicOn, setMusicOn] = useState(true);
   musicOnRef.current = musicOn;
+
+  const [audioPlaying, setAudioPlaying] = useState(false);
 
   const abortTransition = useCallback(() => {
     transitionAbortRef.current?.abort();
@@ -87,10 +91,10 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
       }
 
       audio.volume = Math.max(0, Math.min(1, segmentFade * tailFade));
+      volumeRafRef.current = requestAnimationFrame(tick);
+    };
     volumeRafRef.current = requestAnimationFrame(tick);
-  };
-  volumeRafRef.current = requestAnimationFrame(tick);
-}, [stopVolumeLoop]);
+  }, [stopVolumeLoop]);
 
   const fadeVolumeLinear = useCallback(
     (
@@ -202,14 +206,26 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
     audio.preload = "auto";
     audioRef.current = audio;
 
+    const syncPlayingFlag = () => {
+      setAudioPlaying(!audio.paused);
+    };
+
     const onEnded = () => {
       void beginPlayRef.current(true);
     };
 
+    audio.addEventListener("play", syncPlayingFlag);
+    audio.addEventListener("playing", syncPlayingFlag);
+    audio.addEventListener("pause", syncPlayingFlag);
+
     audio.addEventListener("ended", onEnded);
 
     return () => {
+      audio.removeEventListener("play", syncPlayingFlag);
+      audio.removeEventListener("playing", syncPlayingFlag);
+      audio.removeEventListener("pause", syncPlayingFlag);
       audio.removeEventListener("ended", onEnded);
+      setAudioPlaying(false);
       abortTransition();
       stopVolumeLoop();
       audio.pause();
@@ -243,8 +259,8 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ musicOn, toggleMusic }),
-    [musicOn, toggleMusic],
+    () => ({ musicOn, audioPlaying, toggleMusic }),
+    [audioPlaying, musicOn, toggleMusic],
   );
 
   return (

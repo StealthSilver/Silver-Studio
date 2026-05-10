@@ -1,18 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import {
-  forwardRef,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -21,20 +13,9 @@ gsap.registerPlugin(ScrollTrigger);
  * Pin span — scroll distance while intro stays pinned (relative to the pinned
  * block height, 100dvh).
  */
-const PIN_SCROLL_END = "+=520%";
+const PIN_SCROLL_END = "+=435%";
 
-/** One full vertical tile loop completes between these document scroll ratios (0–1). */
-const GRID_PAGE_SCROLL_START = 0.03;
-const GRID_PAGE_SCROLL_END = 0.22;
-
-/** Extra smoothing for pinned headline / wash (not the grid — grid follows document scroll). */
-const PIN_SCRUB = 1.45;
-
-/** Debounce before ScrollTrigger.refresh after layout shifts (reduces mid-scroll “breaks”) */
-const LAYOUT_REFRESH_DEBOUNCE_MS = 380;
-
-/** Ignore tiny strip-height jitter so cycle length stays fixed while scrolling */
-const CYCLE_HEIGHT_COMMIT_DELTA_PX = 4;
+const PIN_SCRUB = 1.2;
 
 /** Project previews from `public/Projects` */
 const WORK_SRCS = [
@@ -66,12 +47,6 @@ const WORK_GRID_PASS: string[] = Array.from(
   () => [...WORK_SRCS],
 ).flat();
 
-/**
- * Identical strips stacked with gap-0 — must cover viewport + max translate so the
- * repeated pattern never runs out while wrapping (more copies = safer seam).
- */
-const WORK_GRID_STRIP_COPIES = 14;
-
 /** Tile frame — matches section card borders (light) vs glassy rim (dark). */
 const WORK_GRID_TILE_FRAME =
   "relative overflow-hidden rounded-xl border border-border/80 shadow-[0_10px_28px_rgb(15_23_42_/_0.08)] ring-1 ring-border/55 " +
@@ -81,64 +56,60 @@ const WORK_GRID_TILE_FRAME =
 const WORK_GRID_IMAGE_CLASS =
   "object-cover opacity-[0.92] saturate-[0.95] dark:opacity-[0.9]";
 
-/** Fractional position within one vertical period H (GSAP wrap handles float edge cases). */
-function wrapCycleStable(delta: number, cycle: number): number {
-  if (cycle <= 1e-6) return 0;
-  return gsap.utils.wrap(0, cycle, delta);
+const ROW_GAP =
+  "gap-5 sm:gap-7 md:gap-8 lg:gap-10 xl:gap-12" as const;
+
+function chunkIntoRows<T>(items: readonly T[], perRow: number): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < items.length; i += perRow) {
+    rows.push(items.slice(i, i + perRow) as T[]);
+  }
+  return rows;
 }
 
-const WorkGridStrip = forwardRef<
-  HTMLDivElement,
-  { stripIndex: number; onImageLoad?: () => void }
->(function WorkGridStrip({ stripIndex, onImageLoad }, ref) {
+const WORK_GRID_ROWS = chunkIntoRows(WORK_GRID_PASS, 3);
+
+function WorkGridStrip({ stripIndex }: { stripIndex: number }) {
   const ariaHidden = stripIndex > 0;
 
   return (
     <div
-      ref={ref}
       className={cn(
-        "grid w-full shrink-0 grid-cols-2 md:grid-cols-3",
-        "gap-5 sm:gap-7 md:gap-8 lg:gap-10 xl:gap-12",
+        "flex w-full shrink-0 flex-col",
+        ROW_GAP,
       )}
       aria-hidden={ariaHidden || undefined}
     >
-      {WORK_GRID_PASS.map((src, i) => (
+      {WORK_GRID_ROWS.map((row, rowIndex) => (
         <div
-          key={`${stripIndex}-${src}-${i}`}
-          className={WORK_GRID_TILE_FRAME}
+          key={`${stripIndex}-row-${rowIndex}`}
+          className={cn("flex w-full min-w-0", ROW_GAP)}
         >
-          <Image
-            src={src}
-            alt=""
-            fill
-            priority={stripIndex === 0 && i < 6}
-            className={WORK_GRID_IMAGE_CLASS}
-            sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 28vw"
-            onLoad={onImageLoad}
-          />
+          {row.map((src, colIndex) => {
+            const flatIndex = rowIndex * 3 + colIndex;
+            return (
+              <div
+                key={`${stripIndex}-r${rowIndex}-c${colIndex}-${src}`}
+                className={cn(
+                  WORK_GRID_TILE_FRAME,
+                  "min-w-0 flex-1 basis-0",
+                )}
+              >
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  priority={stripIndex === 0 && flatIndex < 6}
+                  className={WORK_GRID_IMAGE_CLASS}
+                  sizes="(max-width: 640px) 31vw, 28vw"
+                />
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>
   );
-});
-
-function useDebouncedLayoutRefresh(delayMs: number) {
-  const t = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useLayoutEffect(
-    () => () => {
-      if (t.current) clearTimeout(t.current);
-    },
-    [],
-  );
-
-  return useCallback(() => {
-    if (t.current) clearTimeout(t.current);
-    t.current = setTimeout(() => {
-      t.current = null;
-      scheduleScrollTriggerRefresh();
-    }, delayMs);
-  }, [delayMs]);
 }
 
 type WorkScrollIntroProps = {
@@ -149,13 +120,8 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
   const pinRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<HTMLDivElement>(null);
   const washRef = useRef<HTMLDivElement>(null);
-  const gridMotionRef = useRef<HTMLDivElement>(null);
-  const firstStripRef = useRef<HTMLDivElement>(null);
-  /** Stable tile-strip period (px); avoids reading layout every scroll frame */
-  const cyclePxRef = useRef(0);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  const bumpLayoutRefresh = useDebouncedLayoutRefresh(LAYOUT_REFRESH_DEBOUNCE_MS);
 
   const words = useMemo(
     () => heading.trim().split(/\s+/).filter(Boolean),
@@ -176,72 +142,13 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
     const pinEl = pinRef.current;
     const trailEl = trailRef.current;
     const washEl = washRef.current;
-    const gridLayer = gridMotionRef.current;
 
-    if (!pinEl || !trailEl || !washEl || !gridLayer) {
+    if (!pinEl || !trailEl || !washEl) {
       return;
     }
 
     const vw = () => window.innerWidth;
     const vh = () => window.innerHeight;
-
-    const fallbackCycle = () => vh() * 0.55;
-
-    const cyclePx = () => {
-      const c = cyclePxRef.current;
-      return c > 0 ? c : fallbackCycle();
-    };
-
-    /** Only RO / layout should change this — never per scroll frame (prevents jumps mid-scroll). */
-    const commitCycleHeightFromDom = () => {
-      const el = firstStripRef.current;
-      if (!el) return;
-      const h = Math.round(el.getBoundingClientRect().height * 100) / 100;
-      if (h <= 0) return;
-      if (cyclePxRef.current === 0) {
-        cyclePxRef.current = h;
-        return;
-      }
-      if (Math.abs(h - cyclePxRef.current) >= CYCLE_HEIGHT_COMMIT_DELTA_PX) {
-        cyclePxRef.current = h;
-      }
-    };
-
-    commitCycleHeightFromDom();
-
-    /**
-     * Document scroll progress 0–1 using scrollable distance (stable math vs ratio-only APIs).
-     */
-    const documentScrollRatio = () => {
-      const doc = document.documentElement;
-      const max = Math.max(0, doc.scrollHeight - window.innerHeight);
-      if (max <= 0) return 0;
-      return window.scrollY / max;
-    };
-
-    /** 0–1 page scroll: prefer ScrollTrigger.progress so it stays in sync with GSAP after refresh/pin */
-    const pageScrollRatio = (st?: ScrollTrigger) =>
-      st?.progress ?? documentScrollRatio();
-
-    /** 0 before GRID_PAGE_SCROLL_START, 1 after GRID_PAGE_SCROLL_END; one full loop in between */
-    const gridLoopProgressFromPage = (st?: ScrollTrigger) =>
-      gsap.utils.clamp(
-        0,
-        1,
-        (pageScrollRatio(st) - GRID_PAGE_SCROLL_START) /
-          (GRID_PAGE_SCROLL_END - GRID_PAGE_SCROLL_START),
-      );
-
-    const setGridY = gsap.quickSetter(gridLayer, "y", "px");
-
-    const applyGridFromDocumentScroll = (st?: ScrollTrigger) => {
-      const H = cyclePx();
-      const y0 = -H * 0.26;
-      const t = gridLoopProgressFromPage(st);
-      const unwrapped = t * H;
-      const w = wrapCycleStable(unwrapped, H);
-      setGridY(y0 + w);
-    };
 
     const ctx = gsap.context(() => {
       gsap.set(trailEl, {
@@ -251,8 +158,6 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
       });
 
       gsap.set(washEl, { opacity: 1, yPercent: 4 });
-
-      applyGridFromDocumentScroll(undefined);
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -265,13 +170,6 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
           invalidateOnRefresh: true,
         },
       });
-
-      tl.fromTo(
-        washEl,
-        { yPercent: 6 },
-        { yPercent: 12, duration: 1, ease: "none" },
-        0,
-      );
 
       tl.to(
         trailEl,
@@ -290,45 +188,10 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
       );
     }, pinEl);
 
-    /** Full-page scroll — use ST progress (same as 0→maxScroll) so pin spacers & refresh stay coherent */
-    const gridScrollTrigger = ScrollTrigger.create({
-      scroller: window,
-      trigger: document.body,
-      start: "top top",
-      end: "bottom bottom",
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        applyGridFromDocumentScroll(self);
-      },
-      onRefresh: (self) => {
-        applyGridFromDocumentScroll(self);
-      },
-    });
-
-    const stripEl = firstStripRef.current;
-    let ro: ResizeObserver | undefined;
-
-    if (stripEl) {
-      ro = new ResizeObserver(() => {
-        const prev = cyclePxRef.current;
-        commitCycleHeightFromDom();
-        const next = cyclePxRef.current;
-        if (Math.abs(next - prev) >= CYCLE_HEIGHT_COMMIT_DELTA_PX) {
-          bumpLayoutRefresh();
-        }
-        applyGridFromDocumentScroll(undefined);
-      });
-      ro.observe(stripEl);
-    }
-
-    scheduleScrollTriggerRefresh();
-
     return () => {
-      gridScrollTrigger.kill();
-      ro?.disconnect();
       ctx.revert();
     };
-  }, [prefersReducedMotion, words.length, bumpLayoutRefresh]);
+  }, [prefersReducedMotion, words.length]);
 
   if (!heading.trim()) {
     return null;
@@ -364,22 +227,8 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
       >
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
           <div className="mx-auto flex h-full w-full max-w-[min(100%,96rem)] items-start justify-center px-4 pt-[6vh] pb-[10vh] sm:px-6 sm:pt-[7vh] lg:px-10">
-            <div
-              ref={gridMotionRef}
-              className="relative flex w-full flex-col gap-0 will-change-transform [transform:translateZ(0)] [contain:layout]"
-            >
-              {/*
-               * Same strip repeated many times (gap-0) — transform wraps every H px so
-               * strip N+1 always continues strip N with identical pixels at the seam.
-               */}
-              {Array.from({ length: WORK_GRID_STRIP_COPIES }, (_, stripIndex) => (
-                <WorkGridStrip
-                  key={stripIndex}
-                  ref={stripIndex === 0 ? firstStripRef : undefined}
-                  stripIndex={stripIndex}
-                  onImageLoad={stripIndex === 0 ? bumpLayoutRefresh : undefined}
-                />
-              ))}
+            <div className="relative flex w-full flex-col gap-0 [contain:layout]">
+              <WorkGridStrip stripIndex={0} />
             </div>
           </div>
         </div>

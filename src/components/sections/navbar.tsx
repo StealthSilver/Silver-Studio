@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Volume2, VolumeX } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -66,55 +65,125 @@ function serverScrollSnapshot() {
 const scrollGaugeClass =
   "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary px-2 text-xs font-semibold tabular-nums text-foreground";
 
-const navMusicButtonClass =
-  "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary text-muted-foreground transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+/** Shared chrome for hamburger + music controls in the navbar toolbars */
+const navToolbarIconButtonClass =
+  "inline-flex size-9 shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary text-muted-foreground transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
-function NavMusicEqualizer() {
+/** One 480-unit tile (~5 cycles); ends meet y=20 for seamless tiling with translate(480) */
+const NAV_MUSIC_WAVE_PATH_D =
+  "M 0 20 Q 24 11 48 20 Q 72 29 96 20 Q 120 11 144 20 Q 168 29 192 20 Q 216 11 240 20 Q 264 29 288 20 Q 312 11 336 20 Q 360 29 384 20 Q 408 11 432 20 Q 456 29 480 20";
+
+const NAV_MUSIC_WAVE_VIEW_HEIGHT = 40;
+const NAV_MUSIC_WAVE_VIEW_WIDTH = 480;
+/** Render height keeps aspect with viewBox — avoids `preserveAspectRatio=none` squashing the curve flat */
+const NAV_MUSIC_WAVE_PX_HEIGHT = 15;
+
+function NavMusicWaveGlyph({
+  mode,
+}: {
+  mode: "flat-muted" | "flat-idle" | "wave-static" | "wave-drift";
+}) {
+  const pathClass =
+    "fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:2.85] motion-reduce:stroke-[2.65]";
+
+  const shellClass = cn(
+    "nav-music-wave-shell pointer-events-none flex min-h-0 w-full shrink-0 items-center px-px",
+    mode === "flat-muted" && "opacity-[0.38]",
+  );
+
+  /** Paused: fill the padded inset so the baseline is horizontally + vertically centered (no wide-svg left clipping). */
+  if (mode === "flat-muted" || mode === "flat-idle") {
+    const mid = NAV_MUSIC_WAVE_VIEW_HEIGHT / 2;
+    return (
+      <span aria-hidden className={cn(shellClass, "justify-center overflow-hidden")}>
+        <svg
+          className="block h-[15px] w-full min-w-0 text-current"
+          viewBox={`0 0 ${NAV_MUSIC_WAVE_VIEW_WIDTH} ${NAV_MUSIC_WAVE_VIEW_HEIGHT}`}
+          preserveAspectRatio="none"
+        >
+          <path
+            d={`M 0 ${mid} L ${NAV_MUSIC_WAVE_VIEW_WIDTH} ${mid}`}
+            className={pathClass}
+          />
+        </svg>
+      </span>
+    );
+  }
+
+  const svgHeight = NAV_MUSIC_WAVE_PX_HEIGHT;
+  const svgWidth =
+    (NAV_MUSIC_WAVE_PX_HEIGHT * NAV_MUSIC_WAVE_VIEW_WIDTH) /
+    NAV_MUSIC_WAVE_VIEW_HEIGHT;
+
   return (
     <span
-      className="flex h-[14px] w-[18px] items-end justify-center gap-[3px]"
       aria-hidden
+      className={cn(shellClass, "justify-center overflow-visible")}
     >
-      {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          className="block w-[3px] origin-bottom rounded-full bg-current will-change-transform"
-          initial={false}
-          animate={{ scaleY: [0.35, 1, 0.45, 0.82, 0.35] }}
-          transition={{
-            duration: 0.75,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: i * 0.12,
-          }}
-          style={{ height: 11 }}
-        />
-      ))}
+      <svg
+        className="-mt-px max-w-none shrink-0 overflow-visible text-current"
+        width={svgWidth}
+        height={svgHeight}
+        viewBox={`0 0 ${NAV_MUSIC_WAVE_VIEW_WIDTH} ${NAV_MUSIC_WAVE_VIEW_HEIGHT}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {mode === "wave-static" ? (
+          <path d={NAV_MUSIC_WAVE_PATH_D} className={pathClass} />
+        ) : (
+          <g>
+            <animateTransform
+              attributeName="transform"
+              additive="replace"
+              type="translate"
+              from="0 0"
+              to={`-${NAV_MUSIC_WAVE_VIEW_WIDTH} 0`}
+              dur="2.75s"
+              repeatCount="indefinite"
+            />
+            <path d={NAV_MUSIC_WAVE_PATH_D} className={pathClass} />
+            <path
+              d={NAV_MUSIC_WAVE_PATH_D}
+              className={pathClass}
+              transform={`translate(${NAV_MUSIC_WAVE_VIEW_WIDTH} 0)`}
+            />
+          </g>
+        )}
+      </svg>
     </span>
   );
 }
 
-function NavMusicButton({ reducedMotion }: { reducedMotion: boolean }) {
-  const { musicOn, toggleMusic } = useAmbientMusic();
+function NavMusicButton({
+  reducedMotion,
+}: {
+  reducedMotion: boolean;
+}) {
+  const { musicOn, audioPlaying, toggleMusic } = useAmbientMusic();
+
+  let waveMode: "flat-muted" | "flat-idle" | "wave-static" | "wave-drift";
+  if (!musicOn) {
+    waveMode = "flat-muted";
+  } else if (!audioPlaying) {
+    waveMode = "flat-idle";
+  } else if (reducedMotion) {
+    waveMode = "wave-static";
+  } else {
+    waveMode = "wave-drift";
+  }
 
   return (
     <button
       type="button"
       className={cn(
-        navMusicButtonClass,
+        navToolbarIconButtonClass,
+        "overflow-hidden px-[5px]",
         musicOn && "border-primary/45 text-primary ring-1 ring-primary/25",
       )}
       aria-pressed={musicOn}
       aria-label={musicOn ? "Pause site music" : "Play site music"}
       onClick={toggleMusic}
     >
-      {musicOn && !reducedMotion ? (
-        <NavMusicEqualizer />
-      ) : musicOn ? (
-        <Volume2 className="size-[17px]" strokeWidth={2} aria-hidden />
-      ) : (
-        <VolumeX className="size-[17px]" strokeWidth={2} aria-hidden />
-      )}
+      <NavMusicWaveGlyph mode={waveMode} />
     </button>
   );
 }
@@ -281,7 +350,7 @@ export function Navbar() {
   const menuButton = (
     <button
       type="button"
-      className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+      className={navToolbarIconButtonClass}
       aria-expanded={open}
       aria-controls="mobile-nav"
       aria-label={open ? "Close menu" : "Open menu"}
