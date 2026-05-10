@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -9,60 +15,60 @@ import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Pin span — tuned for two-phase headline (into center, then out to top-left) */
-const PIN_SCROLL_END = "+=220%";
+/** Pin span — scroll distance while intro is pinned */
+const PIN_SCROLL_END = "+=260%";
 
+/** Project previews from `public/Projects` */
 const WORK_SRCS = [
-  "/works/brilliant.png",
-  "/works/sgrids.png",
-  "/works/8thlight.png",
-  "/works/harit.png",
-  "/works/sol-x.png",
-  "/works/meshspire.png",
+  "/Projects/alcaster.png",
+  "/Projects/algorhythm.png",
+  "/Projects/blog.png",
+  "/Projects/connectingdots.png",
+  "/Projects/gamezone.png",
+  "/Projects/infinityx.png",
+  "/Projects/meshspire.png",
+  "/Projects/mindpalace.png",
+  "/Projects/riffinity.png",
+  "/Projects/sgrids.png",
+  "/Projects/silver-ui.png",
+  "/Projects/silver.png",
+  "/Projects/sketchit.png",
+  "/Projects/Sol-X.png",
+  "/Projects/spardha.png",
 ] as const;
 
-/** Larger thumbnails, fewer rows = more vertical gap; straight (no tilt) */
-const PHOTO_W = 164;
-const PHOTO_H = 102;
-const COLLAGE_EDGE = "0";
-/** Fewer images per column so spacing reads cleaner */
-const PER_SIDE = 7;
+/** Full grid: one extra row above — repeats the last row of tiles so the stack reads endless while scrolling */
+const WORK_GRID_SRCS = [...WORK_SRCS.slice(-3), ...WORK_SRCS];
 
-type CollageItem = {
-  side: "left" | "right";
-  top: string;
-  inset: string;
-  w: number;
-  h: number;
-  src: (typeof WORK_SRCS)[number];
-};
-
-function buildVerticalSideCollage(): readonly CollageItem[] {
-  const span = 88 / Math.max(1, PER_SIDE - 1);
-  const baseTop = 4;
-
-  const left: CollageItem[] = Array.from({ length: PER_SIDE }, (_, i) => ({
-    side: "left" as const,
-    top: `${baseTop + i * span}%`,
-    inset: COLLAGE_EDGE,
-    w: PHOTO_W,
-    h: PHOTO_H,
-    src: WORK_SRCS[i % WORK_SRCS.length],
-  }));
-
-  const right: CollageItem[] = Array.from({ length: PER_SIDE }, (_, i) => ({
-    side: "right" as const,
-    top: `${baseTop + i * span}%`,
-    inset: COLLAGE_EDGE,
-    w: PHOTO_W,
-    h: PHOTO_H,
-    src: WORK_SRCS[(i + 2) % WORK_SRCS.length],
-  }));
-
-  return [...left, ...right];
+function scheduleScrollTriggerRefresh() {
+  queueMicrotask(() => {
+    ScrollTrigger.refresh();
+  });
+  requestAnimationFrame(() => {
+    ScrollTrigger.refresh();
+  });
 }
 
-const COLLAGE_ITEMS = buildVerticalSideCollage();
+const REFRESH_DEBOUNCE_MS = 140;
+
+function useDebouncedScrollTriggerRefresh() {
+  const t = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useLayoutEffect(
+    () => () => {
+      if (t.current) clearTimeout(t.current);
+    },
+    [],
+  );
+
+  return useCallback(() => {
+    if (t.current) clearTimeout(t.current);
+    t.current = setTimeout(() => {
+      t.current = null;
+      scheduleScrollTriggerRefresh();
+    }, REFRESH_DEBOUNCE_MS);
+  }, []);
+}
 
 type WorkScrollIntroProps = {
   heading: string;
@@ -72,9 +78,11 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
   const pinRef = useRef<HTMLDivElement>(null);
   const trailRef = useRef<HTMLDivElement>(null);
   const washRef = useRef<HTMLDivElement>(null);
-  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
+  /** Whole grid layer — single transform target so scrub always runs */
+  const gridMotionRef = useRef<HTMLDivElement>(null);
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const bumpScrollTrigger = useDebouncedScrollTriggerRefresh();
 
   const words = useMemo(
     () => heading.trim().split(/\s+/).filter(Boolean),
@@ -95,16 +103,9 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
     const pinEl = pinRef.current;
     const trailEl = trailRef.current;
     const washEl = washRef.current;
-    const photos = COLLAGE_ITEMS.map((_, i) => photoRefs.current[i]).filter(
-      Boolean,
-    ) as HTMLElement[];
+    const gridLayer = gridMotionRef.current;
 
-    if (
-      !pinEl ||
-      !trailEl ||
-      !washEl ||
-      photos.length !== COLLAGE_ITEMS.length
-    ) {
+    if (!pinEl || !trailEl || !washEl || !gridLayer) {
       return;
     }
 
@@ -120,13 +121,9 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
 
       gsap.set(washEl, { opacity: 1, yPercent: 4 });
 
-      photos.forEach((el, i) => {
-        const row = i < PER_SIDE ? i : i - PER_SIDE;
-        gsap.set(el, {
-          x: 0,
-          rotation: 0,
-          y: () => -vh() * 0.2 - row * 32,
-        });
+      /* Start shifted up; scrub scroll moves the grid downward (taller grid → slightly more travel) */
+      gsap.set(gridLayer, {
+        y: () => -vh() * 0.26,
       });
 
       const tl = gsap.timeline({
@@ -135,7 +132,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
           start: "top top",
           end: PIN_SCROLL_END,
           pin: true,
-          scrub: 0.42,
+          scrub: 0.45,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -148,21 +145,12 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
         0,
       );
 
-      photos.forEach((el, i) => {
-        const row = i < PER_SIDE ? i : i - PER_SIDE;
-        tl.fromTo(
-          el,
-          {
-            y: () => -vh() * 0.18 - row * 36,
-          },
-          {
-            y: () => vh() * 0.34 + row * 38,
-            duration: 1,
-            ease: "none",
-          },
-          0,
-        );
-      });
+      tl.fromTo(
+        gridLayer,
+        { y: () => -vh() * 0.26 },
+        { y: () => vh() * 0.3, duration: 1, ease: "none" },
+        0,
+      );
 
       tl.to(
         trailEl,
@@ -180,6 +168,8 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
         0.5,
       );
     }, pinEl);
+
+    scheduleScrollTriggerRefresh();
 
     return () => ctx.revert();
   }, [prefersReducedMotion, words.length]);
@@ -199,6 +189,22 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
               </span>
             ))}
           </p>
+          <div className="mt-12 grid w-full grid-cols-2 gap-6 md:grid-cols-3 md:gap-8 lg:gap-10">
+            {WORK_GRID_SRCS.map((src, i) => (
+              <div
+                key={`${src}-${i}`}
+                className="relative aspect-[16/10] overflow-hidden rounded-xl border border-white/14 shadow-[0_10px_32px_rgb(0_0_0_/_0.35)] ring-1 ring-black/40"
+              >
+                <Image
+                  src={src}
+                  alt=""
+                  fill
+                  className="object-cover opacity-95 saturate-[0.95]"
+                  sizes="(max-width: 768px) 45vw, 28vw"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -213,35 +219,37 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
         className="dark relative flex h-[100dvh] max-h-[100dvh] w-full shrink-0 flex-col overflow-hidden bg-background text-foreground"
       >
         <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
-          <div className="mx-auto flex h-full w-full max-w-7xl justify-center px-4 sm:px-6 lg:px-8">
-            <div className="relative h-full w-full min-h-0">
-              {COLLAGE_ITEMS.map((item, i) => (
-                <div
-                  key={`${item.src}-${i}`}
-                  ref={(el) => {
-                    photoRefs.current[i] = el;
-                  }}
-                  className="absolute will-change-transform shadow-[0_10px_32px_rgb(0_0_0_/_0.48)]"
-                  style={{
-                    top: item.top,
-                    left: item.side === "left" ? item.inset : undefined,
-                    right: item.side === "right" ? item.inset : undefined,
-                    width: item.w,
-                    height: item.h,
-                  }}
-                >
-                  <div className="relative h-full w-full overflow-hidden rounded-[8px] border border-white/14 ring-1 ring-black/45">
+          <div className="mx-auto flex h-full w-full max-w-[min(100%,96rem)] justify-center px-4 pt-[6vh] pb-[10vh] sm:px-6 sm:pt-[7vh] lg:px-10">
+            <div
+              ref={gridMotionRef}
+              className="relative w-full will-change-transform"
+            >
+              <div
+                className={cn(
+                  "grid w-full grid-cols-2 md:grid-cols-3",
+                  /* Visible gutters — bigger tiles on large screens */
+                  "gap-5 sm:gap-7 md:gap-8 lg:gap-10 xl:gap-12",
+                )}
+              >
+                {WORK_GRID_SRCS.map((src, i) => (
+                  <div
+                    key={`${src}-${i}`}
+                    className={cn(
+                      "relative overflow-hidden rounded-xl border border-white/14 shadow-[0_10px_32px_rgb(0_0_0_/_0.48)] ring-1 ring-black/45",
+                      "aspect-[16/10] min-h-[132px] sm:min-h-[160px] md:min-h-[180px] lg:min-h-[200px] xl:min-h-[220px]",
+                    )}
+                  >
                     <Image
-                      src={item.src}
+                      src={src}
                       alt=""
-                      width={item.w}
-                      height={item.h}
-                      className="h-full w-full object-cover opacity-[0.9] saturate-[0.95]"
-                      sizes="(max-width: 768px) 36vw, 180px"
+                      fill
+                      className="object-cover opacity-[0.9] saturate-[0.95]"
+                      sizes="(max-width: 640px) 46vw, (max-width: 1024px) 31vw, 28vw"
+                      onLoadingComplete={bumpScrollTrigger}
                     />
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

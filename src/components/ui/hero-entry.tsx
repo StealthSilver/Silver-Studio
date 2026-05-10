@@ -1,7 +1,11 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
-import { useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  useMemo,
+  type MouseEvent as ReactMouseEvent,
+} from "react";
 
 import { HeroLogoTicker } from "@/components/ui/hero-logo-ticker";
 import {
@@ -17,13 +21,17 @@ import {
   OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { heroLogoTicker } from "@/data/site";
+import {
+  scrollToDocumentPercent,
+  setPendingNavScrollPercent,
+} from "@/lib/scroll-document-percent";
 
 type HeroEntryProps = {
   sectionAriaLabel: string;
   headline: string;
   description: string;
   primaryCta: { href: string; label: string };
-  secondaryCta: { href: string; label: string };
+  secondaryCta: { href: string; label: string; scrollPercent: number };
   splashRevealBypass?: boolean;
 };
 
@@ -35,8 +43,25 @@ export function HeroEntry({
   secondaryCta,
   splashRevealBypass = false,
 }: HeroEntryProps) {
+  const pathname = usePathname();
+  const router = useRouter();
   const reduceMotion = useReducedMotion();
   const instant = !!reduceMotion || splashRevealBypass;
+
+  const scrollBehavior: ScrollBehavior =
+    reduceMotion === true ? "auto" : "smooth";
+
+  const handleSecondaryCtaClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
+    const pct = secondaryCta.scrollPercent;
+    if (pathname === "/") {
+      e.preventDefault();
+      scrollToDocumentPercent(pct, scrollBehavior);
+      return;
+    }
+    e.preventDefault();
+    setPendingNavScrollPercent(pct);
+    router.push("/");
+  };
 
   const headlineWords = useMemo(() => splitHeroWords(headline), [headline]);
   const descWords = useMemo(() => splitHeroWords(description), [description]);
@@ -127,6 +152,7 @@ export function HeroEntry({
                 href={secondaryCta.href}
                 className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
                 label={secondaryCta.label}
+                onClick={handleSecondaryCtaClick}
               />
             </motion.span>
           </div>

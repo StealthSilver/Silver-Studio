@@ -21,16 +21,16 @@ export const hero = {
   description:
     "We create modern websites and landing pages for startups and established brands that care about design, performance, and perception.",
   primaryCta: { href: "/#contact", label: "BOOK A CALL" },
-  secondaryCta: { href: "/#work", label: "SEE WORK" },
+  secondaryCta: { href: "/#work", label: "SEE WORK", scrollPercent: 8 },
 } as const;
 
 export const navbar = {
   links: [
     { href: "/#work", label: "Work", scrollPercent: 8 },
     { href: "/#services", label: "Services", scrollPercent: 63 },
-    { href: "/#silver-ui", label: "Silver UI", scrollPercent: 69 },
-    { href: "/#process", label: "Process", scrollPercent: 91 },
-    { href: "/#faq", label: "FAQ", scrollPercent: 96 },
+    { href: "/#silver-ui", label: "Silver UI", scrollPercent: 68 },
+    { href: "/#process", label: "Process", scrollPercent: 89 },
+    { href: "/#faq", label: "FAQ", scrollPercent: 93 },
   ],
   cta: { href: "/#contact", label: "BOOK A CALL" },
 } as const;

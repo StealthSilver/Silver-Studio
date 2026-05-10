@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -218,6 +219,85 @@ type HeroTilesReveal = {
   instant: boolean;
 };
 
+function HeroTileDraggable({
+  index,
+  reveal,
+}: {
+  index: number;
+  reveal?: HeroTilesReveal;
+}) {
+  const reduceMotion = useReducedMotion();
+  const [hovered, setHovered] = useState(false);
+  const stackZ = tileStackZ(index);
+  const accent = index === 3 || hovered;
+
+  return (
+    <motion.div
+      className={cn(
+        "relative shrink-0 cursor-grab touch-none select-none first:ml-0 active:cursor-grabbing",
+        "-ml-[9.5rem] sm:-ml-[12.5rem]",
+      )}
+      style={{
+        zIndex: stackZ,
+      }}
+      initial={
+        reveal ? (reveal.instant ? false : { opacity: 0 }) : false
+      }
+      animate={reveal ? { opacity: 1 } : undefined}
+      transition={
+        reveal
+          ? {
+              opacity: {
+                delay: reveal.instant
+                  ? 0
+                  : ((reveal.baseStep + index) * reveal.staggerMs) / 1000,
+                duration: reveal.instant ? 0 : reveal.duration,
+                ease: [0.25, 0.46, 0.45, 0.94],
+              },
+            }
+          : undefined
+      }
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      whileHover={
+        reduceMotion
+          ? undefined
+          : {
+              y: -12,
+              scale: 1.03,
+              transition: { type: "spring", stiffness: 380, damping: 24 },
+            }
+      }
+      whileTap={reduceMotion ? { scale: 0.99 } : { scale: 0.98 }}
+      whileDrag={
+        reduceMotion
+          ? undefined
+          : {
+              scale: 1.04,
+              zIndex: 40,
+              cursor: "grabbing",
+            }
+      }
+      drag={reduceMotion ? false : true}
+      dragSnapToOrigin
+      dragElastic={0.16}
+      dragTransition={{
+        bounceStiffness: 340,
+        bounceDamping: 20,
+      }}
+    >
+      <div
+        className={cn(
+          "relative isolate pb-0.5",
+          index === 3 && "-translate-y-2 sm:-translate-y-3",
+        )}
+      >
+        <GlassWebTile index={index} accent={accent} />
+      </div>
+    </motion.div>
+  );
+}
+
 export function HeroTiles({
   className,
   reveal,
@@ -225,8 +305,6 @@ export function HeroTiles({
   className?: string;
   reveal?: HeroTilesReveal;
 }) {
-  const reduceMotion = useReducedMotion();
-
   return (
     <figure
       className={cn(
@@ -254,80 +332,9 @@ export function HeroTiles({
         )}
       >
         <div className="flex min-w-min items-end">
-          {Array.from({ length: HERO_TILE_COUNT }, (_, i) => {
-            const stackZ = tileStackZ(i);
-
-            return (
-              <motion.div
-                key={i}
-                className={cn(
-                  "relative shrink-0 cursor-grab touch-none select-none first:ml-0 active:cursor-grabbing",
-                  "-ml-[9.5rem] sm:-ml-[12.5rem]",
-                )}
-                style={{
-                  zIndex: stackZ,
-                }}
-                initial={
-                  reveal
-                    ? reveal.instant
-                      ? false
-                      : { opacity: 0 }
-                    : false
-                }
-                animate={reveal ? { opacity: 1 } : undefined}
-                transition={
-                  reveal
-                    ? {
-                        opacity: {
-                          delay: reveal.instant
-                            ? 0
-                            : ((reveal.baseStep + i) * reveal.staggerMs) / 1000,
-                          duration: reveal.instant ? 0 : reveal.duration,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        },
-                      }
-                    : undefined
-                }
-                whileHover={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        y: -12,
-                        scale: 1.03,
-                        transition: { type: "spring", stiffness: 380, damping: 24 },
-                      }
-                }
-                whileTap={
-                  reduceMotion ? { scale: 0.99 } : { scale: 0.98 }
-                }
-                whileDrag={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        scale: 1.04,
-                        zIndex: 40,
-                        cursor: "grabbing",
-                      }
-                }
-                drag={reduceMotion ? false : true}
-                dragSnapToOrigin
-                dragElastic={0.16}
-                dragTransition={{
-                  bounceStiffness: 340,
-                  bounceDamping: 20,
-                }}
-              >
-                <div
-                  className={cn(
-                    "relative isolate pb-0.5",
-                    i === 3 && "-translate-y-2 sm:-translate-y-3",
-                  )}
-                >
-                  <GlassWebTile index={i} accent={i === 3} />
-                </div>
-              </motion.div>
-            );
-          })}
+          {Array.from({ length: HERO_TILE_COUNT }, (_, i) => (
+            <HeroTileDraggable key={i} index={i} reveal={reveal} />
+          ))}
         </div>
       </div>
     </figure>
