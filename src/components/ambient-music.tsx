@@ -220,7 +220,33 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
 
     audio.addEventListener("ended", onEnded);
 
+    /**
+     * Aim: play on load and keep playing until the tab is hidden or the navbar
+     * pause control turns `musicOff`. Autoplay is often blocked until `canplay*` or the
+     * first input — those paths retry without adding other pause triggers.
+     */
+    const resumeIfEligible = () => {
+      if (!musicOnRef.current || document.visibilityState !== "visible") return;
+      if (!audioRef.current || !audio.paused) return;
+      void beginPlayRef.current(false);
+    };
+
+    audio.addEventListener("loadeddata", resumeIfEligible);
+    audio.addEventListener("canplaythrough", resumeIfEligible);
+
+    window.addEventListener("pageshow", resumeIfEligible);
+
+    const gestureOpts = { capture: true, passive: true } as const;
+    document.addEventListener("pointerdown", resumeIfEligible, gestureOpts);
+    window.addEventListener("touchstart", resumeIfEligible, gestureOpts);
+
     return () => {
+      audio.removeEventListener("loadeddata", resumeIfEligible);
+      audio.removeEventListener("canplaythrough", resumeIfEligible);
+      window.removeEventListener("pageshow", resumeIfEligible);
+      document.removeEventListener("pointerdown", resumeIfEligible, gestureOpts.capture);
+      window.removeEventListener("touchstart", resumeIfEligible, gestureOpts.capture);
+
       audio.removeEventListener("play", syncPlayingFlag);
       audio.removeEventListener("playing", syncPlayingFlag);
       audio.removeEventListener("pause", syncPlayingFlag);
@@ -236,8 +262,10 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
   }, [abortTransition, stopVolumeLoop]);
 
   useEffect(() => {
-    const apply = () => {
-      const wantsSound = musicOnRef.current && !document.hidden;
+    const syncPlaybackIntent = () => {
+      /** Only two stop conditions: user chose pause (`musicOff`) or tab is not visible. */
+      const wantsSound =
+        musicOnRef.current && document.visibilityState === "visible";
 
       if (wantsSound) {
         void beginPlayRef.current(false);
@@ -249,9 +277,13 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    apply();
-    document.addEventListener("visibilitychange", apply);
-    return () => document.removeEventListener("visibilitychange", apply);
+    syncPlaybackIntent();
+    document.addEventListener("visibilitychange", syncPlaybackIntent);
+    window.addEventListener("pageshow", syncPlaybackIntent);
+    return () => {
+      document.removeEventListener("visibilitychange", syncPlaybackIntent);
+      window.removeEventListener("pageshow", syncPlaybackIntent);
+    };
   }, [musicOn]);
 
   const toggleMusic = useCallback(() => {
