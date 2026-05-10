@@ -19,7 +19,7 @@ export function ProjectDetail({ item }: { item: WorkCard }) {
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {item.title}
         </h1>
-        <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
           {item.description}
         </p>
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">

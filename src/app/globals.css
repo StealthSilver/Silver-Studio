@@ -78,6 +78,8 @@ html {
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #dce3ea;
   --sidebar-ring: #94a3b8;
+  /* Work section: match page canvas in light mode */
+  --work-section-canvas: var(--background);
 }
 
 @media (min-width: 640px) {
@@ -88,6 +90,8 @@ html {
 
 .dark {
   --background: #0b1215;
+  /* Behind stacked work slides — slightly darker than `--background` so panels read clearly */
+  --work-section-canvas: color-mix(in srgb, var(--background) 90%, rgb(0 0 0));
   --foreground: oklch(0.985 0 0);
   --hero-silver-1: rgb(218 222 232 / 0.1);
   --hero-silver-2: rgb(218 222 232 / 0.028);

@@ -64,7 +64,7 @@ function WorkItemRow({
 
             {/* Center: description + Read more */}
             <div className="absolute left-1/2 top-1/2 z-20 w-full max-w-xl -translate-x-1/2 -translate-y-1/2 px-5 text-center sm:max-w-2xl sm:px-8">
-              <p className="text-base leading-relaxed text-muted-foreground sm:text-[17px]">
+              <p className="max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
                 {item.description}
               </p>
               <div className="mt-8 flex justify-center sm:mt-10">
@@ -96,7 +96,7 @@ export function Work() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-0 sm:scroll-mt-32 sm:pb-10"
+      className="bg-[var(--work-section-canvas)] w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-0 sm:scroll-mt-32 sm:pb-10"
     >
       {showHeading ? <WorkScrollIntro heading={heading} /> : null}
 

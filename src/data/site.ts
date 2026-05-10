@@ -146,7 +146,7 @@ export const workSection = {
       title: "Brilliant.org",
       slug: "brilliant",
       description:
-        "Interactive STEM learning experience—product storytelling, responsiveness, and a calm interface that scales across audiences.",
+        "Brilliant is trying to make math and science something you come back to, not bounce off of. We helped shape that story on the web with a clear narrative, layouts that hold up on real devices, and a quiet interface so the lesson stays up front.",
       siteUrl: "https://brilliant.org/",
       image: {
         type: "single",
@@ -160,7 +160,7 @@ export const workSection = {
       title: "Sgrids.com",
       slug: "sgrids",
       description:
-        "Corporate positioning and structured layouts for enterprise energy—with light and dark brand treatments that carry across breakpoints.",
+        "Sgrids needed room to breathe as an enterprise brand in energy. We built structured layouts that feel confident in the light suite and deliberate in dark mode, carried consistently from the largest monitors down to handheld screens.",
       siteUrl: "https://www.sgrids.com/",
       image: {
         type: "single",
@@ -174,7 +174,7 @@ export const workSection = {
       title: "8th Light",
       slug: "8th-light",
       description:
-        "Craft-led software consultancy site—emphasis on typography, restraint, and a narrative layout that reinforces expertise.",
+        "8th Light leads with craftsmanship in software. We treated the site like a quiet studio tour through generous typography, restraint in the ornament, and a narrative flow that reinforces expertise instead of drowning it.",
       siteUrl: "https://8thlight.com/",
       image: {
         type: "single",
@@ -188,7 +188,7 @@ export const workSection = {
       title: "Harit",
       slug: "harit",
       description:
-        "Landing and UX systems that translate a technical product story into approachable, credible marketing—built for clarity and conversion.",
+        "Harit wraps a dense product narrative in marketing that strangers can skim and still trust. Repeatable UX patterns hold the layout together and the wording stays grounded in what actually ships, so clarity and conversion feel earned rather than forced.",
       siteUrl: "https://verdan-main.vercel.app/",
       image: {
         type: "single",
@@ -202,7 +202,7 @@ export const workSection = {
       title: "Sol-X",
       slug: "sol-x",
       description:
-        "SaaS go-to-market web presence—focused messaging hierarchy, funnel-friendly sections, and a flexible component set for iterative launches.",
+        "Sol-X marks an early web pass for bringing a SaaS story to market. Messaging stacks in priority order, sections follow how someone actually researches a tool, and the components bend when the pitch changes sprint to sprint.",
       siteUrl: "https://sol-x-eta.vercel.app/",
       image: {
         type: "single",
@@ -216,7 +216,7 @@ export const workSection = {
       title: "Meshspire",
       slug: "meshspire",
       description:
-        "Product-front site with iterative UI delivery—balancing proof, pricing paths, and a lightweight stack for fast stakeholder feedback.",
+        "Meshspire needed a credible shop window while product details kept shifting. Proof, pricing, and calls to action sit in sensible order against a lightweight structure, so stakeholder feedback landed quickly without rewriting the whole story.",
       siteUrl: "https://dev.dg4uqajhampr9.amplifyapp.com/",
       image: {
         type: "single",

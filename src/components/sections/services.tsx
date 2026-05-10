@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { servicesSection } from "@/data/site";
 import { CardSpotlight } from "@/components/ui/card-spotlight";
+import { scheduleScrollTriggerRefresh } from "@/lib/schedule-scroll-trigger-refresh";
 import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -153,6 +154,23 @@ export function Services() {
     const tiles = tileRefs.current.filter(Boolean) as HTMLElement[];
     if (!pinEl || !darkEl || tiles.length !== TILES.length) return;
 
+    let cancelled = false;
+    /** Avoid `Timeout`/`number` clashes from Node timer typings vs DOM. */
+    let resizeScheduleId: number | undefined;
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+
+    const refresh = () => {
+      if (cancelled) return;
+      ScrollTrigger.refresh();
+    };
+
+    const debouncedRefresh = () => {
+      if (resizeScheduleId !== undefined) {
+        window.clearTimeout(resizeScheduleId);
+      }
+      resizeScheduleId = window.setTimeout(refresh, 120);
+    };
+
     const ctx = gsap.context(() => {
       const t0 = INTRO_SCROLL_HOLD;
 
@@ -208,7 +226,38 @@ export function Services() {
       );
     }, pinEl);
 
-    return () => ctx.revert();
+    scheduleScrollTriggerRefresh();
+
+    /** After Work intros / images settle (`work-scroll-intro` debounces refresh at ~380ms). */
+    const afterWorkLayoutsId = window.setTimeout(refresh, 450);
+
+    window.addEventListener("resize", debouncedRefresh);
+    vv?.addEventListener("resize", debouncedRefresh);
+    window.addEventListener("orientationchange", debouncedRefresh);
+
+    const onLoad = () => refresh();
+    if (document.readyState === "complete") {
+      refresh();
+    } else {
+      window.addEventListener("load", onLoad);
+    }
+
+    const fontsDone = document.fonts?.ready?.then(() => refresh());
+    fontsDone?.catch(() => {
+      refresh();
+    });
+
+    return () => {
+      cancelled = true;
+      if (resizeScheduleId !== undefined) window.clearTimeout(resizeScheduleId);
+      window.clearTimeout(afterWorkLayoutsId);
+      window.removeEventListener("resize", debouncedRefresh);
+      vv?.removeEventListener("resize", debouncedRefresh);
+      window.removeEventListener("orientationchange", debouncedRefresh);
+      window.removeEventListener("load", onLoad);
+      fontsDone?.catch(() => {});
+      ctx.revert();
+    };
   }, [prefersReducedMotion]);
 
   const tilesMarkup = TILES.map((tile, index) => {
@@ -278,7 +327,7 @@ export function Services() {
       <section
         id={id}
         aria-labelledby={headingId}
-        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
+        className="mx-auto w-full max-w-7xl shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 sm:scroll-mt-32"
       >
         <ServicesPrePinSpacer />
         <ServicesSectionIntro headingId={headingId} />
@@ -298,7 +347,7 @@ export function Services() {
     <section
       id={id}
       aria-labelledby={headingId}
-      className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
+      className="mx-auto w-full max-w-7xl shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 sm:scroll-mt-32"
     >
       <ServicesPrePinSpacer />
       <div
