@@ -145,11 +145,11 @@ export function AmbientMusicProvider({ children }: { children: ReactNode }) {
 
       const fromVol = audio.paused ? 0 : audio.volume;
       await fadeVolumeLinear(audio, fromVol, 0, durationMs, ac.signal);
-      audio.pause();
+      /** Abort means a newer path (e.g. splash unlocked → beginPlay) owns playback — don't pause here. */
+      if (ac.signal.aborted) return;
 
-      if (!ac.signal.aborted) {
-        transitionAbortRef.current = null;
-      }
+      audio.pause();
+      transitionAbortRef.current = null;
     },
     [abortTransition, fadeVolumeLinear, stopVolumeLoop],
   );
