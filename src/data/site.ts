@@ -138,7 +138,7 @@ export type WorkCard = {
 export const workSection = {
   id: "work" as const,
   sectionAriaLabel: "Selected work",
-  heading: "",
+  heading: "What we have built",
   items: [
     {
       title: "Brilliant.org",

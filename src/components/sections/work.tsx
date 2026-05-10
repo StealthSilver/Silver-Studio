@@ -11,6 +11,7 @@ import {
   LetterWaveLink,
   OUTLINE_CTA_BUTTON_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
+import { WorkScrollIntro } from "@/components/sections/work-scroll-intro";
 import { WorkStackSlide } from "@/components/sections/work-stack-slide";
 import { cn } from "@/lib/utils";
 
@@ -319,19 +320,10 @@ export function Work() {
       aria-label={sectionAriaLabel}
       className="w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-0 sm:scroll-mt-32 sm:pb-10"
     >
-      {showHeading ? (
-        <div className="mx-auto w-full max-w-7xl">
-          <h2 className="max-w-2xl text-left text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            {heading}
-          </h2>
-        </div>
-      ) : null}
+      {showHeading ? <WorkScrollIntro heading={heading} /> : null}
 
       <ul
-        className={cn(
-          "relative m-0 list-none overflow-x-visible overflow-y-visible p-0",
-          showHeading ? "mt-24 sm:mt-32 lg:mt-40" : "mt-0",
-        )}
+        className="relative m-0 list-none overflow-x-visible overflow-y-visible p-0"
       >
         {items.map((item, index) => (
           <WorkItemRow

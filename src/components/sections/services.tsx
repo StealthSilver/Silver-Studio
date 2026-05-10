@@ -67,7 +67,7 @@ const SECTION_WASH =
 const HOVER_Z = 90;
 
 export function Services() {
-  const { id, sectionAriaLabel } = servicesSection;
+  const { id } = servicesSection;
   const pinRef = useRef<HTMLDivElement>(null);
   const darkRef = useRef<HTMLDivElement>(null);
   const tileRefs = useRef<(HTMLElement | null)[]>([]);
@@ -199,16 +199,30 @@ export function Services() {
     );
   });
 
+  const headingId = `${id}-heading`;
+
   if (prefersReducedMotion) {
     return (
       <section
         id={id}
-        aria-label={sectionAriaLabel}
-        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32 border-t border-border/70 dark:border-transparent"
+        aria-labelledby={headingId}
+        className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
       >
         <div
+          className="w-full border-t border-border/70 dark:border-border/50"
+          aria-hidden
+        />
+        <div className="w-full px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8 lg:px-8">
+          <h2
+            id={headingId}
+            className="text-left text-sm font-medium uppercase tracking-[0.2em] text-foreground sm:text-base"
+          >
+            SERVICES WE PROVIDE
+          </h2>
+        </div>
+        <div
           className={cn(
-            "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 py-16 sm:px-6 lg:px-8",
+            "relative flex min-h-[100vh] w-full flex-col items-center justify-center px-4 pb-16 pt-0 sm:px-6 lg:px-8",
             SERVICES_BACKDROP,
           )}
         >
@@ -221,13 +235,25 @@ export function Services() {
   return (
     <section
       id={id}
-      aria-label={sectionAriaLabel}
+      aria-labelledby={headingId}
       className="mx-auto w-full max-w-7xl scroll-mt-28 sm:scroll-mt-32"
     >
+      <div
+        className="w-full border-t border-border/70 dark:border-border/50"
+        aria-hidden
+      />
+      <div className="w-full px-4 pt-8 pb-6 sm:px-6 sm:pt-10 sm:pb-8 lg:px-8">
+        <h2
+          id={headingId}
+          className="text-left text-sm font-medium uppercase tracking-[0.2em] text-foreground sm:text-base"
+        >
+          SERVICES WE PROVIDE
+        </h2>
+      </div>
       <div className="relative w-full">
         <div
           ref={pinRef}
-          className="relative flex h-[100vh] w-full max-w-7xl flex-col border-t border-border/70 px-4 dark:border-transparent sm:px-6 lg:px-8"
+          className="relative flex h-[100vh] w-full max-w-7xl flex-col px-4 sm:px-6 lg:px-8"
         >
           <div ref={darkRef} className={SECTION_WASH} aria-hidden />
           <div className="relative z-[2] flex h-full min-h-0 w-full flex-1">
