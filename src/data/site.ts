@@ -39,7 +39,7 @@ export const footer = {
   /** Shown as: © {year} {copyrightOrg}. {copyrightSuffix} */
   copyrightOrg: site.name,
   copyrightSuffix: "All rights reserved.",
-  contactEmail: "hello@silverstudios.dev",
+  contactEmail: "saraswatrajat12@gmail.com",
   social: [
     {
       network: "x" as const,

@@ -250,7 +250,7 @@ export function WorkScrollIntro({ heading }: WorkScrollIntroProps) {
 
   if (prefersReducedMotion) {
     return (
-      <div className="relative w-full bg-[var(--work-section-canvas)] py-16 text-foreground sm:py-20">
+      <div className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] py-16 text-foreground sm:py-20">
         <div className="mx-auto max-w-7xl px-4">
           <p className="flex max-w-5xl flex-row flex-wrap items-baseline gap-x-6 gap-y-2 text-balance text-3xl font-medium uppercase tracking-[0.18em] sm:gap-x-10 sm:text-4xl md:gap-x-14">
             {words.map((word, i) => (

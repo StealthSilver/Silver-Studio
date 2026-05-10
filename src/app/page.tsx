@@ -14,7 +14,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-x-visible overflow-y-visible bg-background px-4 pb-8 pt-6 text-foreground sm:px-6 sm:pt-8 lg:px-8">
+      <main className="mx-auto flex min-h-0 w-full max-w-7xl flex-1 flex-col overflow-x-visible overflow-y-visible bg-background px-4 pb-0 pt-6 text-foreground sm:px-6 sm:pt-8 lg:px-8">
         <div className="shrink-0">
           <Hero />
         </div>

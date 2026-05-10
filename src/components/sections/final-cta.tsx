@@ -4,6 +4,7 @@ import {
   LetterWaveLink,
 } from "@/components/ui/letter-wave-link";
 import { finalCtaSection } from "@/data/site";
+import { cn } from "@/lib/utils";
 
 /** Same full-bleed rule + heading scale as `Services` / `Process` / `Faq`. */
 const FULL_BLEED_ROW =
@@ -66,9 +67,17 @@ export function FinalCta() {
           scale={0.2}
           rotation={30}
         />
+        {/* Light: sky-blue washes (aligned with `--work-section-canvas` family) over beams; dark: opaque scrim. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-background/90 via-background/45 to-background/90"
+          className={cn(
+            "pointer-events-none absolute inset-0 z-[1] dark:hidden",
+            "bg-[linear-gradient(180deg,rgb(232_241_251_/_0.9)_0%,rgb(245_249_252_/_0.25)_42%,rgb(227_239_251_/_0.88)_100%),radial-gradient(ellipse_88%_58%_at_50%_38%,rgb(154_182_212_/_0.17)_0%,transparent_56%),radial-gradient(ellipse_48%_40%_at_6%_88%,rgb(186_212_236_/_0.22)_0%,transparent_52%),radial-gradient(ellipse_46%_38%_at_94%_82%,rgb(168_198_230_/_0.18)_0%,transparent_50%)]",
+          )}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[1] hidden bg-gradient-to-b from-background/90 via-background/45 to-background/90 dark:block"
         />
         <div
           className={`relative z-10 flex w-full ${CTA_BEAMS_BAND} flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8`}

@@ -96,7 +96,7 @@ export function Work() {
     <section
       id={id}
       aria-label={sectionAriaLabel}
-      className="bg-[var(--work-section-canvas)] w-full shrink-0 overflow-x-visible overflow-y-visible scroll-mt-28 pb-6 pt-0 sm:scroll-mt-32 sm:pb-10"
+      className="relative ml-[calc(50%-50vw)] mr-[calc(50%-50vw)] w-screen max-w-[100vw] shrink-0 bg-[var(--work-section-canvas)] overflow-x-visible overflow-y-visible scroll-mt-28 pb-0 pt-0 sm:scroll-mt-32"
     >
       {showHeading ? <WorkScrollIntro heading={heading} /> : null}
 

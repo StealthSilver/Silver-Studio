@@ -198,13 +198,31 @@ function BeamsScene({
   beamDiffuse,
 }: BeamsSceneProps) {
   const ni = dramatic
-    ? (noiseIntensity ?? 1.75)
+    ? (noiseIntensity ?? (isDark ? 1.75 : 1.35))
     : (noiseIntensity ?? (isDark ? 1.35 : 1.15));
-  const envIntensity = dramatic ? 10 : isDark ? 11 : 7;
-  const roughness = dramatic ? 0.3 : isDark ? 0.28 : 0.38;
-  const metalness = dramatic ? 0.3 : isDark ? 0.42 : 0.22;
+  const envIntensity = dramatic
+    ? isDark
+      ? 10
+      : 6.25
+    : isDark
+      ? 11
+      : 7;
+  const roughness = dramatic
+    ? isDark
+      ? 0.3
+      : 0.36
+    : isDark
+      ? 0.28
+      : 0.38;
+  const metalness = dramatic
+    ? isDark
+      ? 0.3
+      : 0.22
+    : isDark
+      ? 0.42
+      : 0.22;
   const diffuseHex = dramatic
-    ? (beamDiffuse ?? "#000000")
+    ? (beamDiffuse ?? (isDark ? "#000000" : "#c9daf0"))
     : isDark
       ? "#030708"
       : "#e8ecf0";
@@ -285,7 +303,7 @@ function BeamsScene({
         />
         <DirLight color={lightColor} position={[0, 3, 10]} />
       </group>
-      <ambientLight intensity={dramatic ? 1 : isDark ? 0.55 : 0.85} />
+      <ambientLight intensity={dramatic ? (isDark ? 1 : 1.12) : isDark ? 0.55 : 0.85} />
       <color attach="background" args={[background]} />
       <PerspectiveCamera makeDefault position={[0, 0, 20]} fov={30} />
     </>
@@ -452,10 +470,10 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
-/** Matches `globals.css` — Final CTA reads best against true page background. */
+/** Matches `globals.css` (`--background`, cool silver accents). */
 const THEME = {
   light: {
-    background: "#f7f9fb",
+    background: "#f5f9fc",
     lightColor: "#94a3b8",
   },
   dark: {
@@ -475,11 +493,11 @@ const DRAMATIC_BEAMS_DEFAULTS = {
   rotation: 30,
 } as const;
 
-/** “Cinematic” CTA against true black + white key — light theme only. */
+/** Light dramatic: faint sky/slate ribbons over a blue-tinted canvas (pairs with Final CTA washes + work-section blues). */
 const DRAMATIC_BEAMS_PALETTE_LIGHT = {
-  background: "#000000",
-  beamDiffuse: "#000000",
-  lightColor: "#ffffff",
+  background: "#eaf1f9",
+  beamDiffuse: "#c9daf0",
+  lightColor: "#a8bfd9",
 } as const;
 
 /** Dark: same ribbons/spec as dramatic light, tinted to `#0b1215` canvas + muted silver highlights. */
@@ -501,7 +519,7 @@ const SITE_BEAMS_DEFAULTS = {
 
 export type CtaBeamsProps = {
   className?: string;
-  /** Reference-style black scene + white key light */
+  /** Dark: deep canvas + silver ribbons. Light: site background + cool silver wash (not black / white). */
   dramatic?: boolean;
   beamWidth?: number;
   beamHeight?: number;

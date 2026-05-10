@@ -136,13 +136,12 @@ function ServicesHeading({ headingId }: { headingId: string }) {
   );
 }
 
-/** Spacing after Work — scrolls away before the rule pins at the top of the viewport. */
+/** Spacing after Work — scrolls away before the rule pins at the top of the viewport. Full-bleed + `bg-background` so this band matches the main page (work section padding was removed to avoid a tinted strip). */
 function ServicesPrePinSpacer() {
   return (
-    <div
-      className="h-10 shrink-0 sm:h-14 lg:h-16"
-      aria-hidden
-    />
+    <div className={FULL_BLEED_ROW} aria-hidden>
+      <div className="h-16 shrink-0 bg-background sm:h-24 lg:h-[6.5rem]" />
+    </div>
   );
 }
 

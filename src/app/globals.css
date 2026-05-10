@@ -45,8 +45,8 @@ html {
   --hero-tile-shadow: rgb(24 24 27 / 0.2);
   /* Hero glass tiles — contact shadow under stack (light) */
   --hero-glass-ground: rgb(24 24 27 / 0.12);
-  /* Light theme: page palette */
-  --background: #f7f9fb;
+  /* Light theme: page palette — off-white with a faint cool/sky tint */
+  --background: #f5f9fc;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -78,8 +78,8 @@ html {
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #dce3ea;
   --sidebar-ring: #94a3b8;
-  /* Work section: match page canvas in light mode */
-  --work-section-canvas: var(--background);
+  /* Work section: slightly deeper cool canvas vs page (`--background`) so the stack reads as descending */
+  --work-section-canvas: color-mix(in srgb, var(--background) 82%, rgb(154 182 212));
 }
 
 @media (min-width: 640px) {

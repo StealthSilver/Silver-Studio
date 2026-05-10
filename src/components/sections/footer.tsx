@@ -52,7 +52,7 @@ export function Footer() {
               className="group flex w-fit items-center gap-3 rounded-lg outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <span className="sr-only">{site.homeSrLabel}</span>
-              <span className="relative flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/50 bg-background/80 shadow-sm transition-[border-color,box-shadow] group-hover:border-border dark:bg-background/40">
+              <span className="relative flex size-9 shrink-0 items-center justify-center">
                 <Image
                   src={site.logo.lightSrc}
                   alt=""
@@ -82,7 +82,7 @@ export function Footer() {
                   key={item.href}
                   href={item.href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={item.ariaLabel}
                   className={socialButtonClass}
                 >
@@ -91,6 +91,8 @@ export function Footer() {
               ))}
               <a
                 href={mailto}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={`Email ${footerData.contactEmail}`}
                 className={socialButtonClass}
               >
