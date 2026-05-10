@@ -300,6 +300,64 @@ body {
   filter: brightness(0.9);
 }
 
+/* Hero CTAs — very subtle depth (keeps focus on the tile, not the shadow) */
+.hero-cta-primary-wrap {
+  filter: drop-shadow(0 1px 1px rgb(24 24 27 / 0.08))
+    drop-shadow(0 4px 12px rgb(24 24 27 / 0.05));
+}
+
+.dark .hero-cta-primary-wrap {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.16))
+    drop-shadow(0 6px 16px rgb(0 0 0 / 0.1));
+}
+
+.hero-cta-3d-outline {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 -1px 0 rgb(15 23 42 / 0.04),
+    0 1px 1px rgb(15 23 42 / 0.04),
+    0 3px 10px rgb(15 23 42 / 0.04);
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.22s ease,
+    transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.hero-cta-3d-outline:hover {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.62),
+    inset 0 -1px 0 rgb(15 23 42 / 0.035),
+    0 1px 2px rgb(15 23 42 / 0.05),
+    0 5px 14px rgb(15 23 42 / 0.055);
+  transform: translateY(-0.5px);
+}
+
+.dark .hero-cta-3d-outline {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    inset 0 -1px 0 rgb(0 0 0 / 0.18),
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 5px 14px rgb(0 0 0 / 0.1);
+}
+
+.dark .hero-cta-3d-outline:hover {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    inset 0 -1px 0 rgb(0 0 0 / 0.16),
+    0 2px 3px rgb(0 0 0 / 0.14),
+    0 6px 18px rgb(0 0 0 / 0.12);
+  transform: translateY(-0.5px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-cta-3d-outline:hover,
+  .dark .hero-cta-3d-outline:hover {
+    transform: none;
+  }
+}
+
 /* Letter-wave: default stagger LETTER_WAVE_STAGGER_MS; nav uses LETTER_WAVE_NAV_STAGGER_MS + letter-wave-char-nav */
 @keyframes letter-wave-char {
   0%,

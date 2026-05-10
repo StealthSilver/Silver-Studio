@@ -4,7 +4,7 @@ import {
 } from "@/data/site";
 import {
   LetterWaveLink,
-  OUTLINE_CTA_BUTTON_CLASSNAME,
+  OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { WorkBottomPreview } from "@/components/ui/work-style-glass-preview";
 import { WorkScrollIntro } from "@/components/sections/work-scroll-intro";
@@ -70,7 +70,7 @@ function WorkItemRow({
               <div className="mt-8 flex justify-center sm:mt-10">
                 <LetterWaveLink
                   href={`/${item.slug}`}
-                  className={OUTLINE_CTA_BUTTON_CLASSNAME}
+                  className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
                   label="READ MORE"
                   ariaLabel={`Read more about ${item.title}`}
                 />

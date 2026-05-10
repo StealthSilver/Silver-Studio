@@ -2,16 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   useEffect,
   useMemo,
   useSyncExternalStore,
   useState,
+  type MouseEvent as ReactMouseEvent,
 } from "react";
 
-import { LetterWaveLink } from "@/components/ui/letter-wave-link";
+import {
+  HERO_PRIMARY_CTA_WRAP_CLASSNAME,
+  LetterWaveLink,
+} from "@/components/ui/letter-wave-link";
 import { navbar as navbarData, site } from "@/data/site";
+import {
+  consumePendingNavScrollPercent,
+  scrollToDocumentPercent,
+  setPendingNavScrollPercent,
+} from "@/lib/scroll-document-percent";
 import { cn } from "@/lib/utils";
 
 const { links, cta } = navbarData;
@@ -146,6 +156,8 @@ function MobileMenuMorphIcon({
 }
 
 export function Navbar() {
+  const pathname = usePathname();
+  const router = useRouter();
   const prefersReducedMotion = useReducedMotion() === true;
 
   const [open, setOpen] = useState(false);
@@ -167,15 +179,44 @@ export function Navbar() {
     if (!scrolled) setOpen(false);
   }, [scrolled]);
 
+  const scrollBehavior: ScrollBehavior = prefersReducedMotion
+    ? "auto"
+    : "smooth";
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const pending = consumePendingNavScrollPercent();
+    if (pending == null) return;
+    const run = () => scrollToDocumentPercent(pending, scrollBehavior);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(run);
+    });
+  }, [pathname, scrollBehavior]);
+
+  const handleSectionNavClick = (
+    e: ReactMouseEvent<HTMLAnchorElement>,
+    scrollPercent: number,
+  ) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      scrollToDocumentPercent(scrollPercent, scrollBehavior);
+      return;
+    }
+    e.preventDefault();
+    setPendingNavScrollPercent(scrollPercent);
+    router.push("/");
+  };
+
   const desktopLinks = (
     <ul className="hidden h-9 items-center gap-1 md:flex">
-      {links.map(({ href, label }) => (
+      {links.map(({ href, label, scrollPercent }) => (
         <li key={href}>
           <LetterWaveLink
             href={href}
             className={navLinkClass}
             label={label}
             variant="nav"
+            onClick={(e) => handleSectionNavClick(e, scrollPercent)}
           />
         </li>
       ))}
@@ -299,7 +340,7 @@ export function Navbar() {
             initial={prefersReducedMotion ? "visible" : "hidden"}
             animate="visible"
           >
-            {links.map(({ href, label }) => (
+            {links.map(({ href, label, scrollPercent }) => (
               <motion.li
                 key={href}
                 variants={menuItemVariants}
@@ -312,7 +353,10 @@ export function Navbar() {
                     "rounded-none text-center before:rounded-none hover:before:rounded-none",
                   )}
                   label={label}
-                  onClick={() => setOpen(false)}
+                  onClick={(e) => {
+                    handleSectionNavClick(e, scrollPercent);
+                    setOpen(false);
+                  }}
                   centerInContainer
                   variant="nav"
                 />
@@ -382,25 +426,36 @@ export function Navbar() {
                   scrolled && "min-w-0 md:min-w-[1px]",
                 )}
               >
-                <LetterWaveLink
-                  href={cta.href}
-                  className={cn(
-                    `${talkNowButtonClass} inline-flex h-9 !leading-none shrink-0 items-center justify-center px-4`,
-                    "max-md:max-w-[min(108px,calc((100vw-10rem)-1rem))] max-md:truncate max-md:!px-2.5 max-md:text-[clamp(10px,2.85vw,0.75rem)]",
-                  )}
-                  label={cta.label}
-                  onClick={() => setOpen(false)}
-                />
+                <span
+                  className={cn(HERO_PRIMARY_CTA_WRAP_CLASSNAME, "shrink-0")}
+                >
+                  <LetterWaveLink
+                    href={cta.href}
+                    className={cn(
+                      `${talkNowButtonClass} inline-flex h-9 !leading-none shrink-0 items-center justify-center px-4`,
+                      "max-md:max-w-[min(108px,calc((100vw-10rem)-1rem))] max-md:truncate max-md:!px-2.5 max-md:text-[clamp(10px,2.85vw,0.75rem)]",
+                    )}
+                    label={cta.label}
+                    onClick={() => setOpen(false)}
+                  />
+                </span>
               </div>
             </>
           ) : (
             <div className="flex h-9 shrink-0 items-center gap-2 md:gap-3">
               {desktopLinks}
-              <LetterWaveLink
-                href={cta.href}
-                className={`${talkNowButtonClass} hidden h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
-                label={cta.label}
-              />
+              <span
+                className={cn(
+                  HERO_PRIMARY_CTA_WRAP_CLASSNAME,
+                  "hidden shrink-0 md:inline-block",
+                )}
+              >
+                <LetterWaveLink
+                  href={cta.href}
+                  className={`${talkNowButtonClass} h-9 !leading-none items-center justify-center px-4 md:inline-flex`}
+                  label={cta.label}
+                />
+              </span>
               <div className="md:hidden">{menuToolbar}</div>
             </div>
           )}

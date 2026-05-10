@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { testimonialsSection } from "@/data/site";
+import { STANDARD_ICON_BUTTON_CLASS } from "@/lib/standard-icon-button";
 import { cn } from "@/lib/utils";
 
 /** Same full-bleed rule + heading scale as `Services` / `Process` / `Faq`. */
@@ -56,6 +57,12 @@ const PLACEHOLDER_GRADIENTS = [
 
 const GLASS_OVERLAY =
   "pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.45),rgba(255,255,255,0.1))] dark:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.14),rgba(255,255,255,0.03))]";
+
+/** Carousel arrows: shared icon-button styles; 6px radius for this section. */
+const TESTIMONIALS_ARROW_CLASS = cn(
+  STANDARD_ICON_BUTTON_CLASS,
+  "rounded-[6px] [&_svg]:size-4",
+);
 
 export function Testimonials() {
   const { id, items } = testimonialsSection;
@@ -156,10 +163,7 @@ export function Testimonials() {
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className={cn(
-                    "group/button grid size-10 shrink-0 place-items-center rounded-full border border-border/80 bg-card/90 text-foreground transition-colors hover:border-border hover:bg-accent",
-                    "[&_svg]:size-4",
-                  )}
+                  className={TESTIMONIALS_ARROW_CLASS}
                   title="Previous testimonial"
                 >
                   <ArrowLeft
@@ -170,10 +174,7 @@ export function Testimonials() {
                 <button
                   type="button"
                   onClick={handleNext}
-                  className={cn(
-                    "group/button grid size-10 shrink-0 place-items-center rounded-full border border-border/80 bg-card/90 text-foreground transition-colors hover:border-border hover:bg-accent",
-                    "[&_svg]:size-4",
-                  )}
+                  className={TESTIMONIALS_ARROW_CLASS}
                   title="Next testimonial"
                 >
                   <ArrowRight

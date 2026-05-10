@@ -1,6 +1,6 @@
 "use client";
 
-import type { HTMLAttributeAnchorTarget } from "react";
+import type { HTMLAttributeAnchorTarget, MouseEventHandler } from "react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -9,6 +9,16 @@ import { cn } from "@/lib/utils";
 /** Outline CTA: hero "SEE WORK" and matching links (LetterWaveLink). */
 export const OUTLINE_CTA_BUTTON_CLASSNAME =
   "inline-flex h-11 items-center justify-center rounded-[4px] border border-border bg-background px-6 text-sm font-semibold tracking-wide text-foreground shadow-sm transition-colors hover:border-border hover:bg-accent";
+
+/** Outline + subtle layered shadow (hero SEE WORK, Work READ MORE, Silver UI CTA). */
+export const OUTLINE_CTA_HERO_SHADOW_CLASSNAME = cn(
+  OUTLINE_CTA_BUTTON_CLASSNAME.replace(/\bshadow-sm\b/, ""),
+  "hero-cta-3d-outline",
+);
+
+/** Wrap primary `talk-now-btn` CTAs — pairs with `.hero-cta-primary-wrap` in globals.css */
+export const HERO_PRIMARY_CTA_WRAP_CLASSNAME =
+  "hero-cta-primary-wrap inline-block";
 
 /** Stagger between characters (buttons / CTAs); nav uses LETTER_WAVE_NAV_STAGGER_MS */
 export const LETTER_WAVE_STAGGER_MS = 12;
@@ -31,7 +41,7 @@ export function LetterWaveLink({
   label: string;
   /** Overrides default `aria-label` (the visible label) when context needs more detail */
   ariaLabel?: string;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   /** Full-width row with centered label (e.g. mobile menu links) */
   centerInContainer?: boolean;
   /** Navbar section links: slower easing + stagger than hero / CTA buttons */

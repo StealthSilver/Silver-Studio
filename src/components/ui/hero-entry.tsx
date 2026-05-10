@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/hero-reveal";
 import { HERO_TILE_COUNT, HeroTiles } from "@/components/ui/hero-tiles";
 import {
+  HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
-  OUTLINE_CTA_BUTTON_CLASSNAME,
+  OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { heroLogoTicker } from "@/data/site";
 
@@ -97,7 +98,7 @@ export function HeroEntry({
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <motion.span
-              className="inline-block"
+              className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}
               initial={instant ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{
@@ -124,7 +125,7 @@ export function HeroEntry({
             >
               <LetterWaveLink
                 href={secondaryCta.href}
-                className={OUTLINE_CTA_BUTTON_CLASSNAME}
+                className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
                 label={secondaryCta.label}
               />
             </motion.span>

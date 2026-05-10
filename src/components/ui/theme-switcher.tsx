@@ -16,19 +16,23 @@ function ThemeOption({
   value,
   isActive,
   onClick,
+  reducedMotion,
 }: {
   icon: JSX.Element;
   value: string;
   isActive?: boolean;
   onClick: (value: ThemeValue) => void;
+  reducedMotion: boolean;
 }) {
   return (
     <button
       className={cn(
-        "relative flex size-8 cursor-default items-center justify-center rounded-full transition-[color] [&_svg]:size-4",
-        isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground",
+        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[4px] [&_svg]:size-4",
+        "transition-[color,background-color]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        !isActive &&
+          "text-muted-foreground hover:bg-accent hover:text-foreground",
+        isActive && "text-foreground",
       )}
       role="radio"
       aria-checked={isActive}
@@ -36,15 +40,23 @@ function ThemeOption({
       onClick={() => onClick(value as ThemeValue)}
       type="button"
     >
-      {icon}
-
-      {isActive && (
-        <motion.div
-          layoutId="theme-option"
-          transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
-          className="absolute inset-0 rounded-full border border-border"
-        />
-      )}
+      {isActive &&
+        (reducedMotion ? (
+          <span
+            className="absolute inset-0 rounded-[4px] bg-accent"
+            aria-hidden
+          />
+        ) : (
+          <motion.div
+            layoutId="theme-option"
+            transition={{ type: "spring", bounce: 0.28, duration: 0.55 }}
+            className="absolute inset-0 rounded-[4px] bg-accent"
+            aria-hidden
+          />
+        ))}
+      <span className="relative z-10 flex items-center justify-center">
+        {icon}
+      </span>
     </button>
   );
 }
@@ -67,6 +79,7 @@ const THEME_OPTIONS = [
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const prefersReducedMotion = useReducedMotion() === true;
+  const reducedMotion = prefersReducedMotion;
   const [playSwitch] = useSound(switch007Sound, {
     soundEnabled: !prefersReducedMotion,
   });
@@ -77,7 +90,12 @@ function ThemeSwitcher() {
   };
 
   if (theme === undefined) {
-    return <div className="flex h-8 w-24" aria-hidden />;
+    return (
+      <div
+        className="h-8 w-[6.25rem] shrink-0 rounded-[4px] border border-border/60 bg-background/80 shadow-sm"
+        aria-hidden
+      />
+    );
   }
 
   return (
@@ -86,8 +104,9 @@ function ThemeSwitcher() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="inline-flex items-center overflow-hidden rounded-full bg-card ring-1 ring-border ring-inset"
+      className="inline-flex items-center gap-0.5 rounded-[4px] border border-border bg-background p-0.5 shadow-sm"
       role="radiogroup"
+      aria-label="Theme"
     >
       {THEME_OPTIONS.map((option) => (
         <ThemeOption
@@ -96,6 +115,7 @@ function ThemeSwitcher() {
           value={option.value}
           isActive={theme === option.value}
           onClick={handleThemeSelect}
+          reducedMotion={reducedMotion}
         />
       ))}
     </motion.div>

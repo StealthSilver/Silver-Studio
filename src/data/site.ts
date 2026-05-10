@@ -26,11 +26,11 @@ export const hero = {
 
 export const navbar = {
   links: [
-    { href: "/#work", label: "Work" },
-    { href: "/#services", label: "Services" },
-    { href: "/#process", label: "Process" },
-    { href: "/#faq", label: "FAQ" },
-    { href: "/#silver-ui", label: "Silver UI" },
+    { href: "/#work", label: "Work", scrollPercent: 8 },
+    { href: "/#services", label: "Services", scrollPercent: 63 },
+    { href: "/#silver-ui", label: "Silver UI", scrollPercent: 69 },
+    { href: "/#process", label: "Process", scrollPercent: 91 },
+    { href: "/#faq", label: "FAQ", scrollPercent: 96 },
   ],
   cta: { href: "/#contact", label: "BOOK A CALL" },
 } as const;
@@ -39,16 +39,18 @@ export const footer = {
   /** Shown as: © {year} {copyrightOrg}. {copyrightSuffix} */
   copyrightOrg: site.name,
   copyrightSuffix: "All rights reserved.",
-  description:
-    "Design-forward web studio for startups, growth-stage companies, and product teams. We craft high-conversion marketing sites with clean execution and fast iteration.",
   contactEmail: "hello@silverstudios.dev",
-  location: "Remote • Worldwide",
-  availability: "Booking projects for Q3 2026",
-  primaryCta: { href: "/#contact", label: "Book a call" },
-  secondaryCta: { href: "/#work", label: "See work" },
-  legalLinks: [
-    { href: "/privacy", label: "Privacy" },
-    { href: "/terms", label: "Terms" },
+  social: [
+    {
+      network: "x" as const,
+      href: "https://x.com/silver_srs",
+      ariaLabel: "Silver Studios on X",
+    },
+    {
+      network: "discord" as const,
+      href: "https://discord.com/users/rajat_28969",
+      ariaLabel: "Message Silver Studios on Discord",
+    },
   ],
 } as const;
 

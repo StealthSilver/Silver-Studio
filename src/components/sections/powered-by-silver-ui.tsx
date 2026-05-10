@@ -1,6 +1,6 @@
 import {
   LetterWaveLink,
-  OUTLINE_CTA_BUTTON_CLASSNAME,
+  OUTLINE_CTA_HERO_SHADOW_CLASSNAME,
 } from "@/components/ui/letter-wave-link";
 import { WorkBottomSingle } from "@/components/ui/work-style-glass-preview";
 import { poweredBySilverUiSection } from "@/data/site";
@@ -61,7 +61,7 @@ export function PoweredBySilverUi() {
                     href={externalHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={OUTLINE_CTA_BUTTON_CLASSNAME}
+                    className={OUTLINE_CTA_HERO_SHADOW_CLASSNAME}
                     label={ctaLabel}
                     ariaLabel={ctaAriaLabel}
                   />

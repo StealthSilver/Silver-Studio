@@ -1,4 +1,5 @@
 import {
+  HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
 } from "@/components/ui/letter-wave-link";
 import { finalCtaSection } from "@/data/site";
@@ -55,11 +56,13 @@ export function FinalCta() {
       <FinalCtaHeading headingId={headingId} title={heading} />
       <FinalCtaHeadingToContentSpacer />
       <div className="mx-auto box-border flex w-full max-w-7xl justify-center px-5 pb-16 sm:px-8 sm:pb-24 lg:px-12">
-        <LetterWaveLink
-          href={primaryCta.href}
-          className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide shadow-[0_14px_32px_-20px_rgb(24_24_27_/_0.55)]"
-          label={primaryCta.label}
-        />
+        <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
+          <LetterWaveLink
+            href={primaryCta.href}
+            className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
+            label={primaryCta.label}
+          />
+        </span>
       </div>
     </section>
   );
