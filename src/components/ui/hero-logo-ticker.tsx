@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import type { ReactNode } from "react";
@@ -10,9 +9,7 @@ import {
   FadeRevealSpan,
   splitHeroWords,
 } from "@/components/ui/hero-reveal";
-import { BrilliantLogo } from "@/components/ui/logos/brilliant-logo";
-import { EighthLightLogo } from "@/components/ui/logos/eighth-light-logo";
-import { MeshspireLogo } from "@/components/ui/logos/meshspire-logo";
+import { HeroTickerLogoMark } from "@/components/ui/hero-ticker-logo-mark";
 import { heroLogoTicker } from "@/data/site";
 import { cn } from "@/lib/utils";
 
@@ -60,53 +57,6 @@ function TickerExternalLink({
   );
 }
 
-function TickerItemContent({ item }: { item: (typeof heroLogoTicker.items)[number] }) {
-  switch (item.type) {
-    case "dualImage":
-      return (
-        <span className="inline-flex items-center justify-center">
-          <Image
-            src={item.light.src}
-            alt=""
-            width={item.light.width}
-            height={item.light.height}
-            className={item.light.className}
-            sizes={item.light.sizes}
-          />
-          <Image
-            src={item.dark.src}
-            alt=""
-            width={item.dark.width}
-            height={item.dark.height}
-            className={item.dark.className}
-            sizes={item.dark.sizes}
-            aria-hidden={item.dark.ariaHidden}
-          />
-        </span>
-      );
-    case "singleImage":
-      return (
-        <Image
-          src={item.src}
-          alt=""
-          width={item.width}
-          height={item.height}
-          className={item.className}
-        />
-      );
-    case "brilliant":
-      return <BrilliantLogo className={item.logoClassName} />;
-    case "eighthLight":
-      return <EighthLightLogo className={item.logoClassName} />;
-    case "meshspire":
-      return <MeshspireLogo className={item.logoClassName} />;
-    default: {
-      const _exhaustive: never = item;
-      return _exhaustive;
-    }
-  }
-}
-
 /**
  * Logo strip below the hero (ticker layout). Optional staggered fade-in via `reveal`.
  */
@@ -150,7 +100,7 @@ export function HeroLogoTicker({ className, reveal }: HeroLogoTickerProps) {
         {items.map((item, index) => {
           const inner = (
             <TickerExternalLink href={item.href} ariaLabel={item.ariaLabel}>
-              <TickerItemContent item={item} />
+              <HeroTickerLogoMark item={item} presentation="ticker" />
             </TickerExternalLink>
           );
 

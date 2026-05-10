@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
-import { testimonialsSection } from "@/data/site";
+import { HeroTickerLogoMark } from "@/components/ui/hero-ticker-logo-mark";
+import { heroLogoTicker, testimonialsSection } from "@/data/site";
 import { STANDARD_ICON_BUTTON_CLASS } from "@/lib/standard-icon-button";
 import { cn } from "@/lib/utils";
 
@@ -46,17 +47,29 @@ function TestimonialsHeadingToContentSpacer() {
   return <div className="h-8 shrink-0 sm:h-10 lg:h-12" aria-hidden />;
 }
 
-/** Gradient “avatars” — one style per testimonial index (no photos yet). */
-const PLACEHOLDER_GRADIENTS = [
-  "bg-[radial-gradient(85%_75%_at_20%_15%,#dbeafe_0%,transparent_52%),radial-gradient(70%_85%_at_80%_25%,#c4b5fd_0%,transparent_58%),radial-gradient(85%_90%_at_50%_100%,#99f6e4_0%,transparent_60%),linear-gradient(140deg,#ffffff_0%,#ecfeff_38%,#eef2ff_100%)] dark:bg-[radial-gradient(85%_75%_at_20%_15%,#1d4ed8_0%,transparent_55%),radial-gradient(70%_85%_at_80%_25%,#6d28d9_0%,transparent_60%),radial-gradient(85%_90%_at_50%_100%,#0f766e_0%,transparent_62%),linear-gradient(140deg,#0b1215_0%,#11191d_42%,#151f24_100%)]",
-  "bg-[radial-gradient(80%_70%_at_15%_20%,#fce7f3_0%,transparent_50%),radial-gradient(75%_80%_at_85%_30%,#c4b5fd_0%,transparent_56%),radial-gradient(90%_85%_at_50%_95%,#a5b4fc_0%,transparent_58%),linear-gradient(145deg,#ffffff_0%,#faf5ff_40%,#eef2ff_100%)] dark:bg-[radial-gradient(80%_70%_at_15%_20%,#be185d_0%,transparent_52%),radial-gradient(75%_80%_at_85%_30%,#7c3aed_0%,transparent_58%),radial-gradient(90%_85%_at_50%_95%,#4f46e5_0%,transparent_60%),linear-gradient(145deg,#0b1215_0%,#18122b_38%,#151f24_100%)]",
-  "bg-[radial-gradient(82%_78%_at_25%_12%,#ccfbf1_0%,transparent_52%),radial-gradient(72%_82%_at_75%_28%,#bfdbfe_0%,transparent_55%),radial-gradient(88%_88%_at_48%_100%,#6ee7b7_0%,transparent_58%),linear-gradient(138deg,#ffffff_0%,#f0fdfa_36%,#ecfeff_100%)] dark:bg-[radial-gradient(82%_78%_at_25%_12%,#047857_0%,transparent_54%),radial-gradient(72%_82%_at_75%_28%,#2563eb_0%,transparent_58%),radial-gradient(88%_88%_at_48%_100%,#059669_0%,transparent_60%),linear-gradient(138deg,#0b1215_0%,#0f1f1c_40%,#11191d_100%)]",
-  "bg-[radial-gradient(78%_72%_at_18%_18%,#fed7aa_0%,transparent_50%),radial-gradient(74%_78%_at_82%_22%,#e9d5ff_0%,transparent_56%),radial-gradient(86%_90%_at_52%_92%,#fde68a_0%,transparent_56%),linear-gradient(142deg,#ffffff_0%,#fffbeb_38%,#f8fafc_100%)] dark:bg-[radial-gradient(78%_72%_at_18%_18%,#c2410c_0%,transparent_52%),radial-gradient(74%_78%_at_82%_22%,#6d28d9_0%,transparent_56%),radial-gradient(86%_90%_at_52%_92%,#ca8a04_0%,transparent_58%),linear-gradient(142deg,#0b1215_0%,#1c1410_38%,#151f24_100%)]",
-  "bg-[radial-gradient(84%_76%_at_22%_14%,#ddd6fe_0%,transparent_51%),radial-gradient(76%_84%_at_78%_26%,#bae6fd_0%,transparent_57%),radial-gradient(86%_88%_at_50%_98%,#93c5fd_0%,transparent_59%),linear-gradient(140deg,#ffffff_0%,#f5f3ff_38%,#f1f5f9_100%)] dark:bg-[radial-gradient(84%_76%_at_22%_14%,#5b21b6_0%,transparent_54%),radial-gradient(76%_84%_at_78%_26%,#0369a1_0%,transparent_58%),radial-gradient(86%_88%_at_50%_98%,#1d4ed8_0%,transparent_60%),linear-gradient(140deg,#0b1215_0%,#1a1625_40%,#151f24_100%)]",
+/**
+ * Light: soft silver washes on `#f7f9fb` / white family (`--card`, `--muted`).
+ * Dark: deep charcoal matching `--background` / `--card` in `.dark`.
+ */
+const TESTIMONIAL_TILE_GRADIENTS = [
+  "bg-[radial-gradient(ellipse_88%_72%_at_18%_14%,rgb(148_163_184_/_0.22)_0%,transparent_55%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(226_232_240_/_0.65)_0%,transparent_62%),linear-gradient(152deg,#ffffff_0%,#f4f7fa_42%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_82%_68%_at_18%_14%,rgb(51_65_85_/_0.14)_0%,transparent_54%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(15_23_42_/_0.32)_0%,transparent_62%),linear-gradient(152deg,#05080a_0%,#0b1215_40%,#101920_100%)]",
+  "bg-[radial-gradient(ellipse_82%_70%_at_14%_20%,rgb(199_210_254_/_0.38)_0%,transparent_52%),radial-gradient(ellipse_78%_68%_at_88%_32%,rgb(224_231_255_/_0.55)_0%,transparent_58%),linear-gradient(148deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)] dark:bg-[radial-gradient(ellipse_78%_64%_at_12%_22%,rgb(30_58_138_/_0.12)_0%,transparent_52%),radial-gradient(ellipse_80%_70%_at_90%_30%,rgb(49_46_129_/_0.14)_0%,transparent_58%),linear-gradient(148deg,#06090c_0%,#0b1215_44%,#121a22_100%)]",
+  "bg-[radial-gradient(ellipse_86%_74%_at_24%_12%,rgb(167_243_208_/_0.32)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(204_251_241_/_0.45)_0%,transparent_60%),linear-gradient(155deg,#ffffff_0%,#f6fdfb_42%,#f0fdf9_100%)] dark:bg-[radial-gradient(ellipse_85%_72%_at_25%_12%,rgb(13_148_136_/_0.1)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(15_118_110_/_0.12)_0%,transparent_60%),linear-gradient(155deg,#050a0b_0%,#0b1215_42%,#0f181c_100%)]",
+  "bg-[radial-gradient(ellipse_80%_68%_at_20%_18%,rgb(254_215_170_/_0.26)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(241_245_249_/_0.75)_0%,transparent_58%),linear-gradient(150deg,#ffffff_0%,#fffdfb_45%,#f8fafc_100%)] dark:bg-[radial-gradient(ellipse_76%_66%_at_20%_18%,rgb(120_53_15_/_0.1)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(30_27_75_/_0.14)_0%,transparent_58%),linear-gradient(150deg,#070806_0%,#0b1215_45%,#141c1f_100%)]",
+  "bg-[radial-gradient(ellipse_84%_72%_at_22%_16%,rgb(148_163_184_/_0.2)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(226_232_240_/_0.6)_0%,transparent_62%),linear-gradient(149deg,#ffffff_0%,#f4f6f8_43%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_80%_70%_at_22%_16%,rgb(71_85_105_/_0.15)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(30_41_59_/_0.28)_0%,transparent_62%),linear-gradient(149deg,#050809_0%,#0b1215_43%,#111a20_100%)]",
 ] as const;
 
-const GLASS_OVERLAY =
-  "pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.45),rgba(255,255,255,0.1))] dark:bg-[linear-gradient(to_bottom_right,rgba(255,255,255,0.14),rgba(255,255,255,0.03))]";
+const TILE_GLASS =
+  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(168deg,rgba(255,255,255,0.72)_0%,transparent_40%,rgba(148,163,184,0.1)_100%)] dark:bg-[linear-gradient(168deg,rgba(255,255,255,0.085)_0%,transparent_38%,rgba(0,0,0,0.18)_100%)]";
+
+const TILE_VIGNETTE =
+  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[radial-gradient(ellipse_72%_58%_at_50%_48%,transparent_0%,rgb(15_23_42/_0.06)_88%,rgb(15_23_42/_0.1)_100%)] dark:bg-[radial-gradient(ellipse_72%_58%_at_50%_48%,transparent_0%,rgb(0_0_0/_0.42)_88%,rgb(0_0_0/_0.55)_100%)]";
+
+const TILE_INNER_GLOW =
+  "pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgb(255_255_255/_0.92),inset_0_-1px_0_rgb(15_23_42/_0.06)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/_0.07),inset_0_-1px_0_rgb(0_0_0/_0.35)]";
+
+const TILE_FRAME =
+  "border-border/80 bg-white shadow-[0_22px_44px_-18px_rgb(15_23_42/_0.14),0_1px_0_rgb(255_255_255/_0.95)_inset] dark:border-white/[0.06] dark:bg-[#0b1215] dark:shadow-[0_28px_56px_-14px_rgb(0_0_0/_0.65),inset_0_1px_0_rgb(255_255_255/_0.055)]";
 
 /** Carousel arrows: shared icon-button styles; 6px radius for this section. */
 const TESTIMONIALS_ARROW_CLASS = cn(
@@ -66,6 +79,7 @@ const TESTIMONIALS_ARROW_CLASS = cn(
 
 export function Testimonials() {
   const { id, items } = testimonialsSection;
+  const logoItems = heroLogoTicker.items;
   const headingId = `${id}-heading`;
   const [active, setActive] = useState(0);
   const prefersReducedMotion = useReducedMotion();
@@ -191,7 +205,10 @@ export function Testimonials() {
               <AnimatePresence mode="sync">
                 {items.map((testimonial, index) => {
                   const gradientClass =
-                    PLACEHOLDER_GRADIENTS[index % PLACEHOLDER_GRADIENTS.length];
+                    TESTIMONIAL_TILE_GRADIENTS[
+                      index % TESTIMONIAL_TILE_GRADIENTS.length
+                    ];
+                  const logoItem = logoItems[index % logoItems.length]!;
                   const activeSlide = index === active;
                   /** Back cards sit slightly lower so edges read as a straight deck (no tilt). */
                   const backOffsetY = 14 + index * 12;
@@ -240,9 +257,37 @@ export function Testimonials() {
                       }}
                       className="absolute inset-0 origin-center"
                     >
-                      <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/90 shadow-[0_1px_0_rgb(255_255_255_/_0.65)_inset] dark:border-border/55 dark:shadow-[inset_0_1px_0_rgb(255_255_255_/_0.06)]">
+                      <div
+                        className={cn(
+                          "relative h-full w-full overflow-hidden rounded-3xl border",
+                          TILE_FRAME,
+                        )}
+                      >
                         <div className={cn("absolute inset-0", gradientClass)} />
-                        <div className={GLASS_OVERLAY} aria-hidden />
+                        <div className={TILE_VIGNETTE} aria-hidden />
+                        <div className={TILE_GLASS} aria-hidden />
+                        <div className={TILE_INNER_GLOW} aria-hidden />
+                        <div
+                          className="relative flex h-full flex-col items-center justify-center px-6 py-8 sm:px-10"
+                          aria-hidden
+                        >
+                          <div className="flex min-h-[4.5rem] w-full max-w-[min(100%,15rem)] flex-col items-center justify-center sm:min-h-[5.25rem] sm:max-w-[17rem]">
+                            <div className="flex w-full items-center justify-center dark:hidden">
+                              <HeroTickerLogoMark
+                                item={logoItem}
+                                presentation="card"
+                                cardTone="light"
+                              />
+                            </div>
+                            <div className="hidden w-full items-center justify-center dark:flex">
+                              <HeroTickerLogoMark
+                                item={logoItem}
+                                presentation="card"
+                                cardTone="dark"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   );

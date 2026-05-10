@@ -1,3 +1,4 @@
+import { CtaGlassShatter } from "@/components/ui/cta-glass-shatter";
 import {
   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
@@ -53,16 +54,19 @@ export function FinalCta() {
     >
       <FinalCtaPreRuleSpacer />
       <FinalCtaTopRule />
-      <FinalCtaHeading headingId={headingId} title={heading} />
-      <FinalCtaHeadingToContentSpacer />
-      <div className="mx-auto box-border flex w-full max-w-7xl justify-center px-5 pb-16 sm:px-8 sm:pb-24 lg:px-12">
-        <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
-          <LetterWaveLink
-            href={primaryCta.href}
-            className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
-            label={primaryCta.label}
-          />
-        </span>
+      <div className="relative isolate">
+        <FinalCtaHeading headingId={headingId} title={heading} />
+        <FinalCtaHeadingToContentSpacer />
+        <div className="mx-auto box-border flex w-full max-w-7xl justify-center px-5 pb-16 sm:px-8 sm:pb-24 lg:px-12">
+          <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
+            <LetterWaveLink
+              href={primaryCta.href}
+              className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
+              label={primaryCta.label}
+            />
+          </span>
+        </div>
+        <CtaGlassShatter />
       </div>
     </section>
   );
