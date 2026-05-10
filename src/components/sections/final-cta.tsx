@@ -1,4 +1,4 @@
-import { CtaGlassShatter } from "@/components/ui/cta-glass-shatter";
+import { CtaBeamsLazy } from "@/components/ui/cta-beams-dynamic";
 import {
   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
@@ -26,21 +26,19 @@ function FinalCtaTopRule() {
 
 function FinalCtaHeading({ headingId, title }: { headingId: string; title: string }) {
   return (
-    <div className="flex w-full justify-center px-4 pt-[4.25rem] pb-6 sm:px-6 sm:pt-20 sm:pb-8 lg:px-8 lg:pt-24">
-      <div className="flex w-full max-w-7xl flex-col items-center justify-center gap-6">
-        <div className="min-w-0 max-w-[min(100%,44rem)] px-2 text-center">
-          <h2 id={headingId} className={FINAL_CTA_HEADING_CLASS}>
-            {title}
-          </h2>
-        </div>
+    <div className="flex w-full justify-center">
+      <div className="min-w-0 max-w-[min(100%,44rem)] px-2 text-center">
+        <h2 id={headingId} className={FINAL_CTA_HEADING_CLASS}>
+          {title}
+        </h2>
       </div>
     </div>
   );
 }
 
-function FinalCtaHeadingToContentSpacer() {
-  return <div className="h-6 shrink-0 sm:h-8 lg:h-10" aria-hidden />;
-}
+/** Full-viewport-width band; tall enough to vertically center heading + CTA. */
+const CTA_BEAMS_BAND =
+  "min-h-[600px] md:min-h-[min(85vh,920px)]";
 
 export function FinalCta() {
   const { id, heading, primaryCta } = finalCtaSection;
@@ -54,19 +52,41 @@ export function FinalCta() {
     >
       <FinalCtaPreRuleSpacer />
       <FinalCtaTopRule />
-      <div className="relative isolate">
-        <FinalCtaHeading headingId={headingId} title={heading} />
-        <FinalCtaHeadingToContentSpacer />
-        <div className="mx-auto box-border flex w-full max-w-7xl justify-center px-5 pb-16 sm:px-8 sm:pb-24 lg:px-12">
-          <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
-            <LetterWaveLink
-              href={primaryCta.href}
-              className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
-              label={primaryCta.label}
-            />
-          </span>
+      <div
+        className={`${FULL_BLEED_ROW} isolate ${CTA_BEAMS_BAND} overflow-hidden`}
+      >
+        <CtaBeamsLazy
+          dramatic
+          className="absolute inset-0 z-0 h-full w-full min-h-0"
+          beamWidth={3}
+          beamHeight={30}
+          beamNumber={20}
+          lightColor="#ffffff"
+          speed={2}
+          noiseIntensity={1.75}
+          scale={0.2}
+          rotation={30}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-background/90 via-background/45 to-background/90"
+        />
+        <div
+          className={`relative z-10 flex w-full ${CTA_BEAMS_BAND} flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8`}
+        >
+          <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-8 sm:gap-10">
+            <FinalCtaHeading headingId={headingId} title={heading} />
+            <div className="flex justify-center">
+              <span className={HERO_PRIMARY_CTA_WRAP_CLASSNAME}>
+                <LetterWaveLink
+                  href={primaryCta.href}
+                  className="talk-now-btn inline-flex h-11 items-center justify-center rounded-[4px] px-6 text-sm font-semibold tracking-wide"
+                  label={primaryCta.label}
+                />
+              </span>
+            </div>
+          </div>
         </div>
-        <CtaGlassShatter />
       </div>
     </section>
   );

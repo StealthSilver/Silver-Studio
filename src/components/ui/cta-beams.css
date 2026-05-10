@@ -1,0 +1,6 @@
+/* Full-bleed WebGL background for the Final CTA (see `cta-beams.tsx`). */
+.cta-beams-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
