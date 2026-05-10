@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { Volume2, VolumeX } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -12,6 +13,7 @@ import {
   type MouseEvent as ReactMouseEvent,
 } from "react";
 
+import { useAmbientMusic } from "@/components/ambient-music";
 import {
   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
   LetterWaveLink,
@@ -63,6 +65,59 @@ function serverScrollSnapshot() {
 
 const scrollGaugeClass =
   "inline-flex h-9 min-w-[3.25rem] shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary px-2 text-xs font-semibold tabular-nums text-foreground";
+
+const navMusicButtonClass =
+  "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] border border-border/90 bg-secondary text-muted-foreground transition-[color,background-color,border-color,box-shadow] duration-200 hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+
+function NavMusicEqualizer() {
+  return (
+    <span
+      className="flex h-[14px] w-[18px] items-end justify-center gap-[3px]"
+      aria-hidden
+    >
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="block w-[3px] origin-bottom rounded-full bg-current will-change-transform"
+          initial={false}
+          animate={{ scaleY: [0.35, 1, 0.45, 0.82, 0.35] }}
+          transition={{
+            duration: 0.75,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.12,
+          }}
+          style={{ height: 11 }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function NavMusicButton({ reducedMotion }: { reducedMotion: boolean }) {
+  const { musicOn, toggleMusic } = useAmbientMusic();
+
+  return (
+    <button
+      type="button"
+      className={cn(
+        navMusicButtonClass,
+        musicOn && "border-primary/45 text-primary ring-1 ring-primary/25",
+      )}
+      aria-pressed={musicOn}
+      aria-label={musicOn ? "Pause site music" : "Play site music"}
+      onClick={toggleMusic}
+    >
+      {musicOn && !reducedMotion ? (
+        <NavMusicEqualizer />
+      ) : musicOn ? (
+        <Volume2 className="size-[17px]" strokeWidth={2} aria-hidden />
+      ) : (
+        <VolumeX className="size-[17px]" strokeWidth={2} aria-hidden />
+      )}
+    </button>
+  );
+}
 
 const menuMorphTransition = {
   type: "spring" as const,
@@ -250,10 +305,19 @@ export function Navbar() {
     </span>
   );
 
-  const menuToolbar = (
+  /** Scroll % only after the header has switched to the “scrolled” layout */
+  const menuToolbarScrolled = (
     <div className="flex items-center gap-2">
       {menuButton}
       {scrollPercentButton}
+      <NavMusicButton reducedMotion={prefersReducedMotion} />
+    </div>
+  );
+
+  const menuToolbarUnscrolledMobile = (
+    <div className="flex items-center gap-2">
+      {menuButton}
+      <NavMusicButton reducedMotion={prefersReducedMotion} />
     </div>
   );
 
@@ -418,7 +482,7 @@ export function Navbar() {
           {scrolled ? (
             <>
               <div className="flex flex-1 justify-center md:flex-none md:justify-self-center">
-                {menuToolbar}
+                {menuToolbarScrolled}
               </div>
               <div
                 className={cn(
@@ -444,6 +508,9 @@ export function Navbar() {
           ) : (
             <div className="flex h-9 shrink-0 items-center gap-2 md:gap-3">
               {desktopLinks}
+              <div className="hidden h-9 items-center gap-2 md:flex">
+                <NavMusicButton reducedMotion={prefersReducedMotion} />
+              </div>
               <span
                 className={cn(
                   HERO_PRIMARY_CTA_WRAP_CLASSNAME,
@@ -456,7 +523,7 @@ export function Navbar() {
                   label={cta.label}
                 />
               </span>
-              <div className="md:hidden">{menuToolbar}</div>
+              <div className="md:hidden">{menuToolbarUnscrolledMobile}</div>
             </div>
           )}
         </nav>

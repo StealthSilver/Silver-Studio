@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { AmbientMusicProvider } from "@/components/ambient-music";
 import { PageClickSound } from "@/components/page-click-sound";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ZoomNeutralizer } from "@/components/zoom-neutralizer";
@@ -15,7 +16,7 @@ export function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <ZoomNeutralizer />
       <PageClickSound />
-      {children}
+      <AmbientMusicProvider>{children}</AmbientMusicProvider>
     </ThemeProvider>
   );
 }
