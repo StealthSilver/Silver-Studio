@@ -49,24 +49,24 @@ function TestimonialsHeadingToContentSpacer() {
 
 /**
  * Light: soft silver washes on `#f7f9fb` / white family (`--card`, `--muted`).
- * Dark: deep charcoal matching `--background` / `--card` in `.dark`.
+ * Dark: sits on `#0b1215` → `#151f24` (`--background` → `--card`); radials stay low-contrast like hero silver washes.
  */
 const TESTIMONIAL_TILE_GRADIENTS = [
-  "bg-[radial-gradient(ellipse_88%_72%_at_18%_14%,rgb(148_163_184_/_0.22)_0%,transparent_55%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(226_232_240_/_0.65)_0%,transparent_62%),linear-gradient(152deg,#ffffff_0%,#f4f7fa_42%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_82%_68%_at_18%_14%,rgb(51_65_85_/_0.14)_0%,transparent_54%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(15_23_42_/_0.32)_0%,transparent_62%),linear-gradient(152deg,#05080a_0%,#0b1215_40%,#101920_100%)]",
-  "bg-[radial-gradient(ellipse_82%_70%_at_14%_20%,rgb(199_210_254_/_0.38)_0%,transparent_52%),radial-gradient(ellipse_78%_68%_at_88%_32%,rgb(224_231_255_/_0.55)_0%,transparent_58%),linear-gradient(148deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)] dark:bg-[radial-gradient(ellipse_78%_64%_at_12%_22%,rgb(30_58_138_/_0.12)_0%,transparent_52%),radial-gradient(ellipse_80%_70%_at_90%_30%,rgb(49_46_129_/_0.14)_0%,transparent_58%),linear-gradient(148deg,#06090c_0%,#0b1215_44%,#121a22_100%)]",
-  "bg-[radial-gradient(ellipse_86%_74%_at_24%_12%,rgb(167_243_208_/_0.32)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(204_251_241_/_0.45)_0%,transparent_60%),linear-gradient(155deg,#ffffff_0%,#f6fdfb_42%,#f0fdf9_100%)] dark:bg-[radial-gradient(ellipse_85%_72%_at_25%_12%,rgb(13_148_136_/_0.1)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(15_118_110_/_0.12)_0%,transparent_60%),linear-gradient(155deg,#050a0b_0%,#0b1215_42%,#0f181c_100%)]",
-  "bg-[radial-gradient(ellipse_80%_68%_at_20%_18%,rgb(254_215_170_/_0.26)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(241_245_249_/_0.75)_0%,transparent_58%),linear-gradient(150deg,#ffffff_0%,#fffdfb_45%,#f8fafc_100%)] dark:bg-[radial-gradient(ellipse_76%_66%_at_20%_18%,rgb(120_53_15_/_0.1)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(30_27_75_/_0.14)_0%,transparent_58%),linear-gradient(150deg,#070806_0%,#0b1215_45%,#141c1f_100%)]",
-  "bg-[radial-gradient(ellipse_84%_72%_at_22%_16%,rgb(148_163_184_/_0.2)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(226_232_240_/_0.6)_0%,transparent_62%),linear-gradient(149deg,#ffffff_0%,#f4f6f8_43%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_80%_70%_at_22%_16%,rgb(71_85_105_/_0.15)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(30_41_59_/_0.28)_0%,transparent_62%),linear-gradient(149deg,#050809_0%,#0b1215_43%,#111a20_100%)]",
+  "bg-[radial-gradient(ellipse_88%_72%_at_18%_14%,rgb(148_163_184_/_0.22)_0%,transparent_55%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(226_232_240_/_0.65)_0%,transparent_62%),linear-gradient(152deg,#ffffff_0%,#f4f7fa_42%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_82%_68%_at_18%_14%,rgb(148_163_184_/_0.07)_0%,transparent_54%),radial-gradient(ellipse_72%_58%_at_88%_78%,rgb(203_213_225_/_0.06)_0%,transparent_62%),linear-gradient(152deg,#0b1215_0%,color-mix(in_srgb,#151f24_38%,#0b1215)_43%,color-mix(in_srgb,#151f24_78%,#0b1215)_100%)]",
+  "bg-[radial-gradient(ellipse_82%_70%_at_14%_20%,rgb(199_210_254_/_0.38)_0%,transparent_52%),radial-gradient(ellipse_78%_68%_at_88%_32%,rgb(224_231_255_/_0.55)_0%,transparent_58%),linear-gradient(148deg,#ffffff_0%,#f8fafc_44%,#f1f5f9_100%)] dark:bg-[radial-gradient(ellipse_78%_64%_at_12%_22%,rgb(165_180_252_/_0.06)_0%,transparent_52%),radial-gradient(ellipse_80%_70%_at_90%_30%,rgb(129_140_248_/_0.05)_0%,transparent_58%),linear-gradient(148deg,#0b1215_0%,color-mix(in_srgb,#17202e_42%,#0b1215)_44%,color-mix(in_srgb,#151f24_85%,#0b1215)_100%)]",
+  "bg-[radial-gradient(ellipse_86%_74%_at_24%_12%,rgb(167_243_208_/_0.32)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(204_251_241_/_0.45)_0%,transparent_60%),linear-gradient(155deg,#ffffff_0%,#f6fdfb_42%,#f0fdf9_100%)] dark:bg-[radial-gradient(ellipse_85%_72%_at_25%_12%,rgb(45_212_191_/_0.05)_0%,transparent_52%),radial-gradient(ellipse_74%_62%_at_78%_82%,rgb(94_234_212_/_0.04)_0%,transparent_60%),linear-gradient(155deg,#0b1215_0%,color-mix(in_srgb,#132028_42%,#0b1215)_42%,color-mix(in_srgb,#171f26_82%,#0b1215)_100%)]",
+  "bg-[radial-gradient(ellipse_80%_68%_at_20%_18%,rgb(254_215_170_/_0.26)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(241_245_249_/_0.75)_0%,transparent_58%),linear-gradient(150deg,#ffffff_0%,#fffdfb_45%,#f8fafc_100%)] dark:bg-[radial-gradient(ellipse_76%_66%_at_20%_18%,rgb(251_191_36_/_0.04)_0%,transparent_50%),radial-gradient(ellipse_78%_64%_at_85%_75%,rgb(167_139_250_/_0.05)_0%,transparent_58%),linear-gradient(150deg,#0b1215_0%,color-mix(in_srgb,#181c22_45%,#0b1215)_45%,color-mix(in_srgb,#161f24_82%,#0b1215)_100%)]",
+  "bg-[radial-gradient(ellipse_84%_72%_at_22%_16%,rgb(148_163_184_/_0.2)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(226_232_240_/_0.6)_0%,transparent_62%),linear-gradient(149deg,#ffffff_0%,#f4f6f8_43%,#eef2f5_100%)] dark:bg-[radial-gradient(ellipse_80%_70%_at_22%_16%,rgb(100_116_139_/_0.07)_0%,transparent_54%),radial-gradient(ellipse_76%_68%_at_82%_72%,rgb(148_163_184_/_0.05)_0%,transparent_62%),linear-gradient(149deg,#0b1215_0%,color-mix(in_srgb,#151f24_45%,#0b1215)_43%,color-mix(in_srgb,#151f24_88%,#0b1215)_100%)]",
 ] as const;
 
 const TILE_GLASS =
-  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(168deg,rgba(255,255,255,0.72)_0%,transparent_40%,rgba(148,163,184,0.1)_100%)] dark:bg-[linear-gradient(168deg,rgba(255,255,255,0.085)_0%,transparent_38%,rgba(0,0,0,0.18)_100%)]";
+  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[linear-gradient(168deg,rgba(255,255,255,0.72)_0%,transparent_40%,rgba(148,163,184,0.1)_100%)] dark:bg-[linear-gradient(168deg,rgba(255,255,255,0.06)_0%,transparent_40%,rgba(15,23,42,0.08)_100%)]";
 
 const TILE_VIGNETTE =
-  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[radial-gradient(ellipse_72%_58%_at_50%_48%,transparent_0%,rgb(15_23_42/_0.06)_88%,rgb(15_23_42/_0.1)_100%)] dark:bg-[radial-gradient(ellipse_72%_58%_at_50%_48%,transparent_0%,rgb(0_0_0/_0.42)_88%,rgb(0_0_0/_0.55)_100%)]";
+  "pointer-events-none absolute inset-0 rounded-[inherit] bg-[radial-gradient(ellipse_72%_58%_at_50%_48%,transparent_0%,rgb(15_23_42/_0.06)_88%,rgb(15_23_42/_0.1)_100%)] dark:bg-[radial-gradient(ellipse_78%_62%_at_50%_48%,transparent_0%,rgb(15_23_42/_0.08)_86%,rgb(15_23_42/_0.14)_100%)]";
 
 const TILE_INNER_GLOW =
-  "pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgb(255_255_255/_0.92),inset_0_-1px_0_rgb(15_23_42/_0.06)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/_0.07),inset_0_-1px_0_rgb(0_0_0/_0.35)]";
+  "pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_1px_0_rgb(255_255_255/_0.92),inset_0_-1px_0_rgb(15_23_42/_0.06)] dark:shadow-[inset_0_1px_0_rgb(255_255_255/_0.07),inset_0_-1px_0_rgb(15_23_42/_0.12)]";
 
 const TILE_FRAME =
   "border-border/80 bg-white shadow-[0_22px_44px_-18px_rgb(15_23_42/_0.14),0_1px_0_rgb(255_255_255/_0.95)_inset] dark:border-white/[0.06] dark:bg-[#0b1215] dark:shadow-[0_28px_56px_-14px_rgb(0_0_0/_0.65),inset_0_1px_0_rgb(255_255_255/_0.055)]";
@@ -210,8 +210,8 @@ export function Testimonials() {
                     ];
                   const logoItem = logoItems[index % logoItems.length]!;
                   const activeSlide = index === active;
-                  /** Back cards sit slightly lower so edges read as a straight deck (no tilt). */
-                  const backOffsetY = 14 + index * 12;
+                  /** Back cards sit slightly higher (negative y) so the deck reads as stacked from above. */
+                  const backOffsetY = -(14 + index * 12);
 
                   return (
                     <motion.div
@@ -221,12 +221,13 @@ export function Testimonials() {
                           ? { opacity: 0 }
                           : {
                               opacity: 0,
-                              scale: 0.92,
+                              scale: 0.96,
+                              y: -56,
                               z: -100,
                             }
                       }
                       animate={{
-                        opacity: activeSlide ? 1 : reduce ? 0.5 : 0.72,
+                        opacity: reduce ? (activeSlide ? 1 : 0.5) : 1,
                         scale: activeSlide ? 1 : reduce ? 0.97 : 0.94,
                         z: activeSlide ? 0 : -100,
                         rotate: 0,
@@ -238,7 +239,7 @@ export function Testimonials() {
                             ? 0
                             : backOffsetY
                           : activeSlide
-                            ? [0, -48, 0]
+                            ? 0
                             : backOffsetY,
                       }}
                       exit={

@@ -464,17 +464,30 @@ const THEME = {
   },
 } as const;
 
+/** Shared geometry / motion — colors split so dark mode matches site tokens (`globals.css`). */
 const DRAMATIC_BEAMS_DEFAULTS = {
   beamWidth: 3,
   beamHeight: 30,
   beamNumber: 20,
-  lightColor: "#ffffff",
   speed: 2,
   noiseIntensity: 1.75,
   scale: 0.2,
   rotation: 30,
+} as const;
+
+/** “Cinematic” CTA against true black + white key — light theme only. */
+const DRAMATIC_BEAMS_PALETTE_LIGHT = {
   background: "#000000",
   beamDiffuse: "#000000",
+  lightColor: "#ffffff",
+} as const;
+
+/** Dark: same ribbons/spec as dramatic light, tinted to `#0b1215` canvas + muted silver highlights. */
+const DRAMATIC_BEAMS_PALETTE_DARK = {
+  background: THEME.dark.background,
+  /** Between `--background` and `--card` so metal still reads vs key light */
+  beamDiffuse: "#131b20",
+  lightColor: THEME.dark.lightColor,
 } as const;
 
 const SITE_BEAMS_DEFAULTS = {
@@ -523,14 +536,20 @@ export function CtaBeams({
   const hostRef = useRef<HTMLDivElement>(null);
 
   const theme = dark ? THEME.dark : THEME.light;
+  const dramaticPalette = dark
+    ? DRAMATIC_BEAMS_PALETTE_DARK
+    : DRAMATIC_BEAMS_PALETTE_LIGHT;
 
   const resolvedBackground = dramatic
-    ? (background ?? DRAMATIC_BEAMS_DEFAULTS.background)
+    ? (background ?? dramaticPalette.background)
     : (background ?? theme.background);
 
   const resolvedLightColor = dramatic
-    ? (lightColor ?? DRAMATIC_BEAMS_DEFAULTS.lightColor)
+    ? (lightColor ?? dramaticPalette.lightColor)
     : (lightColor ?? theme.lightColor);
+
+  const resolvedBeamDiffuseDramatic =
+    beamDiffuse ?? dramaticPalette.beamDiffuse;
 
   useEffect(() => {
     const el = hostRef.current;
@@ -599,7 +618,7 @@ export function CtaBeams({
             speed={resolvedSpeed}
             scale={resolvedScale}
             noiseIntensity={noiseIntensity}
-            beamDiffuse={dramatic ? (beamDiffuse ?? DRAMATIC_BEAMS_DEFAULTS.beamDiffuse) : beamDiffuse}
+            beamDiffuse={dramatic ? resolvedBeamDiffuseDramatic : beamDiffuse}
           />
         </Canvas>
       ) : (

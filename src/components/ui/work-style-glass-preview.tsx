@@ -15,20 +15,30 @@ const IMAGE_VISIBLE_FRACTION = 0.5;
 const IMAGE_CLIP_ALIGNED_TOP =
   "rounded-t-[calc(1.35rem-12px)] sm:rounded-t-[calc(1.35rem-16px)]";
 
+/** Optional: full card with `2rem` corners (bottom rounded). Work + Silver UI use top-only docking instead. */
+const IMAGE_CLIP_ALIGNED_FULL =
+  "rounded-t-[calc(2rem-12px)] sm:rounded-t-[calc(2rem-16px)] rounded-b-[calc(2rem-12px)] sm:rounded-b-[calc(2rem-16px)]";
+
 const workGlassFrameClassNormal =
   "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-4 sm:pt-4";
+
+/** Same glass spec as normal, full perimeter border + bottom radius (standalone preview card). */
+const workGlassFrameClassStandalone =
+  "mx-auto w-full max-w-7xl rounded-[2rem] border border-white/45 bg-white/18 px-3 pt-3 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-4 sm:pt-4";
 
 /** Tighter inset / compact chrome for spotlight-style previews. */
 const workGlassFrameClassSnug =
   "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-x border-t border-white/45 border-b-0 bg-white/18 px-2 pt-2 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-3 sm:pt-3";
 
+const workGlassFrameClassStandaloneSnug =
+  "mx-auto w-full max-w-7xl rounded-[2rem] border border-white/45 bg-white/18 px-2 pt-2 pb-0 shadow-[0_-4px_40px_rgb(24_24_27_/_0.08),inset_0_1px_0_rgb(255_255_255_/_0.55)] backdrop-blur-2xl dark:border-border/45 dark:bg-card/30 dark:shadow-[0_-6px_48px_rgb(0_0_0_/_0.35),inset_0_1px_0_rgb(255_255_255_/_0.06)] sm:px-3 sm:pt-3";
+
 /** Snug chrome uses 8px / 12px inset — parallel top radius to outer 1.35rem. */
 const IMAGE_CLIP_ALIGNED_TOP_SNUG =
   "rounded-t-[calc(1.35rem-8px)] sm:rounded-t-[calc(1.35rem-12px)]";
 
-/** Powered-by Silver UI — no stroked frame or drop shadow (avoids a bottom “rule” under the raster). */
-const workGlassFrameClassPowered =
-  "mx-auto w-full max-w-7xl rounded-t-[1.35rem] border-0 bg-white/18 px-2 pt-2 pb-0 shadow-none backdrop-blur-2xl outline-none ring-0 dark:bg-card/30 sm:px-3 sm:pt-3";
+const IMAGE_CLIP_ALIGNED_FULL_SNUG =
+  "rounded-t-[calc(2rem-8px)] sm:rounded-t-[calc(2rem-12px)] rounded-b-[calc(2rem-8px)] sm:rounded-b-[calc(2rem-12px)]";
 
 /** Placeholder aspect when there is no image. */
 const PLACEHOLDER_FULL_WIDTH = 1600;
@@ -39,7 +49,7 @@ function WorkBottomGlassInner({
   naturalHeight,
   visibleHeightFraction = IMAGE_VISIBLE_FRACTION,
   snugChrome,
-  minimalChrome,
+  fullRoundedChrome,
   children,
 }: {
   naturalWidth: number;
@@ -47,23 +57,31 @@ function WorkBottomGlassInner({
   visibleHeightFraction?: number;
   /** Thinner rim / padding so the raster reads larger in the same width. */
   snugChrome?: boolean;
-  /** Spotlight preview: borderless chrome (Silver UI section). */
-  minimalChrome?: boolean;
+  /** Optional full `2rem` card (all sides rounded). Work + Silver UI use top-only docking (`false`). */
+  fullRoundedChrome?: boolean;
   children: ReactNode;
 }) {
   const visibleHeight = naturalHeight * visibleHeightFraction;
-  const useSnugClip = snugChrome || minimalChrome;
-  const frameClass = minimalChrome
-    ? workGlassFrameClassPowered
+  const frameClass = fullRoundedChrome
+    ? snugChrome
+      ? workGlassFrameClassStandaloneSnug
+      : workGlassFrameClassStandalone
     : snugChrome
       ? workGlassFrameClassSnug
       : workGlassFrameClassNormal;
-  const clipClass = useSnugClip ? IMAGE_CLIP_ALIGNED_TOP_SNUG : IMAGE_CLIP_ALIGNED_TOP;
+  const clipClass = fullRoundedChrome
+    ? snugChrome
+      ? IMAGE_CLIP_ALIGNED_FULL_SNUG
+      : IMAGE_CLIP_ALIGNED_FULL
+    : snugChrome
+      ? IMAGE_CLIP_ALIGNED_TOP_SNUG
+      : IMAGE_CLIP_ALIGNED_TOP;
   return (
     <div className={frameClass}>
       <div
         className={cn(
-          "relative w-full overflow-hidden rounded-b-none border-0 shadow-none outline-none ring-0",
+          "relative w-full overflow-hidden border-0 shadow-none outline-none ring-0",
+          !fullRoundedChrome && "rounded-b-none",
           clipClass,
         )}
         style={{
@@ -84,7 +102,7 @@ function WorkBottomFrame({
   externalAriaLabel,
   visibleHeightFraction,
   snugChrome,
-  minimalChrome,
+  fullRoundedChrome,
   frameLinkClassName,
 }: {
   children: ReactNode;
@@ -94,7 +112,7 @@ function WorkBottomFrame({
   externalAriaLabel?: string;
   visibleHeightFraction?: number;
   snugChrome?: boolean;
-  minimalChrome?: boolean;
+  fullRoundedChrome?: boolean;
   /** Merged onto the outer `<a>` / wrapper (break out width, hover, etc.) */
   frameLinkClassName?: string;
 }) {
@@ -103,8 +121,8 @@ function WorkBottomFrame({
       naturalWidth={naturalWidth}
       naturalHeight={naturalHeight}
       visibleHeightFraction={visibleHeightFraction}
-      snugChrome={minimalChrome ? false : snugChrome}
-      minimalChrome={minimalChrome}
+      snugChrome={snugChrome}
+      fullRoundedChrome={fullRoundedChrome}
     >
       {children}
     </WorkBottomGlassInner>
@@ -193,7 +211,7 @@ export function WorkBottomSingle({
   externalAriaLabel,
   visibleHeightFraction,
   snugChrome,
-  minimalChrome,
+  fullRoundedChrome = false,
   frameLinkClassName,
   imageSizes,
 }: {
@@ -203,13 +221,19 @@ export function WorkBottomSingle({
   /** Slightly taller crop for spotlight previews (`0..1`, default matches work stack). */
   visibleHeightFraction?: number;
   snugChrome?: boolean;
-  /** Borderless spotlight frame (Powered by Silver UI). */
-  minimalChrome?: boolean;
+  /** When true, all corners use the standalone `2rem` frame (not used on work / Silver UI). */
+  fullRoundedChrome?: boolean;
   frameLinkClassName?: string;
   /** Passed to `<Image sizes="…"/>` — larger widths decode sharper when the preview is scaled up. */
   imageSizes?: string;
 }) {
   const frameHeight = image.frameHeight ?? image.height;
+  const imageClipRounding = fullRoundedChrome
+    ? snugChrome
+      ? "rounded-[calc(2rem-8px)] sm:rounded-[calc(2rem-12px)]"
+      : "rounded-[calc(2rem-12px)] sm:rounded-[calc(2rem-16px)]"
+    : "";
+
   return (
     <WorkBottomFrame
       naturalWidth={image.width}
@@ -218,7 +242,7 @@ export function WorkBottomSingle({
       externalAriaLabel={externalAriaLabel}
       visibleHeightFraction={visibleHeightFraction}
       snugChrome={snugChrome}
-      minimalChrome={minimalChrome}
+      fullRoundedChrome={fullRoundedChrome}
       frameLinkClassName={frameLinkClassName}
     >
       <WorkImageFullWidthTopCrop
@@ -226,7 +250,10 @@ export function WorkBottomSingle({
         width={image.width}
         height={image.height}
         alt={image.alt}
-        className="object-contain object-[center_top]"
+        className={cn(
+          "object-contain object-[center_top]",
+          imageClipRounding,
+        )}
         sizes={
           imageSizes ??
           "(max-width: 1280px) 100vw, 80rem"
@@ -240,26 +267,36 @@ function WorkBottomDual({
   image,
   externalHref,
   externalAriaLabel,
+  fullRoundedChrome = false,
 }: {
   image: WorkImageDual;
   externalHref?: string;
   externalAriaLabel?: string;
+  fullRoundedChrome?: boolean;
 }) {
   const w = image.light.width;
   const h = image.light.height;
+  const imageClipRounding = fullRoundedChrome
+    ? "rounded-[calc(2rem-12px)] sm:rounded-[calc(2rem-16px)]"
+    : "";
+
   return (
     <WorkBottomFrame
       naturalWidth={w}
       naturalHeight={h}
       externalHref={externalHref}
       externalAriaLabel={externalAriaLabel}
+      fullRoundedChrome={fullRoundedChrome}
     >
       <WorkImageFullWidthTopCrop
         src={image.light.src}
         width={image.light.width}
         height={image.light.height}
         alt={image.ariaLabel}
-        className="object-contain object-[center_top] opacity-95 dark:hidden"
+        className={cn(
+          "object-contain object-[center_top] opacity-95 dark:hidden",
+          imageClipRounding,
+        )}
         sizes="(max-width: 1280px) 100vw, 80rem"
       />
       <WorkImageFullWidthTopCrop
@@ -267,7 +304,10 @@ function WorkBottomDual({
         width={image.dark.width}
         height={image.dark.height}
         alt=""
-        className="hidden object-contain object-[center_top] opacity-95 dark:block"
+        className={cn(
+          "hidden object-contain object-[center_top] opacity-95 dark:block",
+          imageClipRounding,
+        )}
         sizes="(max-width: 1280px) 100vw, 80rem"
         ariaHidden
       />

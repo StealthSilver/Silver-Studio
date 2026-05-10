@@ -78,7 +78,6 @@ export function PoweredBySilverUi() {
             externalHref={externalHref}
             externalAriaLabel={previewLinkLabel}
             visibleHeightFraction={POWERED_PREVIEW_VISIBLE_FRACTION}
-            minimalChrome
             frameLinkClassName="max-w-none w-full"
             imageSizes="(max-width:640px) 100vw, (max-width:1024px) 96vw, (max-width:1536px) 92vw, 1400px"
           />
