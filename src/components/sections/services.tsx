@@ -11,11 +11,37 @@ import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/** Small uppercase category line on each tile (muted). */
+const SERVICE_CARD_SUBLINE_CLASS =
+  "max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs";
+
+/**
+ * Same typographic rhythm as section headings (`SERVICES_HEADING_CLASS`), scaled for the card.
+ */
+const SERVICE_CARD_ONE_LINER_CLASS =
+  "max-w-[95%] text-left text-[13px] font-normal uppercase leading-[1.14] tracking-[0.06em] text-foreground sm:text-[0.9375rem] sm:leading-[1.12]";
+
 const TILES = [
-  { num: "01", label: "LANDING PAGES" },
-  { num: "02", label: "DESIGN SYSTEMS" },
-  { num: "03", label: "FRONTEND DEVELOPMENT" },
-  { num: "04", label: "BRANDING" },
+  {
+    num: "01",
+    label: "LANDING PAGES",
+    oneLiner: "PAGES BUILT TO CONVERT",
+  },
+  {
+    num: "02",
+    label: "DESIGN SYSTEMS",
+    oneLiner: "SYSTEMS THAT SCALE",
+  },
+  {
+    num: "03",
+    label: "FRONTEND DEVELOPMENT",
+    oneLiner: "FAST, ACCESSIBLE UI",
+  },
+  {
+    num: "04",
+    label: "BRANDING",
+    oneLiner: "IDENTITY THAT RESONATES",
+  },
 ] as const;
 
 /** Timeline: wash layer fades in; tiles begin mid-ramp */
@@ -311,8 +337,9 @@ export function Services() {
             >
               {tile.num}
             </p>
-            <p className="max-w-[95%] text-[11px] font-normal uppercase leading-snug tracking-[0.14em] text-muted-foreground sm:text-xs">
-              {tile.label}
+            <p className={SERVICE_CARD_SUBLINE_CLASS}>{tile.label}</p>
+            <p className={cn(SERVICE_CARD_ONE_LINER_CLASS, "mt-4 sm:mt-5")}>
+              {tile.oneLiner}
             </p>
           </div>
         </CardSpotlight>
